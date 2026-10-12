@@ -35,3 +35,9 @@ CLAUDE.md
 CLAUDE.local.md
 .anthropic/
 .aider*
+
+# Fichiers generes sur macOS
+/build/
+/stage/
+*.dmg
+.DS_Store
