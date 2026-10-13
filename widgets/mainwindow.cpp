@@ -6189,17 +6189,26 @@ void MainWindow::readFromStdout()                             //readFromStdout
 void MainWindow::updateCqReplyQueue ()
 {
   auto calls = m_cqReplyQueue.calls ();
-  ui->cqReplyQueueLabel->setText (calls.isEmpty () ? tr ("CQ queue: empty")
-    : tr ("CQ queue (%1): %2").arg (calls.size ()).arg (calls.join (", ")));
+  ui->cqReplyQueueLabel->setText (calls.isEmpty () ? tr ("Call queue: empty")
+    : tr ("Call queue (%1): %2").arg (calls.size ()).arg (calls.join (", ")));
 }
 
 bool MainWindow::collectCqReply (DecodedText const& message, bool is_filtered)
 {
   m_cqReplyQueue.context (m_mode + "/" + m_currentBand + "/" + QString::number (m_freqNominal));
+  auto selected = ui->dxCallEntry->text ().trimmed ();
+  selected.remove ('<').remove ('>');
+  auto const selected_base = Radio::base_callsign (selected);
+  bool const unanswered_handover = ui->cbAutoCall->isChecked ()
+    && ui->cb_autoCallPreferIncoming->isChecked ()
+    && (m_QSOProgress == REPLYING || m_QSOProgress == REPORT)
+    && !m_incomingCallPolicy.answered (selected_base);
+  bool const current_qso = !selected_base.isEmpty ()
+    && m_QSOProgress >= REPLYING && !unanswered_handover;
   if (m_diskData || m_transmitting || !m_auto || !ui->cbAutoSeq->isChecked ()
       || !(m_mode == "FT8" || m_mode == "FT4" || m_mode == "FT2" || m_mode == "Q65")
       || m_specOp == SpecOp::FOX || m_specOp == SpecOp::HOUND || m_specOp == SpecOp::Q65_PILEUP
-      || (!m_cqReplyQueue.session () && !(m_bCallingCQ || (m_ntx == 6 && !ui->cbAutoCall->isChecked ())))) return false;
+      || (!m_cqReplyQueue.session () && !current_qso && !(m_bCallingCQ || (m_ntx == 6 && !ui->cbAutoCall->isChecked ())))) return false;
   if (!message.isStandardMessage () || message.isTX () || message.is_composite_message ()) return false;
   if (!(token_matches_call (message.call (), m_config.my_callsign ())
         || token_matches_call (message.call (), m_baseCall))) return false;
@@ -6209,7 +6218,8 @@ bool MainWindow::collectCqReply (DecodedText const& message, bool is_filtered)
   message.deCallAndGrid (call,grid);
   call.remove ('<').remove ('>');
   auto base = Radio::base_callsign (call);
-  if (!Radio::is_callsign (call) || base == m_baseCall || base == m_cqReplyQueue.active ()) return false;
+  if (!Radio::is_callsign (call) || base == m_baseCall || base == m_cqReplyQueue.active ()
+      || base == selected_base) return false;
   // Suppress selection even for a filtered direct reply: it must not take over
   // a queued round through one of the legacy CQ reply paths.
   if (is_filtered) return true;
@@ -6226,6 +6236,7 @@ bool MainWindow::collectCqReply (DecodedText const& message, bool is_filtered)
     azdist_ (mygrid.data (),theirgrid.data (),&utc,&az,&el,&miles,&km,&hotaz,&hotbetter,6,6);
     reply.distance = km;
   }
+  if (current_qso) m_cqReplyQueue.attach_current (selected_base);
   m_cqReplyQueue.add (reply);
   updateCqReplyQueue ();
   return true;
@@ -6250,6 +6261,8 @@ void MainWindow::startNextCqReply ()
     m_bSentReport = false;
     m_sentFirst73 = false;
     m_bDoubleClicked = true;
+    m_bAutoReply = true;
+    m_bCallingCQ = false;
     tx_watchdog (false);
     processMessage (message);
     m_processingCqQueue = false;

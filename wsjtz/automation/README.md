@@ -51,3 +51,12 @@ The pending calls are shown in the main controls as `CQ queue`. Validation:
 macOS arm64 build and `wsjtz_cq_reply_queue_regression` passed (priorities,
 FIFO ties, deduplication, exhaustion and manual/context cancellation).
 Live CQ/QSO, radio and operator-flow tests are still outstanding.
+
+The same queue now accepts direct callers during an existing automatic QSO,
+including an outgoing/manual-selected QSO. It attaches the current partner as
+the active exchange, so waiting callers cannot start until it is logged (or
+the existing watchdog expires). Repeated calls update one waiting entry.
+The optional Auto Call handover still applies to unanswered outgoing attempts;
+after a response, new callers wait. Operator selection of another station
+continues to cancel the entire queue. Manual TX without automatic sequencing
+is not made automatic by receipt of a call.

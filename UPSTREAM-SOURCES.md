@@ -64,3 +64,9 @@ QSO, délai d'appel et sélection manuelle dans `widgets/mainwindow.*`.
 Toujours active pour la réponse automatique aux CQ des modes pris en charge.
 Les sources amont ne sont pas créditées comme auteurs de cette nouvelle
 fonction. Compilation macOS et test de file réussis ; essai radio à réaliser.
+
+Extension de la file aux appels directs reçus pendant un QSO déjà en cours,
+13 octobre 2026 : association du correspondant courant à la session de file,
+attente jusqu'à sa journalisation, dédoublonnage conservé. L'option Auto Call
+reste applicable aux tentatives sans réponse. Compilation macOS et deux
+régressions d'automatisation réussies ; validation radio à effectuer.

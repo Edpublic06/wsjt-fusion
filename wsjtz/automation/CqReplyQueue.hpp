@@ -15,6 +15,9 @@ public:
   bool session () const { return session_; }
   QString active () const { return active_; }
   bool empty () const { return waiting_.isEmpty (); }
+  void attach_current (QString const& call) {
+    if (active_.isEmpty () && !call.isEmpty ()) { active_ = call; seen_.insert (call); session_ = true; }
+  }
   void highlight (QString const& call,int rank) { for (auto& r : waiting_) if (r.call == call) r.highlight = rank; }
   void add (CqReply const& reply) {
     session_ = true;

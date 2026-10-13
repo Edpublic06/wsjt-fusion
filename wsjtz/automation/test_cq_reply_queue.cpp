@@ -8,6 +8,12 @@ wsjtz::CqReply reply (QString call,int signal,int distance,bool psk=false) {
 }
 int main () {
   wsjtz::CqReplyQueue q;
+  q.attach_current ("CURRENT");
+  q.add (reply ("NEW",-10,100));q.add (reply ("NEW",-8,110));
+  q.add (reply ("CURRENT",-1,100));
+  check (q.active ()=="CURRENT" && q.calls ().size ()==1);
+  q.complete ();check (q.take (0,false).call=="NEW");q.complete ();
+  check (q.empty () && !q.session ());
   q.context ("FT8/20m");
   q.add (reply ("A",-10,100));q.add (reply ("B",-5,200));q.add (reply ("C",-5,300));
   q.add (reply ("B",-4,200));

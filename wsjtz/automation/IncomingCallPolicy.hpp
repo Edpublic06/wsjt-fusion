@@ -31,6 +31,7 @@ public:
     target_ = incoming;
     answered_ = true;
   }
+  bool answered (QString const& selected) const { return selected == target_ && answered_; }
 private:
   QString target_;
   bool answered_ = false;
