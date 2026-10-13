@@ -1,17 +1,8 @@
 <p align="center">
-  <img src="docs/wsjtz_icon.png" alt="WSJT-Z" width="160">
-</p>
-
-<h1 align="center">WSJT-Z</h1>
-
-<p align="center">
-  A modified WSJT-X with extended automation, advanced filtering, and an enhanced decoder pipeline.
-</p>
-
-<p align="center">
   <a href="https://github.com/sq9fve/wsjt-z/releases"><img src="https://img.shields.io/github/v/release/sq9fve/wsjt-z?include_prereleases&label=release" alt="Latest release"></a>
   <a href="https://www.gnu.org/licenses/gpl-3.0.txt"><img src="https://img.shields.io/badge/license-GPL--3.0-blue" alt="License: GPL-3.0"></a>
   <a href="https://groups.io/g/WSJT-Z/topics"><img src="https://img.shields.io/badge/discuss-groups.io-orange" alt="groups.io"></a>
+  <a href="https://github.com/Edpublic06/wsjt-z/releases"><img src="https://img.shields.io/github/downloads/Edpublic06/wsjt-z/total?label=Téléchargements" alt="Téléchargements"></a>
 </p>
 
 ---
