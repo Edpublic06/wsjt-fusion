@@ -3794,8 +3794,8 @@ Right click for insert and delete options.</string>
              <item><widget class="QSpinBox" name="sb_queuedStationMaxCalls">
               <property name="minimum"><number>0</number></property>
               <property name="maximum"><number>999</number></property>
-              <property name="specialValueText"><string>Default</string></property>
-              <property name="toolTip"><string>WD Timer (0): use the normal watchdog. Otherwise allow this number of transmissions without a reply, including the initial call, then advance to the next station. Each reply resets the count.</string></property>
+              <property name="value"><number>0</number></property>
+              <property name="toolTip"><string>0: use the existing Custom WD Timer for the current mode when enabled. Otherwise allow this number of transmissions without a reply, including the initial call, then advance to the next station. Each reply resets the count.</string></property>
              </widget></item>
             </layout>
            </item>

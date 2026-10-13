@@ -65,8 +65,8 @@ is not made automatic by receipt of a call.
 ## Queued-station call limit
 
 Settings / WSJT-Z / Misc also contains **WD Counter**.
-The special `Default` value (zero/default, rather than a numeric zero) uses
-the existing watchdog. A positive value replaces that elapsed-time watchdog
+The numeric default `0` uses the existing Custom WD Timer for the current
+mode when enabled; otherwise the existing standard watchdog configuration applies. A positive value replaces that elapsed-time watchdog
 for a dequeued station with a cap on transmissions without a reply, including
 the first call. Replies reset the counter for the next exchange step. The
 current QSO attached to a queue is not retroactively given this budget.

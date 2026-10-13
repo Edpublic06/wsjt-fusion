@@ -83,3 +83,7 @@ Configuration/Edpublic06/WDCounter. Test de persistance effectué sur un
 fichier temporaire : conservation des clés et valeurs WD et d'un autre MOD,
 avec exactement deux nouvelles clés. Cela ne constitue pas un test de tous
 les MOD disponibles. Aucune conversion globale de paramètres n'est ajoutée.
+
+WD Counter affiche finalement 0 (valeur initiale). À 0, le chemin WD existant
+est conservé, avec Custom WD Timer du mode lorsqu'il est activé. Une valeur
+positive utilise le compteur par station sortie de la file.
