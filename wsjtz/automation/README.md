@@ -3,9 +3,10 @@
 `IncomingCallPolicy.hpp` is a personal WSJT-Z extension, dated 13 October
 2026, licensed GPL-3.0-or-later. It is kept separate from upstream code.
 
-The **Auto Call: prefer incoming calls** checkbox is in the WSJT-Z
-operating settings, beside the PSK preference. It is off by default and saved
-as `AutoCallPreferIncoming` in the existing per-configuration settings.
+The **Auto Call: prioritize stations calling us** checkbox is in
+**Settings / WSJT-Z / Misc**. It is off by default and saved as
+`Configuration/PreferIncomingCalls`. The prior main-window preference is
+used as the migration fallback when the new key is absent.
 
 When enabled, an unanswered outgoing attempt can yield to a different station
 that addresses our callsign directly in a standard live decode. Existing
@@ -60,3 +61,20 @@ The optional Auto Call handover still applies to unanswered outgoing attempts;
 after a response, new callers wait. Operator selection of another station
 continues to cancel the entire queue. Manual TX without automatic sequencing
 is not made automatic by receipt of a call.
+
+## Queued-station call limit
+
+Settings / WSJT-Z / Misc also contains **Maximum calls per queued station**.
+The special `WD Timer` value (zero/default, rather than a numeric zero) uses
+the existing watchdog. A positive value replaces that elapsed-time watchdog
+for a dequeued station with a cap on transmissions without a reply, including
+the first call. Replies reset the counter for the next exchange step. The
+current QSO attached to a queue is not retroactively given this budget.
+
+Transmissions are counted at the PTT start transition, not during message
+regeneration. The cap blocks any additional PTT start and advances the queue
+after the receive/decode window, without interrupting a running transmission.
+A manual station selection still cancels the queue. Values are committed by
+OK in the existing Configuration dialog; Cancel retains the accepted settings.
+The call-count regression covers zero/WD fallback, limits 1/2, counter reset
+on a reply, unrelated stations and a fresh queued target.

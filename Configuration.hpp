@@ -233,6 +233,8 @@ public:
   double wd_FT4() const;
   double wd_FT2() const;
   bool wd_Timer() const;
+  bool preferIncomingCalls() const;
+  int queuedStationMaxCalls() const;
   bool processTailenders() const;
   QString permIgnoreList() const;
   void set_permIgnoreList(QString const& value);

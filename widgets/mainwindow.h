@@ -35,6 +35,7 @@
 #include "commons.h"
 #include "wsjtz/automation/IncomingCallPolicy.hpp"
 #include "wsjtz/automation/CqReplyQueue.hpp"
+#include "wsjtz/automation/QueuedCallBudget.hpp"
 #include "Radio.hpp"
 #include "models/Modes.hpp"
 #include "models/FrequencyList.hpp"
@@ -754,6 +755,7 @@ private:
   bool    m_bSentReport=false;
   wsjtz::IncomingCallPolicy m_incomingCallPolicy;
   wsjtz::CqReplyQueue m_cqReplyQueue;
+  wsjtz::QueuedCallBudget m_queuedCallBudget;
   bool m_processingCqQueue = false;
   bool m_resumeCqQueue = false;
   bool collectCqReply (DecodedText const&, bool filtered);

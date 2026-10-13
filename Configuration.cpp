@@ -833,6 +833,8 @@ private:
   double wd_FT4_;
   double wd_FT2_;
   bool wd_Timer_;
+  bool preferIncomingCalls_;
+  int queuedStationMaxCalls_;
   bool processTailenders_;
   QString permIgnoreList_;
   bool showDistance_;
@@ -1015,6 +1017,8 @@ double Configuration::wd_FT8() const {return m_->wd_FT8_;}
 double Configuration::wd_FT4() const {return m_->wd_FT4_;}
 double Configuration::wd_FT2() const {return m_->wd_FT2_;}
 bool Configuration::wd_Timer() const {return m_->wd_Timer_;}
+bool Configuration::preferIncomingCalls() const {return m_->preferIncomingCalls_;}
+int Configuration::queuedStationMaxCalls() const {return m_->queuedStationMaxCalls_;}
 bool Configuration::processTailenders() const {return m_->processTailenders_;}
 QString Configuration::permIgnoreList() const {return m_->permIgnoreList_;}
 void Configuration::set_permIgnoreList(QString const& value)
@@ -1886,6 +1890,8 @@ void Configuration::impl::initialize_models ()
   ui_->sb_WD_FT2->setValue(wd_FT2_);
   ui_->gb_WD_Timer->setChecked(wd_Timer_);
   ui_->te_permIgnoreList->setText(permIgnoreList_);
+  ui_->cb_preferIncomingCalls->setChecked(preferIncomingCalls_);
+  ui_->sb_queuedStationMaxCalls->setValue(queuedStationMaxCalls_);
   ui_->cb_processTailenders->setChecked(processTailenders_);
   ui_->cb_showDistance->setChecked(showDistance_);
   ui_->cb_showBearing->setChecked(showBearing_);
@@ -2173,6 +2179,9 @@ void Configuration::impl::read_settings ()
   wd_FT4_ = settings_->value("wd_FT4",1.0).toDouble ();
   wd_FT2_ = settings_->value("wd_FT2",1.0).toDouble ();
   wd_Timer_ = settings_->value("wd_Timer", false).toBool();
+  QSettings legacy_settings {settings_->fileName(), settings_->format()};
+  preferIncomingCalls_ = settings_->value("PreferIncomingCalls", legacy_settings.value("MainWindow/Common/AutoCallPreferIncoming", false)).toBool();
+  queuedStationMaxCalls_ = qBound(0, settings_->value("QueuedStationMaxCalls", 0).toInt(), 999);
   processTailenders_ = settings_->value("processTailenders", false).toBool();
   permIgnoreList_ = settings_->value("permIgnoreList").toString();
   showDistance_ = settings_->value("showDistance", false).toBool();
@@ -2374,6 +2383,8 @@ void Configuration::impl::write_settings ()
   settings_->setValue("wd_FT4", wd_FT4_);
   settings_->setValue("wd_FT2", wd_FT2_);
   settings_->setValue("wd_Timer", wd_Timer_);
+  settings_->setValue("PreferIncomingCalls", preferIncomingCalls_);
+  settings_->setValue("QueuedStationMaxCalls", queuedStationMaxCalls_);
   settings_->setValue("processTailenders", processTailenders_);
   settings_->setValue("permIgnoreList", permIgnoreList_);
   settings_->setValue("showDistance", showDistance_);
@@ -2952,6 +2963,8 @@ void Configuration::impl::accept ()
   wd_FT8_ = ui_->sb_WD_FT8->value();
   wd_FT2_ = ui_->sb_WD_FT2->value();
   wd_Timer_ = ui_->gb_WD_Timer->isChecked();
+  preferIncomingCalls_ = ui_->cb_preferIncomingCalls->isChecked();
+  queuedStationMaxCalls_ = ui_->sb_queuedStationMaxCalls->value();
   processTailenders_ = ui_->cb_processTailenders->isChecked();
   permIgnoreList_ = ui_->te_permIgnoreList->toPlainText();
   showDistance_ = ui_->cb_showDistance->isChecked();

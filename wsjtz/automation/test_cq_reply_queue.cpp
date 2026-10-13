@@ -1,5 +1,6 @@
 // Personal WSJT-Z regression, 2026-10-13. GPL-3.0-or-later.
 #include "CqReplyQueue.hpp"
+#include "QueuedCallBudget.hpp"
 #include <cstdlib>
 #include <iostream>
 void check (bool value) { if (!value) std::exit (1); }
@@ -7,6 +8,16 @@ wsjtz::CqReply reply (QString call,int signal,int distance,bool psk=false) {
   wsjtz::CqReply r; r.call=call;r.decode=call;r.signal=signal;r.distance=distance;r.psk=psk;return r;
 }
 int main () {
+  wsjtz::QueuedCallBudget budget;
+  budget.begin ("A");
+  budget.sent ("OTHER");check (!budget.exhausted ("A",1));
+  budget.sent ("A");check (budget.exhausted ("A",1));
+  check (!budget.exhausted ("A",0)); // unspecified: WD Timer
+  check (!budget.exhausted ("A",2));
+  budget.sent ("A");check (budget.exhausted ("A",2));
+  budget.reply ("OTHER");check (budget.exhausted ("A",2));
+  budget.reply ("A");check (!budget.exhausted ("A",1));
+  budget.begin ("B");check (!budget.owns ("A") && !budget.exhausted ("B",1));
   wsjtz::CqReplyQueue q;
   q.attach_current ("CURRENT");
   q.add (reply ("NEW",-10,100));q.add (reply ("NEW",-8,110));

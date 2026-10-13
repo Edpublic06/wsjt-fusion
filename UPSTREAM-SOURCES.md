@@ -70,3 +70,9 @@ Extension de la file aux appels directs reçus pendant un QSO déjà en cours,
 attente jusqu'à sa journalisation, dédoublonnage conservé. L'option Auto Call
 reste applicable aux tentatives sans réponse. Compilation macOS et deux
 régressions d'automatisation réussies ; validation radio à effectuer.
+
+Réglages des extensions personnelles déplacés vers WSJT-Z / Misc,
+13 octobre 2026 : priorité aux appelants et limite d'émissions sans réponse
+pour chaque station sortie de la file. Valeur par défaut « WD Timer ».
+Configuration acceptée/annulée selon le fonctionnement existant du dialogue.
+Compilation macOS, vérification de l'emplacement XML et régressions réussies.

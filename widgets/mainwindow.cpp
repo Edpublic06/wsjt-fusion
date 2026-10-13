@@ -1763,7 +1763,6 @@ void MainWindow::writeSettings()
   m_settings->setValue ("bandHopperEnabled", ui->cb_bandHopper->isChecked());
   m_settings->setValue ("bandHopper", ui->pte_bandHopper->toPlainText());
   m_settings->setValue ("AutoCallPreferPSKSpotted", ui->cb_autoCallPreferPSKSpotted->isChecked());
-  m_settings->setValue ("AutoCallPreferIncoming", ui->cb_autoCallPreferIncoming->isChecked());
 
   m_settings->setValue ("AutoCallPriority", ui->cb_autoCallPriority->currentIndex());
 
@@ -2008,7 +2007,6 @@ void MainWindow::readSettings()
   ui->pb_BandChangeNow->setVisible(ui->cb_bandHopper->isChecked());
   ui->pte_bandHopper->setPlainText(m_settings->value("bandHopper", "").toString());
   ui->cb_autoCallPreferPSKSpotted->setChecked(m_settings->value("AutoCallPreferPSKSpotted", false).toBool());
-  ui->cb_autoCallPreferIncoming->setChecked(m_settings->value("AutoCallPreferIncoming", false).toBool());
   ui->cb_autoCallPriority->setCurrentIndex(m_settings->value ("AutoCallPriority", 0).toInt ());
   m_infoMessageShown = m_settings->value("infoMessageShown12-2024", false).toBool();
   ui->cb_ignoreCQTarget->setCurrentIndex(m_settings->value("ignoreCQTargetIndex", 0).toInt());
@@ -6200,7 +6198,7 @@ bool MainWindow::collectCqReply (DecodedText const& message, bool is_filtered)
   selected.remove ('<').remove ('>');
   auto const selected_base = Radio::base_callsign (selected);
   bool const unanswered_handover = ui->cbAutoCall->isChecked ()
-    && ui->cb_autoCallPreferIncoming->isChecked ()
+    && m_config.preferIncomingCalls ()
     && (m_QSOProgress == REPLYING || m_QSOProgress == REPORT)
     && !m_incomingCallPolicy.answered (selected_base);
   bool const current_qso = !selected_base.isEmpty ()
@@ -6212,6 +6210,10 @@ bool MainWindow::collectCqReply (DecodedText const& message, bool is_filtered)
   if (!message.isStandardMessage () || message.isTX () || message.is_composite_message ()) return false;
   if (!(token_matches_call (message.call (), m_config.my_callsign ())
         || token_matches_call (message.call (), m_baseCall))) return false;
+  QString budget_call, budget_grid;
+  message.deCallAndGrid (budget_call,budget_grid);
+  budget_call.remove ('<').remove ('>');
+  m_queuedCallBudget.reply (Radio::base_callsign (budget_call));
   auto words = message.messageWords ();
   if (words.contains ("73") || words.contains ("RR73") || words.contains ("RRR")) return false;
   QString call,grid;
@@ -6247,7 +6249,17 @@ void MainWindow::startNextCqReply ()
   m_cqReplyQueue.context (m_mode + "/" + m_currentBand + "/" + QString::number (m_freqNominal));
   updateCqReplyQueue ();
   if (m_diskData || m_transmitting || !m_monitoring || !ui->cbAutoSeq->isChecked ()
-      || (!m_auto && !m_resumeCqQueue) || !m_cqReplyQueue.active ().isEmpty ()) return;
+      || (!m_auto && !m_resumeCqQueue)) return;
+  if (!m_cqReplyQueue.active ().isEmpty ()) {
+    if (!m_queuedCallBudget.exhausted (m_cqReplyQueue.active (),m_config.queuedStationMaxCalls ())) return;
+    // Checked after the receive/decode window, never during a transmission.
+    stopWRTimer.stop ();
+    m_cqReplyQueue.complete ();
+    m_queuedCallBudget.begin (QString {});
+    clearDX ();
+    clearPounceState ();
+    m_resumeCqQueue = true;
+  }
   if (!ui->dxCallEntry->text ().isEmpty () && m_QSOProgress != CALLING) return;
   int priority = ui->respondComboBox->currentIndex () == 2 ? 2 : ui->cb_autoCallPriority->currentIndex ();
   bool prefer_psk = ui->cb_autoCallPreferPSKSpotted->isChecked () && m_config.psk_reporter_band_activity ();
@@ -6255,6 +6267,7 @@ void MainWindow::startNextCqReply ()
     auto next = m_cqReplyQueue.take (priority,prefer_psk);
     DecodedText message {next.decode};
     if (callsignFiltered (message)) { m_cqReplyQueue.complete (); continue; }
+    m_queuedCallBudget.begin (next.call);
     m_processingCqQueue = true;
     clearDX ();
     clearPounceState ();
@@ -6407,7 +6420,7 @@ void MainWindow::auto_sequence (DecodedText const& message, unsigned start_toler
     bool const supported_activity = m_specOp != SpecOp::FOX && m_specOp != SpecOp::HOUND
                                 && m_specOp != SpecOp::Q65_PILEUP;
     if (m_incomingCallPolicy.should_switch (
-          ui->cb_autoCallPreferIncoming->isChecked (), ui->cbAutoCall->isChecked (),
+          m_config.preferIncomingCalls (), ui->cbAutoCall->isChecked (),
           m_auto, ui->cbAutoSeq->isChecked (), !m_diskData && !m_transmitting,
           early_attempt, supported_activity, valid_incoming,
           false, caller_base) && !callsignFiltered (message))
@@ -6847,7 +6860,9 @@ void MainWindow::guiUpdate()
     int msgLength=txMsg.trimmed().length();
     if(msgLength==0 and !m_tune) on_stopTxButton_clicked();
 
-    if(g_iptt==0 and ((m_bTxTime and (fTR < 0.75) and (msgLength>0)) or m_tune)) {
+    bool const queued_call_limit = m_queuedCallBudget.exhausted (
+      m_cqReplyQueue.active (), m_config.queuedStationMaxCalls ());
+    if(g_iptt==0 and (!queued_call_limit or m_tune) and ((m_bTxTime and (fTR < 0.75) and (msgLength>0)) or m_tune)) {
       //### Allow late starts
       icw[0]=m_ncw;
       g_iptt = 1;
@@ -7263,6 +7278,8 @@ void MainWindow::guiUpdate()
       case 6: m_QSOProgress = CALLING; break;
       default: break;             // determined elsewhere
     }
+    if (!m_tune && m_ntx >= 1 && m_ntx <= 5)
+      m_queuedCallBudget.sent (m_cqReplyQueue.active ());
     m_transmitting = true;
     transmitDisplay (true);
     statusUpdate ();
@@ -15989,6 +16006,9 @@ void MainWindow::clearPounceState()
 }
 
 double MainWindow::watchdog() {
+    if (m_config.queuedStationMaxCalls () > 0 && m_queuedCallBudget.owns (m_cqReplyQueue.active ()))
+        return 0.; // Queued attempts use the explicitly selected call count.
+
     if (m_config.wd_Timer()) {
         if (m_mode == "FT8") return m_config.wd_FT8();
         if (m_mode == "FT2") return m_config.wd_FT2();
