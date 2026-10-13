@@ -754,6 +754,9 @@ private:
   bool    m_bOK_to_chk=false;
   bool    m_bSentReport=false;
   wsjtz::IncomingCallPolicy m_incomingCallPolicy;
+  QStringList m_pendingIncomingDecodes;
+  QString m_pendingIncomingTarget;
+  bool m_resolvingIncomingBatch = false;
   wsjtz::CqReplyQueue m_cqReplyQueue;
   wsjtz::QueuedCallBudget m_queuedCallBudget;
   bool m_processingCqQueue = false;

@@ -49,6 +49,15 @@ int main ()
            "N0IGU interrupted N3CH before its R-report was decoded");
   policy.observe ("N3CH", "N3CH", true);
   require (policy.answered ("N3CH"), "partner R-report released the incoming QSO lock");
+  // N2AJO was called outbound; W7XE is decoded before N2AJO's report.
+  // Resolve the handover only after observing the complete receive batch.
+  policy.reset ();
+  policy.observe ("N2AJO", "W7XE", true);
+  require (policy.should_switch (true,true,true,true,true,true,true,true,false,"W7XE"),
+           "unanswered outgoing attempt did not admit a pending caller");
+  policy.observe ("N2AJO", "N2AJO", true);
+  require (!policy.should_switch (true,true,true,true,true,true,true,true,false,"W7XE"),
+           "same-period partner reply failed to cancel pending handover");
   // QSO completion clears the selected station. Auto Call then selects a new
   // outgoing target through its existing cycle; no old target is restored here.
   policy.reset ();

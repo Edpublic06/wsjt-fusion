@@ -5021,7 +5021,28 @@ void MainWindow::decodeDone ()
   }
   to_jt9(m_ihsym,-1,1);                //Tell jt9 we know it has finished
   if (m_mode != "FT8" || dec_data.params.nzhsym >= m_hsymStop)
-    QTimer::singleShot (0, this, [this] { startNextCqReply (); });
+    QTimer::singleShot (0, this, [this] {
+      // All messages in the receive period must be observed before an
+      // unanswered outgoing target can yield to another caller.
+      auto pending = m_pendingIncomingDecodes;
+      auto target = m_pendingIncomingTarget;
+      m_pendingIncomingDecodes.clear ();
+      m_pendingIncomingTarget.clear ();
+      auto selected = ui->dxCallEntry->text ();
+      selected.remove ('<').remove ('>');
+      if (Radio::base_callsign (selected) == target) {
+        m_resolvingIncomingBatch = true;
+        for (auto const& decode : pending) {
+          DecodedText incoming {decode};
+          bool filtered = m_config.autoCQfiltering () && callsignFiltered (incoming);
+          if (!collectCqReply (incoming,filtered)
+              && !m_incomingCallPolicy.answered (Radio::base_callsign (ui->dxCallEntry->text ())))
+            auto_sequence (incoming,25,50);
+        }
+        m_resolvingIncomingBatch = false;
+      }
+      startNextCqReply ();
+    });
 
   m_startAnother=m_loopall;
   if(m_bNoMoreFiles) {
@@ -6275,7 +6296,7 @@ void MainWindow::startNextCqReply ()
   while (!m_cqReplyQueue.empty ()) {
     auto next = m_cqReplyQueue.take (priority,prefer_psk);
     DecodedText message {next.decode};
-    if (callsignFiltered (message)) { m_cqReplyQueue.complete (); continue; }
+    if (m_config.autoCQfiltering () && callsignFiltered (message)) { m_cqReplyQueue.complete (); continue; }
     m_queuedCallBudget.begin (next.call);
     m_processingCqQueue = true;
     clearDX ();
@@ -6435,6 +6456,12 @@ void MainWindow::auto_sequence (DecodedText const& message, unsigned start_toler
           false, caller_base)
         && (!m_config.autoCQfiltering () || !callsignFiltered (message)))
       {
+        if (!m_resolvingIncomingBatch) {
+          if (m_pendingIncomingDecodes.isEmpty ()) m_pendingIncomingTarget = selected_dx_base;
+          if (!m_pendingIncomingDecodes.contains (message.string ()))
+            m_pendingIncomingDecodes.append (message.string ());
+          return;
+        }
         if (m_zdebug) log ("Auto Call: yielding unanswered target " + selected_dx_text
                           + " to incoming caller " + caller);
         // Clear the abandoned attempt and its pending selection. The existing
