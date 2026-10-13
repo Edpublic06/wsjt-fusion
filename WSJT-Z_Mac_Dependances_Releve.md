@@ -1,20 +1,25 @@
-# WSJT-Z 2.0.19 Mac — relevé des dépendances
+# WSJT-Z 2.0.19 for Mac — dependency inventory
 
-## Provenance et portée
+## Provenance and scope
 
-Versions relevées sur le Mac de l’utilisateur avec la commande ci-dessous, puis fournies par capture Terminal dans la conversation. Le Terminal affiche une dernière connexion le 9 octobre à 11:07:05 ; ce message ne suffit pas à dater précisément l’exécution de la commande. La capture a été fournie dans la conversation le 13 octobre 2026.
+Versions were collected on the user's Mac using the command below and supplied
+as a Terminal screenshot on 13 October 2026. Terminal showed a last login on
+9 October at 11:07:05; that does not precisely date execution of the command.
 
-Ces versions attestent les paquets installés au moment du relevé. Elles ne prouvent pas rétroactivement les versions utilisées pour la compilation réussie du 3 octobre 2026. Aucun paquet n’a été installé ou modifié pour établir ce document.
+These versions describe installed packages at inventory time. They do not
+retroactively prove which versions were used for the successful 3 October 2026
+build. No package was installed or modified to prepare this document.
 
-## Commande utilisée
+## Command used
 
 ```bash
 /opt/homebrew/bin/brew list --versions cmake ninja pkg-config gcc boost fftw hamlib libusb portaudio asciidoctor ccache qt@5
 ```
 
-La sortie montre aussi un téléchargement des données API Homebrew. La commande a donc consulté les paquets et rafraîchi des données de Homebrew ; aucun changement de version des paquets n’est rapporté.
+The output also shows a Homebrew API data download. The command inspected
+packages and refreshed Homebrew data; no package version change was reported.
 
-## Versions rapportées
+## Reported versions
 
 ```text
 asciidoctor 2.0.26
@@ -31,19 +36,23 @@ portaudio 19.7.0
 qt@5 5.15.19
 ```
 
-La commande demandait `pkg-config` ; Homebrew rapporte le paquet sous le nom `pkgconf`.
+The command requested `pkg-config`; Homebrew reports the package as `pkgconf`.
 
-## Contexte de la compilation conservée
+## Context of the retained build
 
-- MacBook Pro Apple Silicon, 16 Go ; macOS 15.8.1 lors de la capture initiale.
-- Compilation le 3 octobre 2026, selon confirmation de l’utilisateur.
-- Sources WSJT-Z : tag `v2.0.19`, commit `b3a06e89ae0174c51c8595d99e40ca179738eb0a`.
-- Version affichée : `2.0.19 - b3a06e`.
-- Script utilisé : `doc/build-osx.sh`.
-- Publication communautaire : [v2.0.19-macos-m1](https://github.com/Edpublic06/wsjt-fusion/releases/tag/v2.0.19-macos-m1).
+- MacBook Pro Apple Silicon, 16 GB; macOS 15.8.1 in the initial screenshot.
+- Built on 3 October 2026, according to the user.
+- WSJT-Z source: tag `v2.0.19`, commit `b3a06e89ae0174c51c8595d99e40ca179738eb0a`.
+- Displayed version: `2.0.19 - b3a06e`.
+- Script used: `doc/build-osx.sh`.
+- Historical community release: `v2.0.19-macos-m1` (now retained as a draft).
 
-## Utilisation pour les reconstructions et mises à jour
+## Use for rebuilds and updates
 
-Conserver ce relevé avec la documentation de compilation. Avant une nouvelle construction, relever de nouveau les versions et comparer les résultats. La disponibilité future de ces versions via Homebrew n’est pas garantie ; cette liste ne constitue pas un mécanisme d’installation de versions figées.
+Keep this inventory with the build documentation. Collect versions again before
+each build and compare them. Future availability through Homebrew is not
+guaranteed; this list does not provide a pinned-version installation mechanism.
 
-Les versions exactes de Homebrew, des outils de ligne de commande Apple et du compilateur gfortran effectivement choisi lors de la compilation initiale restent non consignées. La version de la formule GCC ne suffit pas à prouver le chemin du compilateur utilisé par CMake.
+The exact Homebrew and Apple command-line tool versions and the gfortran
+compiler actually selected for the initial build were not recorded. The GCC
+formula version alone does not establish the compiler path used by CMake.

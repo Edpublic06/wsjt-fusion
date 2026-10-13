@@ -6,7 +6,7 @@
   <a href="https://github.com/Edpublic06/wsjt-fusion/releases"><img src="https://img.shields.io/github/v/release/Edpublic06/wsjt-fusion?include_prereleases&sort=date&label=Fusion" alt="Latest release"></a>
   <a href="https://www.gnu.org/licenses/gpl-3.0.txt"><img src="https://img.shields.io/badge/license-GPL--3.0-blue" alt="License: GPL-3.0"></a>
   <a href="https://groups.io/g/WSJT-Z/topics"><img src="https://img.shields.io/badge/discuss-groups.io-orange" alt="groups.io"></a>
-  <a href="https://github.com/Edpublic06/wsjt-fusion/releases"><img src="https://img.shields.io/github/downloads/Edpublic06/wsjt-fusion/total?label=Téléchargements" alt="Téléchargements"></a>
+  <a href="https://github.com/Edpublic06/wsjt-fusion/releases"><img src="https://img.shields.io/github/downloads/Edpublic06/wsjt-fusion/total?label=Downloads" alt="Downloads"></a>
 </p>
 
 ---
@@ -29,11 +29,11 @@ WSJT-Fusion supports **FT8**, **FT4**, **FT2**, **JT4 / JT9 / JT65**, **Q65**, *
 
 ---
 
-## Versions du code intégré / Component versions
+## Component versions
 
-**[Voir le tableau des sources par fonction : FT8, FT4, FT2, JTTY, WSJT-Z et fonctions Fusion](UPSTREAM-SOURCES.md#tableau-des-versions-par-fonction).**
+**[View the source table by function: FT8, FT4, FT2, JTTY, WSJT-Z and Fusion features](UPSTREAM-SOURCES.md#component-versions-by-function).**
 
-Le tableau indique les versions, les révisions exactes connues et l’état réel de chaque intégration. La version de Fusion est indépendante de celles de ses composants.
+The table lists versions, known exact revisions and actual integration status. Fusion’s version is independent of its component versions.
 
 ## Discussion & support
 
@@ -75,7 +75,7 @@ The incoming-caller priority checkbox and **WD Counter** are located in **Settin
 - **General decoder engine:** migration to the newer upstream engine is ongoing. The current FT8 engine still derives from the inherited WSJT-Z baseline and its existing enhancements.
 - **Validation:** current builds and tests focus on **macOS Apple Silicon**. Automated tests pass for FT2 and the new automation policies; live radio testing continues. Windows builds are not yet validated for Fusion.
 
-See the [component version and integration table](UPSTREAM-SOURCES.md#tableau-des-versions-par-fonction) for exact known references and the [automation notes](wsjtz/automation/README.md) for technical details.
+See the [component version and integration table](UPSTREAM-SOURCES.md#component-versions-by-function) for exact known references and the [automation notes](wsjtz/automation/README.md) for technical details.
 
 ## Features
 

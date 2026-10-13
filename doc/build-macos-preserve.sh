@@ -19,11 +19,11 @@ else
   echo "brew not found in /opt/homebrew/bin or /usr/local/bin"
   exit 1
 fi
-# Pas de mise à jour automatique de Homebrew.
+# No automatic Homebrew update.
 
 # 2) Build dependencies from Homebrew
 # IMPORTANT: use Homebrew Qt5 on Apple Silicon so all binaries are arm64.
-# Dépendances à installer séparément si nécessaire : brew install cmake ninja pkg-config gcc boost fftw hamlib libusb portaudio asciidoctor ccache qt@5
+# Dependencies to install separately if needed: brew install cmake ninja pkg-config gcc boost fftw hamlib libusb portaudio asciidoctor ccache qt@5
 
 # 3) Resolve Qt5 path from Homebrew
 QT5_PREFIX="$(brew --prefix qt@5)"
