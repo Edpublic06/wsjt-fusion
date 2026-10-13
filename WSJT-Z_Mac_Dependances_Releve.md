@@ -35,12 +35,12 @@ La commande demandait `pkg-config` ; Homebrew rapporte le paquet sous le nom `pk
 
 ## Contexte de la compilation conservée
 
-- MacBook Pro M1, 16 Go ; macOS 15.8.1 lors de la capture initiale.
+- MacBook Pro Apple Silicon, 16 Go ; macOS 15.8.1 lors de la capture initiale.
 - Compilation le 3 octobre 2026, selon confirmation de l’utilisateur.
 - Sources WSJT-Z : tag `v2.0.19`, commit `b3a06e89ae0174c51c8595d99e40ca179738eb0a`.
 - Version affichée : `2.0.19 - b3a06e`.
 - Script utilisé : `doc/build-osx.sh`.
-- Publication communautaire : [v2.0.19-macos-m1](https://github.com/Edpublic06/wsjt-z/releases/tag/v2.0.19-macos-m1).
+- Publication communautaire : [v2.0.19-macos-m1](https://github.com/Edpublic06/wsjt-fusion/releases/tag/v2.0.19-macos-m1).
 
 ## Utilisation pour les reconstructions et mises à jour
 

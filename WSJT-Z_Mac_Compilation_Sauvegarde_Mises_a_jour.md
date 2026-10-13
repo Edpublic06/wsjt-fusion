@@ -19,7 +19,7 @@ L’utilisateur a ensuite confirmé : « oui toute cette procédure fonctionne �
 
 | Élément | Information vérifiable | Statut |
 |---|---|---|
-| Ordinateur | MacBook Pro 13 pouces, M1, 2020 | Confirmé par capture |
+| Ordinateur | MacBook Pro 13 pouces, Apple Silicon, 2020 | Confirmé par capture |
 | Mémoire | 16 Go | Confirmé par capture |
 | macOS | 15.8.1, build 24H212 | Confirmé par capture |
 | Application antérieure | Version désignée par l’utilisateur comme « wsjtx-z 2.6.A » | Confirmé ; emplacement et identification complète inconnus |
@@ -157,7 +157,7 @@ cmake --build build -j"$(sysctl -n hw.ncpu)"
 cmake --install build
 ```
 
-Sur la machine M1 attendue, les valeurs prévues sont `CMAKE_ARCH=arm64` et `CMAKE_DEPLOY_TARGET=11.0`. Ne pas confondre cette cible minimale avec la version du Mac ayant effectué la construction.
+Sur la machine macOS Apple Silicon attendue, les valeurs prévues sont `CMAKE_ARCH=arm64` et `CMAKE_DEPLOY_TARGET=11.0`. Ne pas confondre cette cible minimale avec la version du Mac ayant effectué la construction.
 
 ### 4.3 Inventaire à effectuer ultérieurement
 
@@ -477,12 +477,12 @@ Les procédures proposées devront être relues à chaque nouvelle version. L’
 
 ### 14.1 Création
 
-Fermer la nouvelle application. Vérifier qu’aucun fichier nommé `WSJT-Z-2.0.19-Mac-M1.dmg` n’existe déjà sur le Bureau. S’il existe, choisir un autre nom pour la nouvelle image ; ne pas supprimer ni remplacer le fichier existant.
+Fermer la nouvelle application. Vérifier qu’aucun fichier nommé `WSJT-Z-2.0.19-macOS-Apple-Silicon.dmg` n’existe déjà sur le Bureau. S’il existe, choisir un autre nom pour la nouvelle image ; ne pas supprimer ni remplacer le fichier existant.
 
 Exécuter la commande fournie :
 
 ```bash
-hdiutil create -volname "WSJT-Z 2.0.19" -srcfolder "$HOME/Applications/WSJT-Z-build/wsjt-z/stage/wsjtx.app" -format UDZO "$HOME/Desktop/WSJT-Z-2.0.19-Mac-M1.dmg"
+hdiutil create -volname "WSJT-Z 2.0.19" -srcfolder "$HOME/Applications/WSJT-Z-build/wsjt-z/stage/wsjtx.app" -format UDZO "$HOME/Desktop/WSJT-Z-2.0.19-macOS-Apple-Silicon.dmg"
 ```
 
 - `-volname` définit le nom du volume visible à l’ouverture.
@@ -492,7 +492,7 @@ hdiutil create -volname "WSJT-Z 2.0.19" -srcfolder "$HOME/Applications/WSJT-Z-bu
 
 ### 14.2 Vérification et conservation
 
-Ouvrir `WSJT-Z-2.0.19-Mac-M1.dmg` depuis le Bureau et vérifier que l’application est présente. La procédure actuelle est confirmée par l’utilisateur. Lors des prochaines créations, conserver également la sortie Terminal et le résultat de cette vérification.
+Ouvrir `WSJT-Z-2.0.19-macOS-Apple-Silicon.dmg` depuis le Bureau et vérifier que l’application est présente. La procédure actuelle est confirmée par l’utilisateur. Lors des prochaines créations, conserver également la sortie Terminal et le résultat de cette vérification.
 
 Conserver le `.dmg` avec les sauvegardes de la section 7 et en copier un exemplaire sur le second support. Cette image ne prouve pas le fonctionnement radio de l’application et n’ajoute pas de notarisation Apple.
 

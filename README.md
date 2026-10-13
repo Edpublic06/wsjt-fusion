@@ -43,6 +43,8 @@ Le tableau indique les versions, les révisions exactes connues et l’état ré
 
 ## Download
 
+Current development and testing focus on **macOS Apple Silicon (arm64)**. Windows builds have not yet been validated for Fusion.
+
 Published builds and release notes, when available, are listed on this fork’s **Releases** page:
 
   → **https://github.com/Edpublic06/wsjt-fusion/releases**
