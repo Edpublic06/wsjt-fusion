@@ -15,3 +15,5 @@ standard settings schema remain unchanged for compatibility with existing
 profiles and companion applications. Fusion-specific settings keep their
 private Edpublic06 namespace. Display names and package names use Fusion.
 The historical integration branch name is retained to preserve links.
+
+Incoming-call priority applies only to an unanswered outgoing attempt. A first accepted CQ reply establishes a protected QSO immediately; subsequent direct callers wait in the deduplicated queue, regardless of decode order.

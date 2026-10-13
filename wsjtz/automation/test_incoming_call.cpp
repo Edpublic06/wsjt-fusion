@@ -38,6 +38,17 @@ int main ()
   policy.observe ("N2NEW", "W4NEXT", true);
   require (!policy.should_switch (true,true,true,true,true,true,true,true,false,"W4NEXT"),
            "incoming QSO was stolen by a subsequent caller");
+  // Operator report: CQ -> N3CH calls -> we send report; N0IGU is
+  // decoded before N3CH's R-report in the following receive period.
+  policy.reset ();
+  policy.observe (QString {}, "N3CH", true);
+  policy.accept_incoming ("N3CH");
+  policy.observe ("N3CH", "N0IGU", true);
+  require (policy.answered ("N3CH"), "first CQ caller was not locked before the next decode");
+  require (!policy.should_switch (true,true,true,true,true,true,true,true,false,"N0IGU"),
+           "N0IGU interrupted N3CH before its R-report was decoded");
+  policy.observe ("N3CH", "N3CH", true);
+  require (policy.answered ("N3CH"), "partner R-report released the incoming QSO lock");
   // QSO completion clears the selected station. Auto Call then selects a new
   // outgoing target through its existing cycle; no old target is restored here.
   policy.reset ();

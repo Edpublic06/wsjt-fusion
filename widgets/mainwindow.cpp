@@ -6197,6 +6197,15 @@ bool MainWindow::collectCqReply (DecodedText const& message, bool is_filtered)
   auto selected = ui->dxCallEntry->text ().trimmed ();
   selected.remove ('<').remove ('>');
   auto const selected_base = Radio::base_callsign (selected);
+  // Observe the current partner before queue eligibility: its reply must
+  // protect the QSO even when another caller is decoded first in this batch.
+  QString observed_call, observed_grid;
+  message.deCallAndGrid (observed_call, observed_grid);
+  observed_call.remove ('<').remove ('>');
+  m_incomingCallPolicy.observe (selected_base, Radio::base_callsign (observed_call),
+    message.isStandardMessage () && !message.isTX ()
+    && (token_matches_call (message.call (), m_config.my_callsign ())
+        || token_matches_call (message.call (), m_baseCall)));
   bool const unanswered_handover = ui->cbAutoCall->isChecked ()
     && m_config.preferIncomingCalls ()
     && (m_QSOProgress == REPLYING || m_QSOProgress == REPORT)
@@ -8464,6 +8473,18 @@ void MainWindow::processMessage (DecodedText const& message, Qt::KeyboardModifie
     // his base call different or his call more qualified
     // i.e. compound version of same base call
     ui->dxCallEntry->setText (hiscall);
+  }
+  // Every accepted direct caller establishes the exchange, including the
+  // legacy first-CQ-reply path. Never wait for a second reply to lock it.
+  if (message.isStandardMessage () && !message.isTX ()
+      && (token_matches_call (message.call (), m_config.my_callsign ())
+          || token_matches_call (message.call (), m_baseCall))) {
+    auto accepted_call = hiscall;
+    accepted_call.remove ('<').remove ('>');
+    auto const accepted_base = Radio::base_callsign (accepted_call);
+    if (Radio::is_callsign (accepted_call)
+        && accepted_base == Radio::base_callsign (ui->dxCallEntry->text ()))
+      m_incomingCallPolicy.accept_incoming (accepted_base);
   }
   if (hisgrid.contains (grid_regexp)) {
     if(ui->dxGridEntry->text().mid(0,4) != hisgrid) ui->dxGridEntry->setText(hisgrid);
