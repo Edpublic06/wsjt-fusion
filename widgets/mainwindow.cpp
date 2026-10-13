@@ -15836,7 +15836,7 @@ void MainWindow::ZMessage ()
     QString message = QString(
         "<h2>WSJT-Fusion</h2>"
         "<p>Independent fork maintained by F6FDY. Derived from WSJT-Z 2.0.19 by SQ9FVE and WSJT-X by the WSJT Development Group; includes WS/WSJT-X Improved FT2 contributions.</p>"
-        "<p>WSJT-X 3.3.0-beta1 engine migration and JTTY integration are in progress.</p>"
+        "<p>Upstream engine migration and JTTY integration are in progress.</p>"
         "<p>%1</p>"
         "<p><b>Resources:</b></p>"
         "<ul>"

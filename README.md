@@ -3,7 +3,7 @@
 <p align="center">1.0.0-beta1 — independent fork maintained by F6FDY</p>
 
 <p align="center">
-  <a href="https://github.com/Edpublic06/wsjt-fusion/releases"><img src="https://img.shields.io/github/v/release/Edpublic06/wsjt-fusion?include_prereleases&label=release" alt="Latest release"></a>
+  <a href="https://github.com/Edpublic06/wsjt-fusion/releases"><img src="https://img.shields.io/github/v/release/Edpublic06/wsjt-fusion?include_prereleases&sort=date&label=Fusion" alt="Latest release"></a>
   <a href="https://www.gnu.org/licenses/gpl-3.0.txt"><img src="https://img.shields.io/badge/license-GPL--3.0-blue" alt="License: GPL-3.0"></a>
   <a href="https://groups.io/g/WSJT-Z/topics"><img src="https://img.shields.io/badge/discuss-groups.io-orange" alt="groups.io"></a>
   <a href="https://github.com/Edpublic06/wsjt-fusion/releases"><img src="https://img.shields.io/github/downloads/Edpublic06/wsjt-fusion/total?label=Téléchargements" alt="Téléchargements"></a>
@@ -18,7 +18,7 @@ and the WSJT Development Group. It incorporates FT2 contributions from
 It is not an official release of any upstream project.
 
 The application has its own version series, starting at **1.0.0-beta1**.
-The complete WSJT-X 3.3.0-beta1 engine migration and JTTY application
+The complete upstream engine migration and JTTY application
 integration are **still in progress**; the imported JTTY core is not yet a
 fully available operating mode. See [integration status](doc/PLAN-3.3.0-beta1.md)
 and [source provenance](UPSTREAM-SOURCES.md).
@@ -45,7 +45,9 @@ Le tableau indique les versions, les révisions exactes connues et l’état ré
 
 Current development and testing focus on **macOS Apple Silicon (arm64)**. Windows builds have not yet been validated for Fusion.
 
-Published builds and release notes, when available, are listed on this fork’s **Releases** page:
+**[Download WSJT-Fusion 1.0.0-beta1 for macOS Apple Silicon](https://github.com/Edpublic06/wsjt-fusion/releases/tag/v1.0.0-beta1).**
+
+Published builds and release notes are listed on this fork’s **Releases** page:
 
   → **https://github.com/Edpublic06/wsjt-fusion/releases**
 
