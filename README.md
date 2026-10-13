@@ -51,6 +51,32 @@ Published builds and release notes are listed on this fork’s **Releases** page
 
   → **https://github.com/Edpublic06/wsjt-fusion/releases**
 
+## What is new compared with WSJT-Z 2.0.19?
+
+**WSJT-Fusion 1.0.0-beta1** introduces the following changes to the inherited WSJT-Z application. These features are under active development and live radio testing.
+
+| Fusion feature | Behavior |
+| --- | --- |
+| **Optional incoming-caller priority in Auto Call** | An unanswered outgoing call can yield to a station calling you directly. Once a QSO is established, further callers cannot interrupt it. After the QSO is logged, the normal Auto Call cycle resumes. |
+| **Protection of the first accepted caller** | A station accepted after your CQ is protected immediately, including before its next report is decoded. Another caller waits rather than taking over the QSO. |
+| **Automatic caller queue** | Multiple replies to your CQ, and direct calls received during an ongoing automatic QSO, are queued and handled one at a time after the current QSO finishes. The queue is always active in supported automatic operation, with no separate enable switch. |
+| **Priority-aware selection and duplicate prevention** | Selection uses the applicable existing priority criteria; equal-priority callers retain their arrival order. Repeated calls from the same station do not create duplicate entries. |
+| **Queue cancellation on manual station change** | Choosing another station manually clears the remaining queue. A mode, band or dial-frequency change also clears it. |
+| **WD Counter for queued stations** | A configurable limit controls transmissions without a reply when calling each queued station. The default **0** follows the existing watchdog behavior, including the mode’s Custom WD Timer when enabled. A positive value limits transmissions, including the first call; a reply resets the counter. |
+| **Incoming-caller filtering preference** | Incoming-call handover respects **Apply filtering to stations calling us**, rather than always enforcing the outgoing-call filters. |
+| **Updated FT2 receiver** | Receiver code from **WS 3.2.1 build 261010** is adapted in a separate module, preserving the standard FT4 decoder. This is a receiver update, not a claim that all WS features have been imported. |
+| **Independent identity and source tracking** | Fusion has its own version series, explicit upstream credits and a per-function source register to support future updates. |
+
+The incoming-caller priority checkbox and **WD Counter** are located in **Settings → Fusion → Misc**. The main window displays the pending call queue. Automatic queue operation currently covers **FT8, FT4, FT2 and Q65**; Fox, Hound and Q65 pileup retain their specialized behavior.
+
+### Work in progress
+
+- **JTTY:** the upstream codec and receive core have been imported and tested. Application UI, audio and transmission integration remain unfinished; JTTY is **not yet available as an operating mode**.
+- **General decoder engine:** migration to the newer upstream engine is ongoing. The current FT8 engine still derives from the inherited WSJT-Z baseline and its existing enhancements.
+- **Validation:** current builds and tests focus on **macOS Apple Silicon**. Automated tests pass for FT2 and the new automation policies; live radio testing continues. Windows builds are not yet validated for Fusion.
+
+See the [component version and integration table](UPSTREAM-SOURCES.md#tableau-des-versions-par-fonction) for exact known references and the [automation notes](wsjtz/automation/README.md) for technical details.
+
 ## Features
 
 ### Operating workflow

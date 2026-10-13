@@ -4,13 +4,12 @@
 2026, licensed GPL-3.0-or-later. It is kept separate from upstream code.
 
 The **Auto Call: prioritize stations calling us** checkbox is in
-**Settings / WSJT-Z / Misc**. It is off by default and saved as
+**Settings / Fusion / Misc**. It is off by default and saved as
 `Configuration/Edpublic06/PreferIncomingCalls`. The prior main-window preference is
 used as the migration fallback when the new key is absent.
 
 When enabled, an unanswered outgoing attempt can yield to a different station
-that addresses our callsign directly in a standard live decode. Existing
-filters apply. The current target's first directed response protects its QSO;
+that addresses our callsign directly in a standard live decode. Incoming-caller filters apply when **Apply filtering to stations calling us** is enabled. The current target's first directed response protects its QSO;
 a newly accepted caller is also protected against later callers. CQ, free text,
 signoff messages, file playback and messages received during transmission do
 not trigger a handover. Fox/Hound and Q65 pileup keep their specialized logic.
@@ -48,7 +47,7 @@ queue. A mode, band or dial-frequency change also invalidates its context.
 The queue is transient and is not restored after an application restart.
 Fox/Hound and Q65 pileup retain their specialized operation.
 
-The pending calls are shown in the main controls as `CQ queue`. Validation:
+The pending calls are shown in the main controls as `Call queue`. Validation:
 macOS arm64 build and `wsjtz_cq_reply_queue_regression` passed (priorities,
 FIFO ties, deduplication, exhaustion and manual/context cancellation).
 Live CQ/QSO, radio and operator-flow tests are still outstanding.
@@ -64,7 +63,7 @@ is not made automatic by receipt of a call.
 
 ## Queued-station call limit
 
-Settings / WSJT-Z / Misc also contains **WD Counter**.
+Settings / Fusion / Misc also contains **WD Counter**.
 The numeric default `0` uses the existing Custom WD Timer for the current
 mode when enabled; otherwise the existing standard watchdog configuration applies. A positive value replaces that elapsed-time watchdog
 for a dequeued station with a cap on transmissions without a reply, including
