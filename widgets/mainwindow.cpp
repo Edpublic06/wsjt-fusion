@@ -6298,7 +6298,7 @@ void MainWindow::auto_sequence (DecodedText const& message, unsigned start_toler
           ui->cb_autoCallPreferIncoming->isChecked (), ui->cbAutoCall->isChecked (),
           m_auto, ui->cbAutoSeq->isChecked (), !m_diskData && !m_transmitting,
           early_attempt, supported_activity, valid_incoming,
-          valid_incoming && callsignFiltered (message), caller_base))
+          false, caller_base) && !callsignFiltered (message))
       {
         if (m_zdebug) log ("Auto Call: yielding unanswered target " + selected_dx_text
                           + " to incoming caller " + caller);
