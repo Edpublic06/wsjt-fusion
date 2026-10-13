@@ -6233,7 +6233,7 @@ bool MainWindow::collectCqReply (DecodedText const& message, bool is_filtered)
       || base == selected_base) return false;
   // Suppress selection even for a filtered direct reply: it must not take over
   // a queued round through one of the legacy CQ reply paths.
-  if (is_filtered) return true;
+  if (is_filtered && m_config.autoCQfiltering ()) return true;
   wsjtz::CqReply reply;
   reply.call = base;
   reply.decode = message.string ();
@@ -6432,7 +6432,8 @@ void MainWindow::auto_sequence (DecodedText const& message, unsigned start_toler
           m_config.preferIncomingCalls (), ui->cbAutoCall->isChecked (),
           m_auto, ui->cbAutoSeq->isChecked (), !m_diskData && !m_transmitting,
           early_attempt, supported_activity, valid_incoming,
-          false, caller_base) && !callsignFiltered (message))
+          false, caller_base)
+        && (!m_config.autoCQfiltering () || !callsignFiltered (message)))
       {
         if (m_zdebug) log ("Auto Call: yielding unanswered target " + selected_dx_text
                           + " to incoming caller " + caller);
