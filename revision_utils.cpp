@@ -6,6 +6,7 @@
 #include <QRegularExpression>
 
 #include "scs_version.h"
+#include "wsjtx_config.h"
 
 namespace
 {
@@ -54,6 +55,6 @@ QString version (bool include_patch)
 
 QString program_title (QString const& revision)
 {
-  QString id {QCoreApplication::applicationName () + "   v" + QCoreApplication::applicationVersion ()};
+  QString id {QStringLiteral ("WSJT-Fusion " VERSION_Z) + " [" + QCoreApplication::applicationName () + "]"};
   return id + "  " + revision + " ";
 }

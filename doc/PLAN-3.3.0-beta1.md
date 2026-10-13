@@ -1,14 +1,14 @@
-# WSJT-Z 3.3.0-beta1 — étude de faisabilité
+# WSJT-Fusion 1.0.0-beta1 — étude de faisabilité
 
 Date : 13 octobre 2026.
 
 ## Sources examinées
 
-- Dépôt : https://github.com/Edpublic06/wsjt-z
+- Dépôt : https://github.com/Edpublic06/wsjt-fusion
 - Branche de départ : `macos-build-maintenance`, commit `e850c68`.
 - Référence amont : https://github.com/WSJTX/wsjtx/releases/tag/v3.3.0-beta1
 - Commit amont : `57ba9337fa020065dc0ceee2c4ef85e433ea32d4`.
-- Nom et version cibles : **WSJT-Z 3.3.0-beta1**.
+- Nom et version cibles : **WSJT-Fusion 1.0.0-beta1**.
 
 ## Conclusion
 

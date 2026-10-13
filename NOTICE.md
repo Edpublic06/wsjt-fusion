@@ -1,6 +1,6 @@
 # Copyright, licences et crédits
 
-Cette branche de travail prépare **WSJT-Z 3.3.0-beta1**, une version dérivée.
+Cette branche de travail prépare **WSJT-Fusion 1.0.0-beta1**, une version dérivée.
 Elle n'est pas une publication officielle de WSJT-X, WS ou WSJT-Z.
 Les modifications de cette branche ne transfèrent pas les droits des auteurs
 du code repris. Les licences et mentions présentes dans chaque fichier restent
@@ -73,3 +73,7 @@ Pour toute distribution : conserver les notices, signaler les fichiers
 modifiés et leurs dates, inclure les licences applicables et fournir le code
 source correspondant conformément à celles-ci. Les binaires et les sources
 publiés doivent correspondre à la même révision.
+
+## Identité du fork
+
+WSJT-Fusion est un fork indépendant maintenu par F6FDY, dérivé de WSJT-Z 2.0.19 de SQ9FVE. Son numéro de version est indépendant des versions des composants. Les copyrights et crédits historiques restent applicables ; F6FDY ne revendique pas la paternité du code repris.

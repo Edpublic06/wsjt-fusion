@@ -1,4 +1,4 @@
-# Registre des sources et adaptations
+# WSJT-Fusion — registre des sources et adaptations
 
 État au 13 octobre 2026. Le registre distingue les sources présentes dans
 le socle des sources téléchargées pour l'intégration en cours.
@@ -87,3 +87,5 @@ les MOD disponibles. Aucune conversion globale de paramètres n'est ajoutée.
 WD Counter affiche finalement 0 (valeur initiale). À 0, le chemin WD existant
 est conservé, avec Custom WD Timer du mode lorsqu'il est activé. Une valeur
 positive utilise le compteur par station sortie de la file.
+
+Le dépôt a été renommé `Edpublic06/wsjt-fusion`. Les anciennes références `Edpublic06/wsjt-z` ci-dessus désignent son historique antérieur au changement de nom. La version applicative Fusion 1.0.0-beta1 est indépendante des versions amont.

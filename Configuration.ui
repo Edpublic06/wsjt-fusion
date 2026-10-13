@@ -3566,7 +3566,7 @@ Right click for insert and delete options.</string>
      </widget>
     <widget class="QWidget" name="wsjtz_tab">
       <attribute name="title">
-       <string>WSJT-Z</string>
+       <string>Fusion</string>
       </attribute>
     <layout class="QGridLayout" name="gridLayout_wsjtz">
        <item row="3" column="1" rowspan="2" colspan="2">

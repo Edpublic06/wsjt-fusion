@@ -920,7 +920,7 @@ MainWindow::MainWindow(QDir const& temp_directory, bool multiple,
       if (m_pskReporterView) m_pskReporterView->setFont(font);
     });
 
-  setWindowTitle (program_title () + " (WSJT-Z MOD by SQ9FVE " + QStringLiteral (VERSION_Z) + ")");
+  setWindowTitle (program_title () + " — F6FDY");
 
 
   connect(&proc_jt9, &QProcess::readyReadStandardOutput, this, &MainWindow::readFromStdout);
@@ -15812,12 +15812,14 @@ void MainWindow::ZMessage ()
     QString revText = QString("Version %1 - %2").arg(versionZ, rev);
     
     QString message = QString(
-        "<h2>WSJT-Z</h2>"
+        "<h2>WSJT-Fusion</h2>"
+        "<p>Independent fork maintained by F6FDY. Derived from WSJT-Z 2.0.19 by SQ9FVE and WSJT-X by the WSJT Development Group; includes WS/WSJT-X Improved FT2 contributions.</p>"
+        "<p>WSJT-X 3.3.0-beta1 engine migration and JTTY integration are in progress.</p>"
         "<p>%1</p>"
         "<p><b>Resources:</b></p>"
         "<ul>"
-        "<li><a href='https://groups.io/g/WSJT-Z/topics'>WSJT-Z on groups.io for support.</a></li>"
-        "<li><a href='https://github.com/sq9fve/wsjt-z'>Download WSJT-Z on GitHub.</a></li>"
+        "<li><a href='https://groups.io/g/WSJT-Z/topics'>Upstream WSJT-Z community.</a></li>"
+        "<li><a href='https://github.com/Edpublic06/wsjt-fusion'>WSJT-Fusion source and releases.</a></li>"
         "<li><a href='https://github.com/sq9fve/wsjt-z/tree/master/docs'>WSJT-Z Documentation on GitHub.</a></li>"
         "</ul>"
         "<p><b><a href='https://groups.io/g/WSJT-Z/topic/wsjt_z_charity_event_radio/86127241'>Donate to WSJT-Z Charity Event</a></b></p>"

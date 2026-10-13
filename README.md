@@ -1,31 +1,45 @@
+<h1 align="center">WSJT-Fusion</h1>
+
+<p align="center">1.0.0-beta1 — independent fork maintained by F6FDY</p>
+
 <p align="center">
-  <a href="https://github.com/sq9fve/wsjt-z/releases"><img src="https://img.shields.io/github/v/release/sq9fve/wsjt-z?include_prereleases&label=release" alt="Latest release"></a>
+  <a href="https://github.com/Edpublic06/wsjt-fusion/releases"><img src="https://img.shields.io/github/v/release/Edpublic06/wsjt-fusion?include_prereleases&label=release" alt="Latest release"></a>
   <a href="https://www.gnu.org/licenses/gpl-3.0.txt"><img src="https://img.shields.io/badge/license-GPL--3.0-blue" alt="License: GPL-3.0"></a>
   <a href="https://groups.io/g/WSJT-Z/topics"><img src="https://img.shields.io/badge/discuss-groups.io-orange" alt="groups.io"></a>
-  <a href="https://github.com/Edpublic06/wsjt-z/releases"><img src="https://img.shields.io/github/downloads/Edpublic06/wsjt-z/total?label=Téléchargements" alt="Téléchargements"></a>
+  <a href="https://github.com/Edpublic06/wsjt-fusion/releases"><img src="https://img.shields.io/github/downloads/Edpublic06/wsjt-fusion/total?label=Téléchargements" alt="Téléchargements"></a>
 </p>
 
 ---
 
-WSJT-Z is a fork of [WSJT-X](https://wsjt.sourceforge.io/wsjtx.html) by **Joe Taylor K1JT** and the WSJT Development Group. Initially developed as an automation project, WSJT-Z now focuses on extending the operating workflow with deeper filtering, smarter automation, and a more responsive UI — while keeping full compatibility with the upstream WSJT-X protocols.
+**WSJT-Fusion** is an independent fork maintained by **F6FDY**, derived from
+**WSJT-Z 2.0.19 by SQ9FVE**, itself based on **WSJT-X** by Joe Taylor K1JT
+and the WSJT Development Group. It incorporates FT2 contributions from
+**WS/WSJT-X Improved** and additional automation developed for this fork.
+It is not an official release of any upstream project.
 
-WSJT-Z supports **FT8**, **FT4**, **FT2**, **JT4 / JT9 / JT65**, **Q65**, **MSK144**, **WSPR**, **Echo** and **FreqCal**.
+The application has its own version series, starting at **1.0.0-beta1**.
+The complete WSJT-X 3.3.0-beta1 engine migration and JTTY application
+integration are **still in progress**; the imported JTTY core is not yet a
+fully available operating mode. See [integration status](doc/PLAN-3.3.0-beta1.md)
+and [source provenance](UPSTREAM-SOURCES.md).
 
-> ⚠️ **Always monitor your transceiver while using WSJT-Z**, unless unattended/automated operation is explicitly permitted by the regulations in your country.
+WSJT-Fusion supports **FT8**, **FT4**, **FT2**, **JT4 / JT9 / JT65**, **Q65**, **MSK144**, **WSPR**, **Echo** and **FreqCal**.
+
+> ⚠️ **Always monitor your transceiver while using WSJT-Fusion**, unless unattended/automated operation is explicitly permitted by the regulations in your country.
 
 ---
 
 ## Discussion & support
 
-- **Groups.io (questions, comments, bug reports):** https://groups.io/g/WSJT-Z/topics
-- **Issue tracker:** https://github.com/sq9fve/wsjt-z/issues
-- **Changelog:** see [`changelog.txt`](changelog.txt) and the GitHub [Releases](https://github.com/sq9fve/wsjt-z/releases) page
+- **Upstream WSJT-Z community (not Fusion support):** https://groups.io/g/WSJT-Z/topics
+- **Issue tracker:** https://github.com/Edpublic06/wsjt-fusion/issues
+- **Changelog:** see [`changelog.txt`](changelog.txt) and the GitHub [Releases](https://github.com/Edpublic06/wsjt-fusion/releases) page
 
 ## Download
 
-Pre-built Windows installers and release notes are published on the GitHub **Releases** page:
+Published builds and release notes, when available, are listed on this fork’s **Releases** page:
 
-  → **https://github.com/sq9fve/wsjt-z/releases**
+  → **https://github.com/Edpublic06/wsjt-fusion/releases**
 
 ## Features
 
@@ -76,7 +90,7 @@ The `tools/` directory contains helper scripts for project maintenance:
 
 For this integration branch, see [copyright and credits](NOTICE.md) and the
 [upstream source register](UPSTREAM-SOURCES.md). The branch prepares
-WSJT-Z 3.3.0-beta1; it is not an official upstream release. Those documents
+WSJT-Fusion 1.0.0-beta1; it is not an official upstream release. Those documents
 distinguish the existing WSJT-Z baseline from updates still being integrated.
 
 Licensed under the **GNU General Public License v3** — see [`COPYING`](COPYING) and https://www.gnu.org/licenses/gpl-3.0.txt.
@@ -84,6 +98,10 @@ Licensed under the **GNU General Public License v3** — see [`COPYING`](COPYING
 The vast majority of the code is created and copyrighted by the WSJT Development Group, led by Joe Taylor K1JT, and licensed under the same terms. WSJT-Z extensions follow the same license.
 
 ## Credits
+
+- **SQ9FVE and WSJT-Z contributors** — original WSJT-Z application and automation, baseline 2.0.19
+- **WS/WSJT-X Improved authors and contributors** — imported FT2 receiver evolution
+- **F6FDY** — maintenance of this independent fork and its additional automation
 
 - **WSJT Development Group** — Joe Taylor K1JT and contributors — for WSJT-X, the upstream project this fork is built on
 - **JTDX team** — for the multi-threaded FT8 decoder enhancements that informed the WSJT-Z decoder pipeline

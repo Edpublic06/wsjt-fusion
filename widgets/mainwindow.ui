@@ -5574,7 +5574,7 @@ list. The list can be maintained in Settings (F2).</string>
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>WSJT-Z Debug </string>
+    <string>WSJT-Fusion Debug </string>
    </property>
   </action>
   <action name="actionFST4">
@@ -5612,7 +5612,7 @@ list. The list can be maintained in Settings (F2).</string>
   </action>
   <action name="actionAbout_WSJT_Z">
    <property name="text">
-    <string>About WSJT-Z</string>
+    <string>About WSJT-Fusion</string>
    </property>
   </action>
   <action name="actionDark_mode">
