@@ -83,6 +83,11 @@ The `tools/` directory contains helper scripts for project maintenance:
 
 ## License
 
+For this integration branch, see [copyright and credits](NOTICE.md) and the
+[upstream source register](UPSTREAM-SOURCES.md). The branch prepares
+WSJT-Z 3.3.0-beta1; it is not an official upstream release. Those documents
+distinguish the existing WSJT-Z baseline from updates still being integrated.
+
 Licensed under the **GNU General Public License v3** — see [`COPYING`](COPYING) and https://www.gnu.org/licenses/gpl-3.0.txt.
 
 The vast majority of the code is created and copyrighted by the WSJT Development Group, led by Joe Taylor K1JT, and licensed under the same terms. WSJT-Z extensions follow the same license.
