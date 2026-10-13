@@ -1,0 +1,76 @@
+{
+  "archive": "ws-3.2.1_261010.tgz",
+  "archive_sha256": "b343f440baec95c6cf6eaf3766802c4c6533a2b3129fbecf23d9a096daf2a0d5",
+  "renamed_symbols": {
+    "ft4_decode": "wsjtz_ft2_decode",
+    "ft4_a7": "zft2_ft4_a7",
+    "ft4_a7_save": "zft2_ft4_a7_save",
+    "ft4_a7d": "zft2_ft4_a7d",
+    "ft4_downsample": "zft2_ft4_downsample",
+    "ft4_baseline": "zft2_ft4_baseline",
+    "get_ft4_bitmetrics": "zft2_get_ft4_bitmetrics",
+    "getcandidates4": "zft2_getcandidates4",
+    "sync4d": "zft2_sync4d",
+    "subtractft4": "zft2_subtractft4",
+    "genft4": "zft2_genft4",
+    "gen_ft4wave": "zft2_gen_ft4wave",
+    "get_ft4_tones_from_77bits": "zft2_get_ft4_tones_from_77bits"
+  },
+  "files": [
+    {
+      "source": "lib/ft4_decode.f90",
+      "destination": "wsjtz/decoding/ft2/upstream/ft4_decode.f90",
+      "source_sha256": "c80c0f99c3f802672ee2845c353702e4ae01596d18093ed073af986b30b94003"
+    },
+    {
+      "source": "lib/ft4/ft4_a7.f90",
+      "destination": "wsjtz/decoding/ft2/upstream/ft4_a7.f90",
+      "source_sha256": "3441604acd42000a186837e39055259e82104b27630c2a6b30b15295dcd10705"
+    },
+    {
+      "source": "lib/ft4/ft4_params.f90",
+      "destination": "wsjtz/decoding/ft2/upstream/ft4_params.f90",
+      "source_sha256": "bbd5de44f0c4fec9fac17f3c9049597a4ec2ff4b18e053471e650b2dffbbfe90"
+    },
+    {
+      "source": "lib/ft4/ft4_downsample.f90",
+      "destination": "wsjtz/decoding/ft2/upstream/ft4_downsample.f90",
+      "source_sha256": "a4db11fca252973fa7d3b2dd0856ce5d7d991072d5c606ba6f662542e0004a45"
+    },
+    {
+      "source": "lib/ft4/ft4_baseline.f90",
+      "destination": "wsjtz/decoding/ft2/upstream/ft4_baseline.f90",
+      "source_sha256": "f0759a7e19c8f6f7a2be673c24b287038f4ead642cb974c5bc9ea3f9e38681c8"
+    },
+    {
+      "source": "lib/ft4/get_ft4_bitmetrics.f90",
+      "destination": "wsjtz/decoding/ft2/upstream/get_ft4_bitmetrics.f90",
+      "source_sha256": "eed5232c18be160023c4868036e4cddbbe7aa4510254027f7e78e81ead332c19"
+    },
+    {
+      "source": "lib/ft4/getcandidates4.f90",
+      "destination": "wsjtz/decoding/ft2/upstream/getcandidates4.f90",
+      "source_sha256": "e14f25cb060892cb20e6a70cae5b1d57466c976de335d008c40ce6f012a309a4"
+    },
+    {
+      "source": "lib/ft4/sync4d.f90",
+      "destination": "wsjtz/decoding/ft2/upstream/sync4d.f90",
+      "source_sha256": "33917306ff84b34a8240b03ccbf878a184c1bc0b45ca1493d39b7324761b31f3"
+    },
+    {
+      "source": "lib/ft4/subtractft4.f90",
+      "destination": "wsjtz/decoding/ft2/upstream/subtractft4.f90",
+      "source_sha256": "80133ed3881ca9391c2885f036295c11759d73e134be1c8f3a6b812d64b60898"
+    },
+    {
+      "source": "lib/ft4/genft4.f90",
+      "destination": "wsjtz/decoding/ft2/upstream/genft4.f90",
+      "source_sha256": "298d76caa4fd102e7078f5e860652a35473dd869906d4c0333ddbf9ae2b69fc7"
+    },
+    {
+      "source": "lib/ft4/gen_ft4wave.f90",
+      "destination": "wsjtz/decoding/ft2/upstream/gen_ft4wave.f90",
+      "source_sha256": "f5c10ab8345aa591f12cd3db23556f60f503249e42d93c3b97e63fa93f4740be"
+    }
+  ]
+}

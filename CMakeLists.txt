@@ -1241,6 +1241,7 @@ add_library (wsjt_cxx STATIC ${wsjt_CSRCS} ${wsjt_CXXSRCS})
 target_link_libraries (wsjt_cxx ${LIBM_LIBRARIES} Boost::log_setup ${LIBM_LIBRARIES})
 
 # build an OpenMP variant of the Fortran library routines
+include (wsjtz/decoding/ft2/CMakeLists.cmake)
 add_library (wsjt_fort STATIC ${wsjt_FSRCS})
 target_link_libraries (wsjt_fort  ${FFTW3_LIBRARIES})
 if (${OPENMP_FOUND} OR APPLE)
@@ -1359,6 +1360,9 @@ target_link_libraries (msk144sim wsjt_fort wsjt_cxx)
 
 add_executable (ft4sim lib/ft4/ft4sim.f90)
 target_link_libraries (ft4sim wsjt_fort wsjt_cxx)
+
+add_executable (wsjtz_ft2_regression wsjtz/decoding/ft2/test_ft2_receiver.f90)
+target_link_libraries (wsjtz_ft2_regression wsjt_fort wsjt_cxx)
 
 add_executable (ft4sim_mult lib/ft4/ft4sim_mult.f90)
 target_link_libraries (ft4sim_mult wsjt_fort wsjt_cxx)

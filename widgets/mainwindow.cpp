@@ -2226,10 +2226,10 @@ void MainWindow::fixStop()
       m_hsymStop=50;
       m_earlyDecode2=47;
     }
-  } else if ((m_mode=="FT4" or m_mode=="FT2")) {
-  m_hsymStop=21;
+  } else if (m_mode=="FT4") {
+    m_hsymStop=21;
   } else if (m_mode=="FT2") {
-  m_hsymStop=21;
+    m_hsymStop=23;
   } else if(m_mode=="FST4" or m_mode=="FST4W") {
     int stop[] = {39,85,187,387,1003,3107,6232};
     int stop_EME[] = {48,95,197,396,1012,3107,6232};
@@ -2471,7 +2471,7 @@ void MainWindow::dataSink(qint64 frames)
       }
       int samples=m_TRperiod*12000;
       if((m_mode=="FT4" or m_mode=="FT2")) samples=21*3456;
-      if(m_mode=="FT2") samples=21*1728;    // FT2: 12 kHz * 15 s = 180000, but only 21*1728 filled for decoder
+      if(m_mode=="FT2") samples=23*1728;    // FT2: retain the WS/Improved 23 half-symbol receive window.
 
       // the following is potential a threading hazard - not a good
       // idea to pass pointer to be processed in another thread
@@ -9560,7 +9560,7 @@ void MainWindow::on_actionFT2_triggered()
   m_FFTSize = m_nsps/2;
   if (m_tci_audio) Q_EMIT m_config.transceiver_blocksize (m_FFTSize);
   else Q_EMIT FFTSize (m_FFTSize);
-  m_hsymStop=21;
+  m_hsymStop=23;
   setup_status_bar (bVHF);
   m_toneSpacing=12000.0/288.0;    // 2x FT4's tone spacing
   ui->actionFT2->setChecked(true);

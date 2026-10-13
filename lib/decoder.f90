@@ -9,6 +9,7 @@ subroutine multimode_decoder(ss,id2,params,nfsample)
   use ft8_decode
   use ft8_decodevar
   use ft4_decode
+  use wsjtz_ft2_decode, only: ft2_decoder => ft4_decoder
   use fst4_decode
   use q65_decode
 
@@ -50,6 +51,10 @@ subroutine multimode_decoder(ss,id2,params,nfsample)
      integer :: decoded
   end type counting_ft4_decoder
 
+  type, extends(ft2_decoder) :: counting_ft2_decoder
+     integer :: decoded
+  end type counting_ft2_decoder
+
   type, extends(fst4_decoder) :: counting_fst4_decoder
      integer :: decoded
   end type counting_fst4_decoder
@@ -71,8 +76,8 @@ subroutine multimode_decoder(ss,id2,params,nfsample)
   logical lprinthash22
   ! FT2: FAST FT4 (3.75 s T/R, 2x tone spacing). Upsample captured audio 2x
   ! so it looks like an FT4 frame to the decoder, then scale DT/freq back.
-  integer, parameter :: FT2_NMAX=21*1728
-  integer, parameter :: FT4_NMAX=21*3456
+  integer, parameter :: FT2_NMAX=23*1728
+  integer, parameter :: FT4_NMAX=23*3456
   integer, parameter :: FT2_STRETCH=2
   integer*2 id2(NTMAX*12000)
   integer*2 id2_ft4(FT4_NMAX)
@@ -92,16 +97,17 @@ subroutine multimode_decoder(ss,id2,params,nfsample)
   type(counting_ft8_decoder) :: my_ft8
   type(counting_ft8_decodervar) :: my_ft8var
   type(counting_ft4_decoder) :: my_ft4
+  type(counting_ft2_decoder) :: my_ft2
   type(counting_fst4_decoder) :: my_fst4
   type(counting_q65_decoder) :: my_q65  
 
   if(.not.params%newdat .and. params%ntr.gt.ntr0) go to 800
   ntr0=params%ntr
-  ! rms window sized by mode: FT2 fills only 36288 samples (3 s); computing
+  ! rms window sized by mode: FT2 fills only FT2_NMAX samples; computing
   ! over the full 180000-sample buffer dilutes rms below the 0.5 threshold
   ! and causes the decoder to bail before dispatching to the FT2 branch.
   if(params%nmode.eq.52) then
-     rms=sqrt(dot_product(float(id2(1:36288)),float(id2(1:36288)))/36288.0)
+     rms=sqrt(dot_product(float(id2(1:FT2_NMAX)),float(id2(1:FT2_NMAX)))/real(FT2_NMAX))
   else
      rms=sqrt(dot_product(float(id2(1:180000)),float(id2(1:180000)))/180000.0)
   endif
@@ -124,6 +130,7 @@ subroutine multimode_decoder(ss,id2,params,nfsample)
   my_ft8%decoded = 0
   my_ft8var%decodedvar = 0
   my_ft4%decoded = 0
+  my_ft2%decoded = 0
   my_fst4%decoded = 0
   my_q65%decoded = 0
   my_ft8var%xdtt=0.
@@ -1223,9 +1230,9 @@ subroutine multimode_decoder(ss,id2,params,nfsample)
         id2_ft4(FT2_STRETCH*i-(FT2_STRETCH-1):FT2_STRETCH*i)=id2(i)
      enddo
      call timer('decft2  ',0)
-     call my_ft4%decode(ft2_decoded,id2_ft4,params%nQSOProgress,nfqso_ft2,   &
-          nfa_ft2,nfb_ft2,params%ndepth,                                     &
-          logical(params%lapcqonly),ncontest,mycall,hiscall)
+     call my_ft2%decode(ft2_decoded,id2_ft4,params%nutc,params%nQSOProgress, &
+          nfqso_ft2,nfa_ft2,nfb_ft2,params%ndepth,                          &
+          logical(params%lapcqonly),ncontest,mycall,hiscall,3.75)
      call timer('decft2  ',1)
      go to 800
   endif
@@ -1412,7 +1419,7 @@ subroutine multimode_decoder(ss,id2,params,nfsample)
 
 ! JT65 is not yet producing info for nsynced, ndecoded.
 800 ndecoded = my_jt4%decoded + my_jt65%decoded + my_jt9%decoded +       &
-         my_ft8%decoded + my_ft8var%decodedvar + my_ft4%decoded +        &
+         my_ft8%decoded + my_ft8var%decodedvar + my_ft4%decoded + my_ft2%decoded +        &
          my_fst4%decoded + my_q65%decoded
   if(params%lmultift8 .and. params%nmode.eq.8) then
      if(params%nzhsym.eq.41) ndec41=0
@@ -1879,10 +1886,10 @@ contains
   subroutine ft2_decoded (this,sync,snr,dt,freq,decoded,nap,qual)
     ! FT2 callback: FT4 decoder produced a decode on stretched audio.
     ! Scale DT and frequency back to FT2 domain (DT halved, freq doubled).
-    use ft4_decode
+    use wsjtz_ft2_decode, only: ft2_decoder => ft4_decoder
     implicit none
 
-    class(ft4_decoder), intent(inout) :: this
+    class(ft2_decoder), intent(inout) :: this
     real, intent(in) :: sync
     integer, intent(in) :: snr
     real, intent(in) :: dt
@@ -1895,7 +1902,7 @@ contains
     real dt_ft2,freq_ft2
 
     decoded0=decoded
-    dt_ft2=0.5*dt
+    dt_ft2=0.5*dt - 0.25
     freq_ft2=2.0*freq
 
     annot='  '
@@ -1916,7 +1923,7 @@ contains
 10  call flush(6)
 
     select type(this)
-    type is (counting_ft4_decoder)
+    type is (counting_ft2_decoder)
        this%decoded = this%decoded + 1
     end select
 

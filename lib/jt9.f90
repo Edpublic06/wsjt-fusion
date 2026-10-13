@@ -306,7 +306,7 @@ program jt9
      endif
      shared_data%id2=0          !??? Why is this necessary ???
      if(mode.eq.5) npts=21*3456
-     if(mode.eq.52) npts=21*1728    ! FT2: half FT4's sample count
+     if(mode.eq.52) npts=23*1728    ! FT2: half FT4's sample count
      if(mode.eq.66) npts=TRperiod*12000
      do iblk=1,npts/kstep
         k=iblk*kstep
