@@ -185,4 +185,6 @@ La référence personnelle devra donc documenter simultanément la base WSJT-X, 
 
 ## État de cette étude
 
-Les deux sources exactes ont été téléchargées et inspectées. Aucun code de décodage ni numéro de version n'a encore été modifié. Aucun binaire 3.3.0-beta1 n'a été construit. Aucun changement n'a été envoyé au dépôt distant. Le test macOS déjà consigné dans la branche concerne Z 2.0.19 et valide seulement un démarrage et une reprise de réglages lors d'un essai bref.
+L'étude initiale est suivie d'une intégration sur la branche `wsjtz-3.3.0-beta1-integration`. Le récepteur FT2 de WS 3.2.1 (261010) est intégré dans un module distinct ; une nouvelle option personnelle Auto Call permet de répondre à un appel direct pendant une tentative sans réponse, puis de reprendre le cycle normal. Le cœur JTTY est importé sans modification et testé. La compilation macOS et huit tests ciblés ont réussi.
+
+Le moteur général 3.3.0-beta1, le raccordement interface/audio de JTTY et la validation radio restent à réaliser. Le numéro de version applicatif n'est pas encore changé : les exécutables de contrôle portent encore les métadonnées du socle 2.0.19. Aucun paquet bêta 3.3.0-beta1 prêt à utiliser n'est déclaré. Les références, adaptations et validations effectives figurent dans `UPSTREAM-SOURCES.md` et les README des modules.

@@ -1755,6 +1755,7 @@ void MainWindow::writeSettings()
   m_settings->setValue ("bandHopperEnabled", ui->cb_bandHopper->isChecked());
   m_settings->setValue ("bandHopper", ui->pte_bandHopper->toPlainText());
   m_settings->setValue ("AutoCallPreferPSKSpotted", ui->cb_autoCallPreferPSKSpotted->isChecked());
+  m_settings->setValue ("AutoCallPreferIncoming", ui->cb_autoCallPreferIncoming->isChecked());
 
   m_settings->setValue ("AutoCallPriority", ui->cb_autoCallPriority->currentIndex());
 
@@ -1999,6 +2000,7 @@ void MainWindow::readSettings()
   ui->pb_BandChangeNow->setVisible(ui->cb_bandHopper->isChecked());
   ui->pte_bandHopper->setPlainText(m_settings->value("bandHopper", "").toString());
   ui->cb_autoCallPreferPSKSpotted->setChecked(m_settings->value("AutoCallPreferPSKSpotted", false).toBool());
+  ui->cb_autoCallPreferIncoming->setChecked(m_settings->value("AutoCallPreferIncoming", false).toBool());
   ui->cb_autoCallPriority->setCurrentIndex(m_settings->value ("AutoCallPriority", 0).toInt ());
   m_infoMessageShown = m_settings->value("infoMessageShown12-2024", false).toBool();
   ui->cb_ignoreCQTarget->setCurrentIndex(m_settings->value("ignoreCQTargetIndex", 0).toInt());
@@ -6275,6 +6277,50 @@ void MainWindow::auto_sequence (DecodedText const& message, unsigned start_toler
     bool const directed_with_selected_dx = selected_dx_is_sender || selected_dx_is_target;
     bool const directed_to_me = sender_is_me || target_is_me;
 
+    // Personal Auto Call extension: only an unanswered outgoing attempt can
+    // yield to a new direct caller. No CQ/free text/signoff can trigger it.
+    QString caller, caller_grid;
+    message.deCallAndGrid (caller, caller_grid);
+    auto const caller_base = normalized_base (caller);
+    bool const addressee_is_me = token_matches_call (message.call (), m_config.my_callsign ())
+                             || token_matches_call (message.call (), m_baseCall);
+    m_incomingCallPolicy.observe (selected_dx_base, caller_base,
+                                 message.isStandardMessage () && addressee_is_me);
+    bool const valid_incoming = message.isStandardMessage () && !message.isTX ()
+      && !message.is_composite_message () && addressee_is_me && !terminal_signoff
+      && caller_base != Radio::base_callsign (m_config.my_callsign ())
+      && Radio::is_callsign (caller.remove ('<').remove ('>'));
+    bool const early_attempt = !m_bCallingCQ && !m_sentFirst73
+      && (m_QSOProgress == REPLYING || m_QSOProgress == REPORT);
+    bool const supported_activity = m_specOp != SpecOp::FOX && m_specOp != SpecOp::HOUND
+                                && m_specOp != SpecOp::Q65_PILEUP;
+    if (m_incomingCallPolicy.should_switch (
+          ui->cb_autoCallPreferIncoming->isChecked (), ui->cbAutoCall->isChecked (),
+          m_auto, ui->cbAutoSeq->isChecked (), !m_diskData && !m_transmitting,
+          early_attempt, supported_activity, valid_incoming,
+          valid_incoming && callsignFiltered (message), caller_base))
+      {
+        if (m_zdebug) log ("Auto Call: yielding unanswered target " + selected_dx_text
+                          + " to incoming caller " + caller);
+        // Clear the abandoned attempt and its pending selection. The existing
+        // QSO/logging path keeps Auto Call enabled and resumes its normal cycle.
+        clearDX ();
+        clearPounceState ();
+        m_nextCall.clear ();
+        m_nextGrid.clear ();
+        m_bSentReport = false;
+        m_sentFirst73 = false;
+        m_bDoubleClicked = true;
+        m_hisCall0.clear ();
+        stopWRTimer.stop ();
+        logQSOTimer.stop ();
+        TxAgainTimer.stop ();
+        tx_watchdog (false);
+        processMessage (message);
+        m_incomingCallPolicy.accept_incoming (caller_base);
+        return;
+      }
+
     if (m_QSOProgress == SIGNOFF && !m_lastCall.isEmpty() && hiscall == m_lastCall) {
       if (m_zdebug) log(QString("auto_sequence: ignoring late duplicate response after logged signoff for %1").arg(hiscall));
       return;
@@ -8730,6 +8776,7 @@ void MainWindow::TxAgain()
 
 void MainWindow::clearDX ()
 {
+  m_incomingCallPolicy.reset ();
   if (m_zdebug) log("clearDX");
   set_dateTimeQSO (-1);
   // Z

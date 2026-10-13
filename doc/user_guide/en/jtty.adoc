@@ -1,0 +1,52 @@
+Select *JTTY* from the *Mode* menu and use *File | Open* to select the
+sample file +...\save\samples\JTTY\260807_134110.wav+.
+
+A weak JTTY signal should appear on the waterfall and decode as shown
+in the screen shot below. You may need to set or adjust certain
+waterfall controls to see the signal clearly. If you're an experienced
+RTTY operator, you might also want to listen to this WAV file by
+opening it in your favorite media player. This JTTY signal is weak
+enough that if it were standard 45.45 baud RTTY instead of JTTY,
+decoding would be marginal and error-prone. Decoding from a WAV file
+may seem nearly instantaneous, but in live operation you would see the
+message accumulating sequentially, as it arrives.
+
+
+image::jtty.png[align="center",alt=JTTY decoding of weak signal]
+
+To test transmitting, enter a message into the field at bottom right,
+click *Send message*, and listen to the JTTY waveform's sound on your
+computer's speaker. Remember that unlike other WSJT modes, JTTY does
+not use timed T/R sequences. Transmissions can start at any time;
+otherwise _WSJT-X_ simply stays in receive or *Monitor* mode.
+
+.JTTY Frames and Contest Messages
+
+Each JTTY transmission consists of one or more "`frames`". A frame has
+space for up to 5 arbitrary characters, but it can also convey many
+more characters by using the defined formats for special contest-style
+messages. Function keys F1-F8 (and the on-screen buttons with those
+same labels) can be programmed to send messages based on the entry
+fields below the buttons. Use the macros %M and %H as stand-ins for
+MyCall and HisCall, %E for the contest exchange (currently defined as
+"599 nnn", where nnn is the number in the "Serial Number" spinbox),
+and %Q for a queued callsign that woould be your next-in-line
+contact. For best efficiency, use the exact message forms outlined in
+the table below. As explicit examples the table uses K1ABC for MyCall,
+W9XYZ for HisCall, W7UVW for a queued callsign, and 107 for Serial
+Number. The final table column shows the number of JTTY frames that
+required for each example message.
+
+[source]
+----
+F-Key  Macro Format     Transmitted message     Frames
+------------------------------------------------------
+F1     CQ %M CQ         CQ K1ABC CQ                1
+F2     %H %E            W9XYZ 599 107              2
+F3     %H TU CQ %M CQ   W9XYZ TU CQ K1ABC CQ       2
+F4     %M               K1ABC                      1
+F5     %H               W9XYZ                      1
+F6     TU NOW %Q %E     TU NOW W7UVW 599 108       2
+F7     %H AGN?          W9XYZ AGN?                 1
+F8     %E               599 107                    1
+----

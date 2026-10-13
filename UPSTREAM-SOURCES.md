@@ -7,7 +7,7 @@ le socle des sources téléchargées pour l'intégration en cours.
 | --- | --- | --- |
 | WSJT-Z original | `sq9fve/wsjt-z`, `v2.0.19`, `b3a06e89ae0174c51c8595d99e40ca179738eb0a` | Socle applicatif présent. |
 | Maintenance macOS Edpublic06 | `Edpublic06/wsjt-z`, `macos-build-maintenance`, `e850c68` | Documentation et procédure présentes ; aucun changement applicatif par rapport au tag Z. |
-| WSJT-X | `WSJTX/wsjtx`, `v3.3.0-beta1`, `57ba9337fa020065dc0ceee2c4ef85e433ea32d4` | Téléchargé ; fusion moteur/JTTY en préparation. |
+| WSJT-X | `WSJTX/wsjtx`, `v3.3.0-beta1`, `57ba9337fa020065dc0ceee2c4ef85e433ea32d4` | Cœur JTTY importé et testé ; raccordement interface/audio et moteur général encore à réaliser. |
 | WS / Improved | `ws-3.2.1_261010.tgz` | Récepteur FT2 intégré dans un module privé ; compilation macOS et premiers tests synthétiques réussis. |
 
 Archive WS officielle :
@@ -37,6 +37,20 @@ date et noms privés. La liste et les empreintes originales sont dans
 `wsjtz/decoding/ft2/source-manifest.json`. Raccordements modifiés :
 `lib/decoder.f90`, `lib/jt9.f90`, `widgets/mainwindow.cpp`, `CMakeLists.txt`.
 Voir `wsjtz/decoding/ft2/README.md` pour les adaptations et validations.
+
+Extension personnelle Auto Call, 13 octobre 2026 :
+`wsjtz/automation/IncomingCallPolicy.hpp` et raccordements dans
+`widgets/mainwindow.{cpp,h,ui}`. Option désactivée par défaut ; abandon d'un
+appel sans réponse au profit d'un appel direct éligible, protection du nouveau
+QSO et reprise du cycle normal Auto Call. Cette fonction est propre à cette
+branche, et n'est pas attribuée à un projet amont. Compilation macOS et test
+de décision réussis ; essai radio à réaliser.
+
+Premier lot JTTY, 13 octobre 2026 : sources conservées sans modification,
+chemins et empreintes dans `wsjtz/jtty/source-manifest.json`. Les nouveaux
+fichiers de raccordement CMake sont propres à cette branche. Six tests amont
+de codec/réception réussis ; interface, émission et audio de l'application
+non raccordés à ce stade. Voir `wsjtz/jtty/README.md`.
 
 Pour chaque lot, enregistrer les fichiers/symboles repris, la référence source,
 la date de modification, les adaptations personnelles, le commit d'intégration,

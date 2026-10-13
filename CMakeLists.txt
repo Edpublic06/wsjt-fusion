@@ -1233,6 +1233,7 @@ if (WSJT_GENERATE_DOCS)
   add_subdirectory (doc)
 endif (WSJT_GENERATE_DOCS)
 if (EXISTS ${CMAKE_SOURCE_DIR}/tests AND IS_DIRECTORY ${CMAKE_SOURCE_DIR}/tests)
+  enable_testing ()
   add_subdirectory (tests)
 endif ()
 
@@ -1242,6 +1243,7 @@ target_link_libraries (wsjt_cxx ${LIBM_LIBRARIES} Boost::log_setup ${LIBM_LIBRAR
 
 # build an OpenMP variant of the Fortran library routines
 include (wsjtz/decoding/ft2/CMakeLists.cmake)
+include (wsjtz/jtty/CMakeLists.cmake)
 add_library (wsjt_fort STATIC ${wsjt_FSRCS})
 target_link_libraries (wsjt_fort  ${FFTW3_LIBRARIES})
 if (${OPENMP_FOUND} OR APPLE)
@@ -1363,6 +1365,19 @@ target_link_libraries (ft4sim wsjt_fort wsjt_cxx)
 
 add_executable (wsjtz_ft2_regression wsjtz/decoding/ft2/test_ft2_receiver.f90)
 target_link_libraries (wsjtz_ft2_regression wsjt_fort wsjt_cxx)
+
+add_executable (wsjtz_incoming_call_regression wsjtz/automation/test_incoming_call.cpp)
+target_link_libraries (wsjtz_incoming_call_regression Qt5::Core)
+
+foreach (jtty_tool sjtty rjtty)
+  add_executable (${jtty_tool} lib/jtty/${jtty_tool}.f90)
+  target_link_libraries (${jtty_tool} wsjt_fort wsjt_cxx)
+endforeach ()
+foreach (jtty_test source_codec frequency_window continuous_decode get_updates
+    receive_state tbcc_decoder)
+  add_executable (test_jtty_${jtty_test} tests/unit/jtty/test_jtty_${jtty_test}.f90)
+  target_link_libraries (test_jtty_${jtty_test} wsjt_fort wsjt_cxx)
+endforeach ()
 
 add_executable (ft4sim_mult lib/ft4/ft4sim_mult.f90)
 target_link_libraries (ft4sim_mult wsjt_fort wsjt_cxx)

@@ -33,6 +33,7 @@
 #include "NonInheritingProcess.hpp"
 #include "Audio/AudioDevice.hpp"
 #include "commons.h"
+#include "wsjtz/automation/IncomingCallPolicy.hpp"
 #include "Radio.hpp"
 #include "models/Modes.hpp"
 #include "models/FrequencyList.hpp"
@@ -750,6 +751,7 @@ private:
   bool    m_bBestSPArmed=false;
   bool    m_bOK_to_chk=false;
   bool    m_bSentReport=false;
+  wsjtz::IncomingCallPolicy m_incomingCallPolicy;
   bool    m_discard_decoded_hounds_this_cycle=false;     // if something changes, like frequency, discard decoded messages that may be in-flight.
 
   SpecOp  m_specOp;

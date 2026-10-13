@@ -1,0 +1,41 @@
+_WSJT-X_ in JTTY mode will work with N1MM Logger+ in the same way
+other RTTY codecs (such as MMTTY) do. Once configured, you can type
+"`JTTY`" in the callsign field in N1MM Logger+ to start _WSJT-X_ in JTTY
+mode. N1MM Logger+ macros will work, but be sure to optimize the
+macros so they will send JTTY's contest-style messages.
+
+.Setup
+
+* Set up N1MM Logger+ (version number 1.0.11449 released September 22, 2026 or later) with _WSJT-X_
+as you would for the FT8 mode. Follow the instructions in
+https://www.rttycontesting.com/tutorials/n1mm/operating-ww-digi-with-n1mm/[Operating WW Digi with N1MM and WSJT-X].
+
+* Make sure your configuration is working in FT8 mode before
+attempting to use JTTY, including CAT control and PTT. This requires
+configuring N1MM for the
+https://www.rttycontesting.com/tutorials/n1mm/operating-ww-digi-with-n1mm/#startingfirsttime[forEW1]
+configuration.
+
+* Enter JTTY mode by typing "`JTTY`" in the callsign field in N1MM
+Logger+ and pressing enter.
+
+* Verify that the _WSJT-X_ window is showing *JTTY* in the footer, and
+that the _WSJT-X_ window title shows *forEW1*.
+
+* Put your radio in test mode, turn the output power to zero, or use a
+dummy load.
+
+* Verify that pressing *F1* in the _WSJT-X_ window, the message "CQ <your
+callsign> CQ" is being sent by your radio.
+
+* Verify that pressing *F1* in the N1MM Logger+ window sends the contents
+of your F1 macro.
+
+* Be sure to customize the
+https://n1mmwp.hamdocs.com/setup/function-keys/#the-function-key-message-editor[N1MM Digital Function Keys] file for JTTY operation. Here is
+an example for the N1MM file `JTTY Messages.mc`:
+
+[source,bash]
+----
+include::../../../lib/jtty/JTTY Messages.mc[]
+----

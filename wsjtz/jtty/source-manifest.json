@@ -1,0 +1,212 @@
+{
+  "repository": "https://github.com/WSJTX/wsjtx",
+  "tag": "v3.3.0-beta1",
+  "commit": "57ba9337fa020065dc0ceee2c4ef85e433ea32d4",
+  "import_date": "2026-10-13",
+  "files": [
+    {
+      "source": "lib/77bit/packjt77_grammar.f90",
+      "destination": "lib/77bit/packjt77_grammar.f90",
+      "sha256": "9e2baabd1b0de14bc48db70f71a2ffabf20618d0aa911e0ffa5dfa3bddbbd6a5",
+      "adaptation": "none"
+    },
+    {
+      "source": "lib/jtty/jtty_source_codec.f90",
+      "destination": "lib/jtty/jtty_source_codec.f90",
+      "sha256": "13a30a32c3084fa4d74d9bff1fda140ebf1b8b767198816a0249e3b83b7150c0",
+      "adaptation": "none"
+    },
+    {
+      "source": "lib/jtty/jtty_mod.f90",
+      "destination": "lib/jtty/jtty_mod.f90",
+      "sha256": "6e8645d156fe7e85e86918508391652dbb1195a5a4f590a556adb05e777b667a",
+      "adaptation": "none"
+    },
+    {
+      "source": "lib/jtty/jtty_tbcc_code_profile.f90",
+      "destination": "lib/jtty/jtty_tbcc_code_profile.f90",
+      "sha256": "9429c79d2aa242b81c474d3b191479fc967455fb9aa72628dba13aa1d7766211",
+      "adaptation": "none"
+    },
+    {
+      "source": "lib/jtty/jtty_tbcc_list_decoder.f90",
+      "destination": "lib/jtty/jtty_tbcc_list_decoder.f90",
+      "sha256": "cfbceff85b29212208e3025dce2579267b195d27ca7be984f120a1d1aca03438",
+      "adaptation": "none"
+    },
+    {
+      "source": "lib/jtty/tbcc.f90",
+      "destination": "lib/jtty/tbcc.f90",
+      "sha256": "40babc8afe96bed03d39246879387e717ad7e9db3d229f9f12305332bcf6cf48",
+      "adaptation": "none"
+    },
+    {
+      "source": "lib/jtty/jtty_tbcc_decoder.f90",
+      "destination": "lib/jtty/jtty_tbcc_decoder.f90",
+      "sha256": "4cd16d4357a0a89ec4281103c7032ea4638f798c1da0b5b51203a9ef50888b4a",
+      "adaptation": "none"
+    },
+    {
+      "source": "lib/jtty/jtty_payload_correlators.f90",
+      "destination": "lib/jtty/jtty_payload_correlators.f90",
+      "sha256": "71ff24a603226d24caf023e8d46e010f0e01ea648643d49382715130af354bc2",
+      "adaptation": "none"
+    },
+    {
+      "source": "lib/jtty/jtty_fec_mod.f90",
+      "destination": "lib/jtty/jtty_fec_mod.f90",
+      "sha256": "ad0afee7bd8c43276f70b506ffb7f88a3eb7452120a1ccfdc5c49d769ba39a28",
+      "adaptation": "none"
+    },
+    {
+      "source": "lib/jtty/jttycom.f90",
+      "destination": "lib/jtty/jttycom.f90",
+      "sha256": "e5ed3232c737fef237a394d36632bd63b1961e10e44c79b667cad1113f40c2a2",
+      "adaptation": "none"
+    },
+    {
+      "source": "lib/jtty/jtty_mdecode.f90",
+      "destination": "lib/jtty/jtty_mdecode.f90",
+      "sha256": "d4a0ec0191dcc2459c7aeb67c5a155daf55117eb5d3c508b7d4487f293bf2400",
+      "adaptation": "none"
+    },
+    {
+      "source": "lib/jtty/jtty_receive_context.f90",
+      "destination": "lib/jtty/jtty_receive_context.f90",
+      "sha256": "11909dc490881d761dddc8dd4ca26f6ffbeffb64fcc063570cc0b208af75474a",
+      "adaptation": "none"
+    },
+    {
+      "source": "lib/jtty/jtty_decode.f90",
+      "destination": "lib/jtty/jtty_decode.f90",
+      "sha256": "61258651df94b3b9c38acaf5ccfe80a9c8dc44999c1209ed0337bbacc67de465",
+      "adaptation": "none"
+    },
+    {
+      "source": "lib/jtty/rjtty_sub.f90",
+      "destination": "lib/jtty/rjtty_sub.f90",
+      "sha256": "e812f32895764b5fd688fc292bda80b3dc08e55a32ef9b78878632aa3dcafae6",
+      "adaptation": "none"
+    },
+    {
+      "source": "lib/jtty/jtty_peakup.f90",
+      "destination": "lib/jtty/jtty_peakup.f90",
+      "sha256": "fe6c14d01de68dd02f782cbc5772f0ad682af1dc0e83b81ad151182de42f7bb5",
+      "adaptation": "none"
+    },
+    {
+      "source": "lib/jtty/jtty_block_pow.f90",
+      "destination": "lib/jtty/jtty_block_pow.f90",
+      "sha256": "c6fed9b61530c1fd7ca578475baf203c3de85529fc4615151236c7d366a63cf4",
+      "adaptation": "none"
+    },
+    {
+      "source": "lib/jtty/ana64a.f90",
+      "destination": "lib/jtty/ana64a.f90",
+      "sha256": "8417496a9a1cc1c1087db1128cdd5e5a92b342690f4f98389c63814debc363ec",
+      "adaptation": "none"
+    },
+    {
+      "source": "lib/jtty/genjtty.f90",
+      "destination": "lib/jtty/genjtty.f90",
+      "sha256": "d117fb73431a574b9fc964adc8254318248c63e2efb9d24ca352f08158ff2303",
+      "adaptation": "none"
+    },
+    {
+      "source": "lib/jtty/gen_jttywave.f90",
+      "destination": "lib/jtty/gen_jttywave.f90",
+      "sha256": "3b78565e3380650cb73884b26453fea6e8cf50bf413370ee020570bd309ae454",
+      "adaptation": "none"
+    },
+    {
+      "source": "lib/jtty/gen_syncwave.f90",
+      "destination": "lib/jtty/gen_syncwave.f90",
+      "sha256": "63bc6b1ce167ceebf4bd7978f3c9bf70a5d6c14e4da0288e677968287236c7f1",
+      "adaptation": "none"
+    },
+    {
+      "source": "lib/jtty/subtract_jtty.f90",
+      "destination": "lib/jtty/subtract_jtty.f90",
+      "sha256": "239c11badb96bbd910ca4d5847029b70812267ca3395c1e1f4585f82c55739a2",
+      "adaptation": "none"
+    },
+    {
+      "source": "lib/jtty/sjtty.f90",
+      "destination": "lib/jtty/sjtty.f90",
+      "sha256": "8b470d85a5f85490ba68295eabac1eed596cb7699b9e80e0393d5c1cc22b38cc",
+      "adaptation": "none"
+    },
+    {
+      "source": "lib/jtty/rjtty.f90",
+      "destination": "lib/jtty/rjtty.f90",
+      "sha256": "1fbe14c7b8908f683e47500c0df8a882b25818472853a1f738226abef20b41bf",
+      "adaptation": "none"
+    },
+    {
+      "source": "JttyDecoder.hpp",
+      "destination": "JttyDecoder.hpp",
+      "sha256": "e055c8f32d982d58170a5b993e869615f96fe7fde240795f8fb029cb3eb84b06",
+      "adaptation": "none"
+    },
+    {
+      "source": "JttyReceiveTiming.hpp",
+      "destination": "JttyReceiveTiming.hpp",
+      "sha256": "ee4734bef2575e43e1b2206457d99321dd03d849b325105f4172014538ad0862",
+      "adaptation": "none"
+    },
+    {
+      "source": "doc/user_guide/en/jtty.adoc",
+      "destination": "doc/user_guide/en/jtty.adoc",
+      "sha256": "c852c60fe6ca9ef7cfc5b6150392dd0d04ed1d51eb50d3bfdbbe6af6525387b7",
+      "adaptation": "none"
+    },
+    {
+      "source": "doc/user_guide/en/jtty_n1mm_integration.adoc",
+      "destination": "doc/user_guide/en/jtty_n1mm_integration.adoc",
+      "sha256": "c729f49ef670d15bec7a4e9238f3dd93f2c6824cebff20f6e8b6c71b4ab36f64",
+      "adaptation": "none"
+    },
+    {
+      "source": "samples/JTTY/260807_134110.wav",
+      "destination": "samples/JTTY/260807_134110.wav",
+      "sha256": "4c3f7ef7266d6ad32a7cb630066376e25e7e104a3afa06c8dbe92842d8e49afc",
+      "adaptation": "none"
+    },
+    {
+      "source": "tests/unit/jtty/test_jtty_source_codec.f90",
+      "destination": "tests/unit/jtty/test_jtty_source_codec.f90",
+      "sha256": "e10210177925ab106bb72f2db51e74c14d55d1b409d7fb30de27076fabd998f7",
+      "adaptation": "none"
+    },
+    {
+      "source": "tests/unit/jtty/test_jtty_frequency_window.f90",
+      "destination": "tests/unit/jtty/test_jtty_frequency_window.f90",
+      "sha256": "fce974afe1afae2233bd9f2f7ab7ab115bdab17bfcc95e7067934bf8974461f6",
+      "adaptation": "none"
+    },
+    {
+      "source": "tests/unit/jtty/test_jtty_continuous_decode.f90",
+      "destination": "tests/unit/jtty/test_jtty_continuous_decode.f90",
+      "sha256": "bb4a3706c25c91e6fa71c15df355c99b9cc6265a88ae8db5781a9084f7fc9be3",
+      "adaptation": "none"
+    },
+    {
+      "source": "tests/unit/jtty/test_jtty_get_updates.f90",
+      "destination": "tests/unit/jtty/test_jtty_get_updates.f90",
+      "sha256": "2045b8ec884c2abf7ecfb68144ea11b926ab32b55a51ffe6a5ffb7869c1aa0ac",
+      "adaptation": "none"
+    },
+    {
+      "source": "tests/unit/jtty/test_jtty_receive_state.f90",
+      "destination": "tests/unit/jtty/test_jtty_receive_state.f90",
+      "sha256": "8b61574b726025191210ff1debd3c00af965db33b9bba0b54ae0bf6aa9f6e777",
+      "adaptation": "none"
+    },
+    {
+      "source": "tests/unit/jtty/test_jtty_tbcc_decoder.f90",
+      "destination": "tests/unit/jtty/test_jtty_tbcc_decoder.f90",
+      "sha256": "60b7bd0e3943763ace6e2bb2c8b907b7cf0ee7327d47e5d1f939c799802fc77b",
+      "adaptation": "none"
+    }
+  ]
+}

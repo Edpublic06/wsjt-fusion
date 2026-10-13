@@ -21,3 +21,13 @@ include_directories (${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR})
 add_executable (test_qt_helpers test_qt_helpers.cpp)
 target_link_libraries (test_qt_helpers wsjt_qt Qt5::Test)
 add_test (test_qt_helpers test_qt_helpers)
+
+if (WSJT_BUILD_UTILS)
+  add_test (NAME wsjtz_ft2_regression COMMAND $<TARGET_FILE:wsjtz_ft2_regression>)
+  add_test (NAME wsjtz_incoming_call_regression COMMAND $<TARGET_FILE:wsjtz_incoming_call_regression>)
+  foreach (jtty_test source_codec frequency_window continuous_decode get_updates
+      receive_state tbcc_decoder)
+    add_test (NAME test_jtty_${jtty_test} COMMAND $<TARGET_FILE:test_jtty_${jtty_test}>)
+    set_tests_properties (test_jtty_${jtty_test} PROPERTIES TIMEOUT 240)
+  endforeach ()
+endif ()
