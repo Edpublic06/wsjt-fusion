@@ -85,3 +85,14 @@ new namespaced values are written by this extension; previous experimental
 keys are read as migration fallbacks. No settings-schema/version conversion
 or removal of other keys is introduced. Other MODs can ignore these private
 keys; compatibility with every MOD has not been experimentally verified.
+
+## Minimum received signal for outgoing selection
+
+With Filtering enabled, Min Signal is checked before the Pounce and
+current/last-partner exemptions, using the local received SNR (not the report
+inside the transmitted text). A newer below-threshold decode cancels an
+older nomination of that station. The threshold is checked again before an
+automatic outgoing call starts. Direct replies from the selected QSO partner
+remain processable when its signal drops; this setting must not break an
+ongoing exchange. The existing -30 setting retains its disabled-threshold
+meaning. Live validation of this correction is still required.

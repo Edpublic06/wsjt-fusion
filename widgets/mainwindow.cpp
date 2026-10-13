@@ -14547,6 +14547,26 @@ bool MainWindow::callsignFiltered(DecodedText dt)
     bool is_73 = (message_words.size() >= 5 && (message_words.contains("73") || message_words.contains("RR73")));
     bool is_CQ = message_words.filter (kReCqStart).size();
 
+    // Check received SNR before Pounce and current/last-partner exemptions.
+    // A direct response from our selected partner must still advance its QSO.
+    bool const current_partner_reply = !is_CQ && !dt.isTX ()
+      && Radio::base_callsign (dxCall) == Radio::base_callsign (ui->dxCallEntry->text ())
+      && (token_matches_call (dt.call (), m_config.my_callsign ())
+          || token_matches_call (dt.call (), m_baseCall));
+    QString dbM = dt.report ();
+    if (ui->cb_filtering->isChecked () && ui->sbMindB->value () > -30
+        && dt.snr () < ui->sbMindB->value () && !current_partner_reply) {
+      // A newer weak decode must invalidate an earlier strong nomination.
+      if (Radio::base_callsign (m_priorityCall) == Radio::base_callsign (dxCall)) {
+        clearPounceState ();
+        m_maxDistance = 0;
+        m_maxSignal = -31;
+      }
+      if (m_zdebug) log (QString ("Min Signal: rejecting %1, received %2 dB < %3 dB")
+        .arg (dxCall).arg (dt.snr ()).arg (ui->sbMindB->value ()));
+      return true;
+    }
+
     // Auto call next
     if (ui->cb_autoCallNext->isChecked() && dxCall == ui->dxCallEntry->text() ) {
           if (is_CQ || is_73 || SpecOp::HOUND == m_config.special_op_id()) {
@@ -14585,18 +14605,6 @@ bool MainWindow::callsignFiltered(DecodedText dt)
         return true;
     }
 
-
-    // Minimum signal strength filter
-    QString dbM = dt.report();
-    if (ui->sbMindB->value() > -30) {
-        if (m_zdebug) log(QString("callsignFiltered: Min signal threshold=%1 actual=%2")
-                          .arg(ui->sbMindB->value())
-                          .arg(dbM));
-        if (dbM.toInt() < ui->sbMindB->value()) {
-            if (m_zdebug) log("callsignFiltered: Station signal strength under threshold: " + dbM);
-            return true;
-        }
-    }
 
     // Continent filter
     auto const& looked_up = m_logBook.countries ()->lookup (dxCall);
@@ -15910,7 +15918,14 @@ void MainWindow::ZProcess ()
     if (m_zdebug) log("ZProcess: m_hiscall: " + m_hisCall);
     if (m_zdebug) log("ZProcess: m_lastcall: " + m_lastCall);
 
+    // Recheck the current threshold at the point an automatic call starts.
+    bool signal_known = false;
+    int const candidate_snr = m_nextRpt.toInt (&signal_known);
+    bool const candidate_signal_allowed = !ui->cb_filtering->isChecked ()
+      || ui->sbMindB->value () <= -30
+      || (signal_known && candidate_snr >= ui->sbMindB->value ());
     if (!ui->autoButton->isChecked() && (ui->cbAutoCall->isChecked() || ui->cb_autoCallNext->isChecked())
+            && candidate_signal_allowed
             && !m_priorityCall.isNull() && !m_priorityCall.isEmpty()
             && m_lastCall != m_priorityCall && (ui->dxCallEntry->text().isEmpty() || ui->dxCallEntry->text() == m_priorityCall)) {
         tx_watchdog(false);
