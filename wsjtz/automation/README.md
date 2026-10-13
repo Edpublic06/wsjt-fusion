@@ -25,3 +25,29 @@ Validation: macOS arm64 application build and
 `wsjtz_incoming_call_regression` passed. The regression covers disabled mode,
 operational gates, filters, current-target replies, caller protection and reset
 for a new outgoing cycle. It does not substitute for a live radio QSO test.
+
+## CQ reply queue
+
+Always active during automatic CQ answering in FT8, FT4, FT2 and Q65.
+Eligible standard direct replies are collected for the decode batch before
+selection; FT8 early passes wait for the configured final decode stage.
+Filters apply both at collection and before starting each queued QSO.
+
+The queue uses existing distance/strongest-signal and PSK preferences, and
+existing Best S&P highlight priorities where applicable. Equal priorities
+keep arrival order. Repeated decodes update the same entry without moving
+its original arrival position. The active or already attempted caller is
+not queued again during that round.
+
+The next pending station is processed after logging the active QSO, using
+the existing QSO sequencer and watchdog. A watchdog timeout advances to the
+next entry. An operator stop pauses automatic processing. Selecting a
+different station, by manual edit or decode selection, clears the whole
+queue. A mode, band or dial-frequency change also invalidates its context.
+The queue is transient and is not restored after an application restart.
+Fox/Hound and Q65 pileup retain their specialized operation.
+
+The pending calls are shown in the main controls as `CQ queue`. Validation:
+macOS arm64 build and `wsjtz_cq_reply_queue_regression` passed (priorities,
+FIFO ties, deduplication, exhaustion and manual/context cancellation).
+Live CQ/QSO, radio and operator-flow tests are still outstanding.

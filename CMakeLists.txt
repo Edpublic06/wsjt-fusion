@@ -1368,6 +1368,8 @@ target_link_libraries (wsjtz_ft2_regression wsjt_fort wsjt_cxx)
 
 add_executable (wsjtz_incoming_call_regression wsjtz/automation/test_incoming_call.cpp)
 target_link_libraries (wsjtz_incoming_call_regression Qt5::Core)
+add_executable (wsjtz_cq_reply_queue_regression wsjtz/automation/test_cq_reply_queue.cpp)
+target_link_libraries (wsjtz_cq_reply_queue_regression Qt5::Core)
 
 foreach (jtty_tool sjtty rjtty)
   add_executable (${jtty_tool} lib/jtty/${jtty_tool}.f90)

@@ -57,3 +57,10 @@ la date de modification, les adaptations personnelles, le commit d'intégration,
 les notices conservées et les validations réalisées. Préserver les en-têtes
 et les fichiers de licence tiers. Ne pas déclarer intégré un lot seulement
 téléchargé, ni validé un lot seulement compilé.
+
+File de réponses CQ, 13 octobre 2026 : extension personnelle dans
+`wsjtz/automation/CqReplyQueue.hpp`, avec raccordements réception, fin du
+QSO, délai d'appel et sélection manuelle dans `widgets/mainwindow.*`.
+Toujours active pour la réponse automatique aux CQ des modes pris en charge.
+Les sources amont ne sont pas créditées comme auteurs de cette nouvelle
+fonction. Compilation macOS et test de file réussis ; essai radio à réaliser.

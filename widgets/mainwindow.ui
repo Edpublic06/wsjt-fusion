@@ -2401,6 +2401,13 @@ list. The list can be maintained in Settings (F2).</string>
                            </property>
                           </widget>
                          </item>
+                         <item row="12" column="0" colspan="4">
+                          <widget class="QLabel" name="cqReplyQueueLabel">
+                           <property name="text"><string>CQ queue: empty</string></property>
+                           <property name="toolTip"><string>Replies waiting for their QSO. Selecting another station manually clears this queue.</string></property>
+                           <property name="wordWrap"><bool>true</bool></property>
+                          </widget>
+                         </item>
                          <item row="11" column="0" colspan="2">
                           <widget class="QCheckBox" name="cb_autoCallPreferIncoming">
                            <property name="toolTip">

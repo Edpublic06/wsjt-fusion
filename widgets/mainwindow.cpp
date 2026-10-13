@@ -515,6 +515,14 @@ MainWindow::MainWindow(QDir const& temp_directory, bool multiple,
   m_block_udp_status_updates {false}
 {
   ui->setupUi(this);
+  connect (ui->dxCallEntry, &QLineEdit::textChanged, this, [this] (QString const& call) {
+    if (!m_processingCqQueue && !call.trimmed ().isEmpty () && m_cqReplyQueue.session ()
+        && Radio::base_callsign (call.trimmed ()) != m_cqReplyQueue.active ()) {
+      m_cqReplyQueue.clear ();
+      m_resumeCqQueue = false;
+      updateCqReplyQueue ();
+    }
+  });
 
   // Keep both decoder panes usable on platforms with larger native controls,
   // and reserve additional vertical space for the decoder area.
@@ -2978,6 +2986,7 @@ void MainWindow::on_autoButton_clicked (bool checked)
     m_bCallingCQ = true;          // allows tail-enders to be picked up
   }
   if (!checked) {
+    m_resumeCqQueue = false;
     m_bCallingCQ = false;
     filtered = false;
   }
@@ -5013,6 +5022,8 @@ void MainWindow::decodeDone ()
     if(ui->cbWorkDupes->isChecked()) QTimer::singleShot (5000, [=] {band_activity_cleared();});
   }
   to_jt9(m_ihsym,-1,1);                //Tell jt9 we know it has finished
+  if (m_mode != "FT8" || dec_data.params.nzhsym >= m_hsymStop)
+    QTimer::singleShot (0, this, [this] { startNextCqReply (); });
 
   m_startAnother=m_loopall;
   if(m_bNoMoreFiles) {
@@ -5663,6 +5674,7 @@ void MainWindow::readFromStdout()                             //readFromStdout
       }
       // Z
       auto isFiltered = callsignFiltered(decodedtext0);
+      bool const queuedCqReply = collectCqReply (decodedtext0, isFiltered);
       addSlot(decodedtext.frequencyOffset());
 
       auto for_us  = decodedtext.string().contains(" " + my_call + " ") or
@@ -5890,7 +5902,7 @@ void MainWindow::readFromStdout()                             //readFromStdout
                                                          true); // highlight dxGridEntry
             }
 
-            if (m_bBestSPArmed && (m_mode=="FT4" or m_mode=="FT2") && CALLING == m_QSOProgress) {
+            if (!queuedCqReply && m_bBestSPArmed && (m_mode=="FT4" or m_mode=="FT2") && CALLING == m_QSOProgress) {
               QString messagePriority = ui->decodedTextBrowser->CQPriority();
               if (messagePriority != "") {
                 if (messagePriority == "New Call on Band"
@@ -5913,6 +5925,17 @@ void MainWindow::readFromStdout()                             //readFromStdout
         }
       }
 
+      if (queuedCqReply && m_bBestSPArmed && bDisplayPoints && !m_bandActivityRawView
+          && (m_mode == "FT4" || m_mode == "FT2")) {
+        QString call, grid;
+        decodedtext.deCallAndGrid (call, grid);
+        call.remove ('<').remove ('>');
+        auto const priority = ui->decodedTextBrowser->CQPriority ();
+        int rank = priority == "New Multiplier" ? 3 : priority == "New DXCC" ? 2
+                 : priority == "New Call on Band" ? 1 : 0;
+        m_cqReplyQueue.highlight (Radio::base_callsign (call), rank);
+      }
+
 //Right (Rx Frequency) window
       bool bDisplayRight=bAvgMsg;
       int audioFreq=decodedtext.frequencyOffset();
@@ -5933,7 +5956,7 @@ void MainWindow::readFromStdout()                             //readFromStdout
                   for_us = false;
             }
           }
-          if(m_bCallingCQ && !m_bAutoReply && for_us && m_specOp!=SpecOp::FOX && m_specOp!=SpecOp::HOUND) {
+          if(!queuedCqReply && m_bCallingCQ && !m_bAutoReply && for_us && m_specOp!=SpecOp::FOX && m_specOp!=SpecOp::HOUND) {
             bool bProcessMsgNormally=ui->respondComboBox->currentText()=="CQ: First" or
                 (ui->respondComboBox->currentText()=="CQ: Max Dist" and m_ActiveStationsWidget==NULL) or
                 (m_ActiveStationsWidget!=NULL and !m_ActiveStationsWidget->isVisible());
@@ -6101,7 +6124,7 @@ void MainWindow::readFromStdout()                             //readFromStdout
       if(m_mode!="FT8" or (SpecOp::HOUND != m_specOp) or (SpecOp::HOUND == m_specOp and sfox)) {
         if(m_mode=="FT8" or m_mode=="FT4" or m_mode=="FT2" or m_mode=="Q65"
            or m_mode=="JT4" or m_mode=="JT65" or m_mode=="JT9" or m_mode=="FST4") {
-          auto_sequence (decodedtext, 25, 50);
+          if (!queuedCqReply) auto_sequence (decodedtext, 25, 50);
         }
 
 // find and extract any report for myCall, but save in m_rptRcvd only if it's from DXcall
@@ -6163,6 +6186,82 @@ void MainWindow::readFromStdout()                             //readFromStdout
 //                  another caller and we are going to transmit within
 //                  +/- this value of the reply to another caller
 //
+void MainWindow::updateCqReplyQueue ()
+{
+  auto calls = m_cqReplyQueue.calls ();
+  ui->cqReplyQueueLabel->setText (calls.isEmpty () ? tr ("CQ queue: empty")
+    : tr ("CQ queue (%1): %2").arg (calls.size ()).arg (calls.join (", ")));
+}
+
+bool MainWindow::collectCqReply (DecodedText const& message, bool is_filtered)
+{
+  m_cqReplyQueue.context (m_mode + "/" + m_currentBand + "/" + QString::number (m_freqNominal));
+  if (m_diskData || m_transmitting || !m_auto || !ui->cbAutoSeq->isChecked ()
+      || !(m_mode == "FT8" || m_mode == "FT4" || m_mode == "FT2" || m_mode == "Q65")
+      || m_specOp == SpecOp::FOX || m_specOp == SpecOp::HOUND || m_specOp == SpecOp::Q65_PILEUP
+      || (!m_cqReplyQueue.session () && !(m_bCallingCQ || (m_ntx == 6 && !ui->cbAutoCall->isChecked ())))) return false;
+  if (!message.isStandardMessage () || message.isTX () || message.is_composite_message ()) return false;
+  if (!(token_matches_call (message.call (), m_config.my_callsign ())
+        || token_matches_call (message.call (), m_baseCall))) return false;
+  auto words = message.messageWords ();
+  if (words.contains ("73") || words.contains ("RR73") || words.contains ("RRR")) return false;
+  QString call,grid;
+  message.deCallAndGrid (call,grid);
+  call.remove ('<').remove ('>');
+  auto base = Radio::base_callsign (call);
+  if (!Radio::is_callsign (call) || base == m_baseCall || base == m_cqReplyQueue.active ()) return false;
+  // Suppress selection even for a filtered direct reply: it must not take over
+  // a queued round through one of the legacy CQ reply paths.
+  if (is_filtered) return true;
+  wsjtz::CqReply reply;
+  reply.call = base;
+  reply.decode = message.string ();
+  reply.signal = message.snr ();
+  reply.psk = m_pskReporterReceivers.contains (call.toUpper ());
+  static QRegularExpression const grid4 {"^[A-R]{2}[0-9]{2}$"};
+  if (grid.contains (grid4)) {
+    auto mygrid = (m_config.my_grid () + "      ").left (6).toLatin1 ();
+    auto theirgrid = (grid + "      ").left (6).toLatin1 ();
+    double utc=0.; int az,el,miles,km,hotaz,hotbetter;
+    azdist_ (mygrid.data (),theirgrid.data (),&utc,&az,&el,&miles,&km,&hotaz,&hotbetter,6,6);
+    reply.distance = km;
+  }
+  m_cqReplyQueue.add (reply);
+  updateCqReplyQueue ();
+  return true;
+}
+
+void MainWindow::startNextCqReply ()
+{
+  m_cqReplyQueue.context (m_mode + "/" + m_currentBand + "/" + QString::number (m_freqNominal));
+  updateCqReplyQueue ();
+  if (m_diskData || m_transmitting || !m_monitoring || !ui->cbAutoSeq->isChecked ()
+      || (!m_auto && !m_resumeCqQueue) || !m_cqReplyQueue.active ().isEmpty ()) return;
+  if (!ui->dxCallEntry->text ().isEmpty () && m_QSOProgress != CALLING) return;
+  int priority = ui->respondComboBox->currentIndex () == 2 ? 2 : ui->cb_autoCallPriority->currentIndex ();
+  bool prefer_psk = ui->cb_autoCallPreferPSKSpotted->isChecked () && m_config.psk_reporter_band_activity ();
+  while (!m_cqReplyQueue.empty ()) {
+    auto next = m_cqReplyQueue.take (priority,prefer_psk);
+    DecodedText message {next.decode};
+    if (callsignFiltered (message)) { m_cqReplyQueue.complete (); continue; }
+    m_processingCqQueue = true;
+    clearDX ();
+    clearPounceState ();
+    m_bSentReport = false;
+    m_sentFirst73 = false;
+    m_bDoubleClicked = true;
+    tx_watchdog (false);
+    processMessage (message);
+    m_processingCqQueue = false;
+    m_incomingCallPolicy.accept_incoming (next.call);
+    m_resumeCqQueue = false;
+    auto_tx_mode (true);
+    updateCqReplyQueue ();
+    return;
+  }
+  updateCqReplyQueue ();
+}
+
 void MainWindow::auto_sequence (DecodedText const& message, unsigned start_tolerance, unsigned stop_tolerance)
 {
   auto const& message_words = message.messageWords ();
@@ -7854,6 +7953,15 @@ void MainWindow::processMessage (DecodedText const& message, Qt::KeyboardModifie
   QString hiscall;
   QString hisgrid;
   message.deCallAndGrid(/*out*/hiscall,hisgrid);
+  if (!m_processingCqQueue && m_bDoubleClicked && m_cqReplyQueue.session ()) {
+    auto selected = hiscall; selected.remove ('<').remove ('>');
+    if (Radio::base_callsign (selected) != m_cqReplyQueue.active ()) {
+      m_cqReplyQueue.clear ();
+      m_resumeCqQueue = false;
+      updateCqReplyQueue ();
+    }
+  }
+
 
   if(message.clean_string ().contains(hiscall+"/R")) {
     hiscall+="/R";
@@ -9326,11 +9434,24 @@ void MainWindow::acceptQSO (QDateTime const& QSO_date_off, QString const& call, 
   // Z
   const auto nowUtc = QDateTime::currentDateTimeUtc();
   updateQsoCounter(true);
+  bool const finishCqQueueQso = !m_cqReplyQueue.active ().isEmpty ()
+    && m_cqReplyQueue.active () == Radio::base_callsign (call);
   m_dxMapLastLogUtc = nowUtc;
   if (m_dxStationMap) {
     m_dxStationMap->setTickerStats(qso_total, qso_new, m_dxMapStartedUtc, m_dxMapLastLogUtc, 0.0);
   }
   clearDX();
+  if (finishCqQueueQso) {
+    m_cqReplyQueue.complete ();
+    updateCqReplyQueue ();
+    QTimer::singleShot (0, this, [this] {
+      if (m_cqReplyQueue.session ()) {
+        m_resumeCqQueue = true;
+        startNextCqReply ();
+      }
+    });
+  }
+
 
   // Log to N1MM Logger
   if (m_config.broadcast_to_n1mm () && m_config.valid_n1mm_info ())
@@ -12603,6 +12724,12 @@ void MainWindow::tx_watchdog (bool triggered)
                 }
 
       clearDX();
+      if (!m_cqReplyQueue.active ().isEmpty ()) {
+        m_cqReplyQueue.complete ();
+        updateCqReplyQueue ();
+        m_resumeCqQueue = !m_cqReplyQueue.empty ();
+        QTimer::singleShot (0, this, [this] { startNextCqReply (); });
+      }
     }
   else
     {

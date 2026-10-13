@@ -25,6 +25,7 @@ add_test (test_qt_helpers test_qt_helpers)
 if (WSJT_BUILD_UTILS)
   add_test (NAME wsjtz_ft2_regression COMMAND $<TARGET_FILE:wsjtz_ft2_regression>)
   add_test (NAME wsjtz_incoming_call_regression COMMAND $<TARGET_FILE:wsjtz_incoming_call_regression>)
+  add_test (NAME wsjtz_cq_reply_queue_regression COMMAND $<TARGET_FILE:wsjtz_cq_reply_queue_regression>)
   foreach (jtty_test source_codec frequency_window continuous_decode get_updates
       receive_state tbcc_decoder)
     add_test (NAME test_jtty_${jtty_test} COMMAND $<TARGET_FILE:test_jtty_${jtty_test}>)
