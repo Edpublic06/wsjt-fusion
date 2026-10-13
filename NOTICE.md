@@ -1,6 +1,6 @@
 # Copyright, licenses and credits
 
-This working branch develops **WSJT-Fusion 1.0.0-beta1**, a derivative version.
+This working branch develops **WSJT-Fusion 1.0.0-beta2**, a derivative version.
 It is not an official release of WSJT-X, WS or WSJT-Z. Changes in this branch
 do not transfer the rights of the authors of imported code. The licenses and
 notices in individual files remain applicable; this document supplements them.

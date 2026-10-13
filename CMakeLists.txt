@@ -76,7 +76,7 @@ set (PROJECT_MANUAL_DIRECTORY_URL https://github.com/Edpublic06/wsjt-fusion/tree
 set (PROJECT_SAMPLES_URL https://sourceforge.net/projects/wsjt/files/)
 #set (PROJECT_SAMPLES_UPLOAD_DEST frs.sourceforge.net:/home/frs/project/wsjt/)
 # WSJT-Z mod version suffix shown in UI and package metadata.
-set (VERSION_Z "1.0.0-beta1")
+set (VERSION_Z "1.0.0-beta2")
 message (STATUS "******************************************************")
 message (STATUS "Building ${PROJECT_BUNDLE_NAME} ${VERSION_Z} (base WSJT-X ${PROJECT_VERSION}) for ${CMAKE_SYSTEM_NAME}-${PROJECT_ARCHITECTURE}")
 message (STATUS "******************************************************")
@@ -1947,7 +1947,7 @@ set (CPACK_PACKAGE_NAME "wsjt-fusion")
 set (CPACK_PACKAGE_VERSION_Z "${VERSION_Z}")
 set (CPACK_PACKAGE_VERSION_MAJOR 1)
 set (CPACK_PACKAGE_VERSION_MINOR 0)
-set (CPACK_PACKAGE_VERSION_PATCH "0-beta1")
+set (CPACK_PACKAGE_VERSION_PATCH "0-beta2")
 set (CPACK_PACKAGE_VERSION "${VERSION_Z}")
 
 

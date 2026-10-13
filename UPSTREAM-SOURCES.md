@@ -7,7 +7,7 @@ in the baseline from downloaded references and integration work in progress.
 
 ## Component versions by function
 
-**Application version: WSJT-Fusion 1.0.0-beta1.** This is the fork's own version;
+**Application version: WSJT-Fusion 1.0.0-beta2.** This is the fork's own version;
 it does not describe every decoder's version.
 
 | Function / component | Source project | Reference version | Revision / evidence | What is actually present in Fusion |
@@ -107,3 +107,7 @@ Accepted/Cancel behavior follows the existing configuration dialog.
 The repository was renamed `Edpublic06/wsjt-fusion`. Historical references to
 `Edpublic06/wsjt-z` identify its pre-rename history. Fusion's application version
 is independent of upstream component versions.
+
+## 1.0.0-beta2 — 14 October 2026
+
+Includes receive-period handover resolution (911456c) and the Min Signal correction (19d1f57). An outgoing partner replying in the same receive period is protected before switching to another caller. Incoming-station filtering is respected when taking stations from the queue. Min Signal is checked before automatic-selection exemptions and again before starting an outgoing call. Direct replies from the current partner remain processable. macOS Apple Silicon build and existing FT2/automation regressions pass; live validation continues.
