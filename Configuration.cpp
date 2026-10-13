@@ -1,3 +1,4 @@
+#include "wsjtz/automation/AutomationSettings.hpp"
 #include "Configuration.hpp"
 
 //
@@ -2180,8 +2181,8 @@ void Configuration::impl::read_settings ()
   wd_FT2_ = settings_->value("wd_FT2",1.0).toDouble ();
   wd_Timer_ = settings_->value("wd_Timer", false).toBool();
   QSettings legacy_settings {settings_->fileName(), settings_->format()};
-  preferIncomingCalls_ = settings_->value("PreferIncomingCalls", legacy_settings.value("MainWindow/Common/AutoCallPreferIncoming", false)).toBool();
-  queuedStationMaxCalls_ = qBound(0, settings_->value("QueuedStationMaxCalls", 0).toInt(), 999);
+  preferIncomingCalls_ = wsjtz::readCallerPreference(*settings_, legacy_settings.value("MainWindow/Common/AutoCallPreferIncoming", false).toBool());
+  queuedStationMaxCalls_ = wsjtz::readWdCounter(*settings_);
   processTailenders_ = settings_->value("processTailenders", false).toBool();
   permIgnoreList_ = settings_->value("permIgnoreList").toString();
   showDistance_ = settings_->value("showDistance", false).toBool();
@@ -2383,8 +2384,7 @@ void Configuration::impl::write_settings ()
   settings_->setValue("wd_FT4", wd_FT4_);
   settings_->setValue("wd_FT2", wd_FT2_);
   settings_->setValue("wd_Timer", wd_Timer_);
-  settings_->setValue("PreferIncomingCalls", preferIncomingCalls_);
-  settings_->setValue("QueuedStationMaxCalls", queuedStationMaxCalls_);
+  wsjtz::writeAutomationSettings(*settings_, preferIncomingCalls_, queuedStationMaxCalls_);
   settings_->setValue("processTailenders", processTailenders_);
   settings_->setValue("permIgnoreList", permIgnoreList_);
   settings_->setValue("showDistance", showDistance_);

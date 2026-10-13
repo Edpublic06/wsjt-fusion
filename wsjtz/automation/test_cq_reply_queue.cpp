@@ -1,6 +1,8 @@
 // Personal WSJT-Z regression, 2026-10-13. GPL-3.0-or-later.
 #include "CqReplyQueue.hpp"
 #include "QueuedCallBudget.hpp"
+#include "AutomationSettings.hpp"
+#include <QTemporaryDir>
 #include <cstdlib>
 #include <iostream>
 void check (bool value) { if (!value) std::exit (1); }
@@ -8,6 +10,24 @@ wsjtz::CqReply reply (QString call,int signal,int distance,bool psk=false) {
   wsjtz::CqReply r; r.call=call;r.decode=call;r.signal=signal;r.distance=distance;r.psk=psk;return r;
 }
 int main () {
+  QTemporaryDir temporary;
+  check (temporary.isValid ());
+  QSettings settings {temporary.filePath ("compatibility.ini"),QSettings::IniFormat};
+  settings.beginGroup ("Configuration");
+  settings.setValue ("wd_FT8",2.0);
+  settings.setValue ("wd_Timer",true);
+  settings.setValue ("OtherMod/Example",QStringList {"A","B"});
+  auto old_keys = settings.allKeys ();
+  check (!wsjtz::readCallerPreference (settings,false) && wsjtz::readWdCounter (settings)==0);
+  wsjtz::writeAutomationSettings (settings,true,3);
+  settings.sync ();
+  check (settings.status ()==QSettings::NoError);
+  QSettings restored {settings.fileName (),QSettings::IniFormat};
+  restored.beginGroup ("Configuration");
+  check (wsjtz::readCallerPreference (restored,false) && wsjtz::readWdCounter (restored)==3);
+  check (restored.value ("wd_FT8").toDouble ()==2.0 && restored.value ("wd_Timer").toBool ());
+  check (restored.value ("OtherMod/Example").toStringList ()==QStringList ({"A","B"}));
+  check (restored.allKeys ().size ()==old_keys.size ()+2);
   wsjtz::QueuedCallBudget budget;
   budget.begin ("A");
   budget.sent ("OTHER");check (!budget.exhausted ("A",1));

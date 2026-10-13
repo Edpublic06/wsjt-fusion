@@ -5,7 +5,7 @@
 
 The **Auto Call: prioritize stations calling us** checkbox is in
 **Settings / WSJT-Z / Misc**. It is off by default and saved as
-`Configuration/PreferIncomingCalls`. The prior main-window preference is
+`Configuration/Edpublic06/PreferIncomingCalls`. The prior main-window preference is
 used as the migration fallback when the new key is absent.
 
 When enabled, an unanswered outgoing attempt can yield to a different station
@@ -64,8 +64,8 @@ is not made automatic by receipt of a call.
 
 ## Queued-station call limit
 
-Settings / WSJT-Z / Misc also contains **Maximum calls per queued station**.
-The special `WD Timer` value (zero/default, rather than a numeric zero) uses
+Settings / WSJT-Z / Misc also contains **WD Counter**.
+The special `Default` value (zero/default, rather than a numeric zero) uses
 the existing watchdog. A positive value replaces that elapsed-time watchdog
 for a dequeued station with a cap on transmissions without a reply, including
 the first call. Replies reset the counter for the next exchange step. The
@@ -78,3 +78,11 @@ A manual station selection still cancels the queue. Values are committed by
 OK in the existing Configuration dialog; Cancel retains the accepted settings.
 The call-count regression covers zero/WD fallback, limits 1/2, counter reset
 on a reply, unrelated stations and a fresh queued target.
+
+The two settings use `Configuration/Edpublic06/PreferIncomingCalls` and
+`Configuration/Edpublic06/WDCounter`. Existing WSJT-X/WSJT-Z keys, types,
+configuration grouping and WD Timer settings are unchanged. Only the two
+new namespaced values are written by this extension; previous experimental
+keys are read as migration fallbacks. No settings-schema/version conversion
+or removal of other keys is introduced. Other MODs can ignore these private
+keys; compatibility with every MOD has not been experimentally verified.

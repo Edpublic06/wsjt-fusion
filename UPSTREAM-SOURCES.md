@@ -76,3 +76,10 @@ Réglages des extensions personnelles déplacés vers WSJT-Z / Misc,
 pour chaque station sortie de la file. Valeur par défaut « WD Timer ».
 Configuration acceptée/annulée selon le fonctionnement existant du dialogue.
 Compilation macOS, vérification de l'emplacement XML et régressions réussies.
+
+Nom final du champ : WD Counter, dans WSJT-Z / Misc. Les paramètres sont
+isolés sous Configuration/Edpublic06/PreferIncomingCalls et
+Configuration/Edpublic06/WDCounter. Test de persistance effectué sur un
+fichier temporaire : conservation des clés et valeurs WD et d'un autre MOD,
+avec exactement deux nouvelles clés. Cela ne constitue pas un test de tous
+les MOD disponibles. Aucune conversion globale de paramètres n'est ajoutée.
