@@ -29,6 +29,12 @@ WSJT-Fusion supports **FT8**, **FT4**, **FT2**, **JT4 / JT9 / JT65**, **Q65**, *
 
 ---
 
+## Versions du code intégré / Component versions
+
+**[Voir le tableau des sources par fonction : FT8, FT4, FT2, JTTY, WSJT-Z et fonctions Fusion](UPSTREAM-SOURCES.md#tableau-des-versions-par-fonction).**
+
+Le tableau indique les versions, les révisions exactes connues et l’état réel de chaque intégration. La version de Fusion est indépendante de celles de ses composants.
+
 ## Discussion & support
 
 - **Upstream WSJT-Z community (not Fusion support):** https://groups.io/g/WSJT-Z/topics
