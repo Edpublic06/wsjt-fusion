@@ -1,3 +1,5 @@
+> **JTTY development branch — 1.0.0-beta3-dev.** Published beta2 remains unchanged. This branch adds an experimental offline JTTY WAV receive panel under **Decode**; live JTTY reception/transmission are not yet integrated. See [development and rollback notes](doc/JTTY-DEVELOPMENT.md).
+
 <h1 align="center">WSJT-Fusion</h1>
 
 <p align="center">1.0.0-beta2 — independent fork maintained by F6FDY</p>

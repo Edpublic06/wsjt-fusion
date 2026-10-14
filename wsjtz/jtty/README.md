@@ -45,3 +45,5 @@ Next steps are a continuous receive owner/audio adapter, the JTTY operating UI,
 and transmit lifecycle/radio integration with explicit stop and ownership tests.
 
 Validation of the offline adapter step (14 October 2026): application/rjtty build passed on macOS arm64; upstream sample decoded with the panel command parameters, producing `RAN ALL NIGHT ON BAND NOISE - NO FALSE DECODES!`. Full interactive panel testing remains to be performed.
+
+Nine regressions passed in the separate build: six upstream JTTY tests, FT2 receiver, incoming-call policy and caller queue. All 34 imported JTTY manifest files retain their original SHA-256 hashes. Beta2 still resolves to commit `8345c155a878185f11736e9dec8df278ab7f1c49`.
