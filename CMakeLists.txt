@@ -1371,6 +1371,17 @@ target_link_libraries (wsjtz_incoming_call_regression Qt5::Core)
 add_executable (wsjtz_cq_reply_queue_regression wsjtz/automation/test_cq_reply_queue.cpp)
 target_link_libraries (wsjtz_cq_reply_queue_regression Qt5::Core)
 
+add_executable (fusion-jtty-rx wsjtz/jtty/live/ReceiveStream.cpp)
+set_target_properties (fusion-jtty-rx PROPERTIES CXX_STANDARD 14 CXX_STANDARD_REQUIRED YES)
+target_link_libraries (fusion-jtty-rx wsjt_fort wsjt_cxx Qt5::Core)
+install (TARGETS fusion-jtty-rx RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+add_executable (test_fusion_jtty_audio wsjtz/jtty/live/TestContinuousAudio.cpp Detector/Detector.cpp Audio/AudioDevice.cpp)
+set_target_properties (test_fusion_jtty_audio PROPERTIES AUTOMOC ON)
+target_link_libraries (test_fusion_jtty_audio wsjt_fort wsjt_cxx Qt5::Core)
+add_executable (test_fusion_jtty_stream wsjtz/jtty/live/TestReceiveStream.cpp)
+target_link_libraries (test_fusion_jtty_stream Qt5::Core)
+
+
 foreach (jtty_tool sjtty rjtty)
   add_executable (${jtty_tool} lib/jtty/${jtty_tool}.f90)
   target_link_libraries (${jtty_tool} wsjt_fort wsjt_cxx)
@@ -1616,6 +1627,7 @@ generate_version_info (wsjtx_VERSION_RESOURCES
 add_executable (wsjtx MACOSX_BUNDLE
   ${wsjtx_CXXSRCS}
   wsjtz/jtty/ui/WavReceiveDialog.cpp
+  wsjtz/jtty/live/LiveReceiver.cpp
   ${wsjtx_GENUISRCS}
   ${WSJTX_ICON_FILE}
   ${wsjtx_RESOURCES_RCC}

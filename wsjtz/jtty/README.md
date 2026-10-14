@@ -11,9 +11,7 @@ decoding, the receive-context API, standalone `sjtty`/`rjtty` tools, selected
 unchanged upstream tests, documentation and the upstream WAV sample.
 
 The core compiles alongside the existing Z decoder without replacing its
-FT8 extensions. The application UI and live audio/transmit lifecycle are
-**not yet connected**. No JTTY Mode menu entry is exposed as usable at this
-stage. This is not the completed mode integration.
+FT8 extensions. The original core import did not connect the application UI or audio/transmit lifecycle. The current development branch now adds continuous local-audio reception, described below; transmission remains unfinished.
 
 Validation on macOS arm64, 13 October 2026: source-codec, frequency-window,
 continuous-decode, update-delivery, receive-state and TBCC-decoder tests passed.
@@ -51,3 +49,32 @@ Nine regressions passed in the separate build: six upstream JTTY tests, FT2 rece
 ## Future upstream updates
 
 See [the JTTY tracking and reimport policy](UPDATE-POLICY.md) for the exact upstream baseline, both source inventories, the read-only comparison command and the per-release update record. Imports and Fusion adaptations must remain separate.
+
+## Continuous live receive adapter — development branch
+
+**Mode → JTTY (receive only — experimental)** enables the configured local audio
+input and a dedicated text panel. **Monitor** starts/stops reception. Incoming
+text grows progressively using upstream `Jtty::Decoder` updates. RX frequency
+changes begin a new receive context. The decoder is serialized in its own
+`fusion-jtty-rx` process, isolating JTTY DSP scratch from the timed-mode engine.
+
+The Detector adapter bypasses UTC timed-buffer boundaries and uses the upstream
+stateful 48-to-12 kHz FIR with a private symbol/state. Provenance and hashes are
+in `live/source-manifest.json`. Audio events carry a session ID so stale queued
+blocks cannot enter a new context. Backpressure is bounded; overruns stop the
+receiver and ask the operator to restart Monitor. Closing the application stops
+the worker. Returning to another mode restores the timed Detector path.
+
+This step supports **local sound-card input only**, not TCI audio. The JTTY
+waterfall/spectrum interface and transmission lifecycle are not connected yet.
+Auto CQ/Auto Call/Auto Seq, Enable Tx and Tune are disabled in JTTY receive mode;
+the transmit/PTT paths are also guarded. No live JTTY transmit capability is
+claimed. Until startup mode restoration is integrated, closing in JTTY stores
+FT8 as the next startup mode, preserving compatibility with beta2.
+
+Validation (14 October 2026): eleven tests passed, including six upstream JTTY
+tests, FT2 and automation regressions, continuous Detector sample conservation
+with irregular partitions/session reset/return to timed mode, and progressive
+text decoding through the stream process. Hardware input, interactive mode
+switching and radio operation still require operator validation. The earlier
+WAV panel was confirmed working by the user.

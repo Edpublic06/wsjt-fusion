@@ -3,6 +3,9 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "wsjtz/jtty/live/LiveReceiver.hpp"
+class QDockWidget;
+class QPlainTextEdit;
 #include <QByteArray>
 #include <QString>
 #include <QStringList>
@@ -754,6 +757,16 @@ private:
   bool    m_bOK_to_chk=false;
   bool    m_bSentReport=false;
   wsjtz::IncomingCallPolicy m_incomingCallPolicy;
+  wsjtz::LiveReceiver * m_jttyLive = nullptr;
+  QDockWidget * m_jttyDock = nullptr;
+  QPlainTextEdit * m_jttyText = nullptr;
+  QAction * m_jttyModeAction = nullptr;
+  quint64 m_jttyAudioSession = 0;
+  bool m_jttyActive = false;
+  void enterJttyReceive ();
+  void leaveJttyReceive ();
+  void restartJttyReceive ();
+  Q_SIGNAL void jttyReceivePolicy (bool enabled, quint64 session);
   QStringList m_pendingIncomingDecodes;
   QString m_pendingIncomingTarget;
   bool m_resolvingIncomingBatch = false;

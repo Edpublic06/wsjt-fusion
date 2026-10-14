@@ -9,7 +9,8 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFESTS = ('wsjtz/jtty/source-manifest.json',
-             'wsjtz/jtty/ui-audio-source-manifest.json')
+             'wsjtz/jtty/ui-audio-source-manifest.json',
+             'wsjtz/jtty/live/source-manifest.json')
 
 def git(repo, *args):
     return subprocess.check_output(['git', '-C', str(repo), *args], stderr=subprocess.PIPE)
@@ -27,7 +28,7 @@ def main():
     for manifest in manifests:
         for entry in manifest['files']:
             source = entry['source']
-            tracked[source] = entry['sha256']
+            tracked[source] = entry.get('source_sha256', entry['sha256'])
             local = ROOT / entry['destination']
             if not local.is_file():
                 failures.append({'file': entry['destination'], 'problem': 'missing'})

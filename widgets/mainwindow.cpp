@@ -12,6 +12,8 @@
 #include <algorithm>
 #include <fftw3.h>
 #include <QApplication>
+#include <QDockWidget>
+#include <QPlainTextEdit>
 #include <QStringListModel>
 #include <QSettings>
 #include <QKeyEvent>
@@ -798,6 +800,21 @@ MainWindow::MainWindow(QDir const& temp_directory, bool multiple,
   ui->actionMSK144->setActionGroup(modeGroup);
   ui->actionQ65->setActionGroup(modeGroup);
   ui->actionFreqCal->setActionGroup(modeGroup);
+  m_jttyLive = new wsjtz::LiveReceiver {this};
+  m_jttyModeAction = ui->menuMode->addAction (tr ("JTTY (receive only — experimental)"));
+  m_jttyModeAction->setCheckable (true);
+  m_jttyModeAction->setActionGroup (modeGroup);
+  connect (m_jttyModeAction,&QAction::triggered,this,[this] { enterJttyReceive (); });
+  connect (this,&MainWindow::jttyReceivePolicy,m_detector,&Detector::setJttyReceive,Qt::QueuedConnection);
+  connect (m_detector,&Detector::jttyPcm,this,[this] (quint64 session,QByteArray pcm) {
+    if (m_jttyActive && m_monitoring && session==m_jttyAudioSession && !m_transmitting)
+      m_jttyLive->append (pcm);
+  },Qt::QueuedConnection);
+  m_jttyLive->textChanged = [this] (QString const& text) {
+    if (m_jttyText) { m_jttyText->setPlainText (text); m_jttyText->moveCursor (QTextCursor::End); }
+  };
+  m_jttyLive->statusChanged = [this] (QString const& text) { statusBar ()->showMessage (text,10000); };
+
 
   QActionGroup* saveGroup = new QActionGroup(this);
   ui->actionNone->setActionGroup(saveGroup);
@@ -1546,6 +1563,7 @@ void MainWindow::on_the_minute ()
 //--------------------------------------------------- MainWindow destructor
 MainWindow::~MainWindow()
 {
+  if (m_jttyLive) { m_jttyLive->textChanged = {}; m_jttyLive->statusChanged = {}; m_jttyLive->stop (); }
   if(m_astroWidget) m_astroWidget.reset ();
   auto fname {QDir::toNativeSeparators(m_config.writeable_data_dir ().absoluteFilePath ("wsjtx_wisdom.dat"))};
   fftwf_export_wisdom_to_filename (fname.toLocal8Bit ());
@@ -1619,7 +1637,7 @@ void MainWindow::writeSettings()
   if(m_mode=="JT4") m_settings->setValue("ShMsgs_JT4",m_bShMsgs);
 
   m_settings->beginGroup("Common");
-  m_settings->setValue("Mode",m_mode);
+  m_settings->setValue("Mode",m_jttyActive ? QStringLiteral ("FT8") : m_mode);
   m_settings->setValue("FT8threads", m_ft8threads);
   m_settings->setValue("UseMultithreadedFT8",
                        ui->actionUse_multithreaded_FT8_decoder->isChecked());
@@ -2263,6 +2281,7 @@ void MainWindow::fixStop()
 //-------------------------------------------------------------- dataSink()
 void MainWindow::dataSink(qint64 frames)
 {
+  if (m_jttyActive) return; // Continuous JTTY bypasses the timed decoder.
   static float s[NSMAX];
   char line[80];
   int k(frames);
@@ -2917,6 +2936,10 @@ void MainWindow::monitor (bool state)
     }
   }
   m_monitoring = state;
+  if (m_jttyActive) {
+    if (state) restartJttyReceive ();
+    else { ++m_jttyAudioSession; Q_EMIT jttyReceivePolicy (true,m_jttyAudioSession); m_jttyLive->stop (); }
+  }
 }
 
 void MainWindow::on_actionAbout_triggered()                  //Display "About"
@@ -2967,6 +2990,7 @@ void MainWindow::on_actionFT8WidebandDXCallSearch_toggled(bool checked) { m_FT8W
 
 void MainWindow::on_autoButton_clicked (bool checked)
 {
+  if (m_jttyActive && checked) { ui->autoButton->setChecked (false); return; }
   // Z
   if (checked) tx_watchdog(false);
   stopWRTimer.stop();             // stop a running Tx3 timer
@@ -6903,7 +6927,7 @@ void MainWindow::guiUpdate()
 
     bool const queued_call_limit = m_queuedCallBudget.exhausted (
       m_cqReplyQueue.active (), m_config.queuedStationMaxCalls ());
-    if(g_iptt==0 and (!queued_call_limit or m_tune) and ((m_bTxTime and (fTR < 0.75) and (msgLength>0)) or m_tune)) {
+    if(!m_jttyActive and g_iptt==0 and (!queued_call_limit or m_tune) and ((m_bTxTime and (fTR < 0.75) and (msgLength>0)) or m_tune)) {
       //### Allow late starts
       icw[0]=m_ncw;
       g_iptt = 1;
@@ -9780,6 +9804,61 @@ void MainWindow::on_actionFST4W_triggered()
   statusChanged();
 }
 
+void MainWindow::restartJttyReceive ()
+{
+  if (!m_jttyActive || !m_monitoring) return;
+  ++m_jttyAudioSession;
+  m_jttyLive->start (qBound (200,ui->RxFreqSpinBox->value (),2800),1300);
+  Q_EMIT jttyReceivePolicy (true,m_jttyAudioSession);
+}
+
+void MainWindow::enterJttyReceive ()
+{
+  if (m_jttyActive) return;
+  if (m_tci_audio) {
+    MessageBox::warning_message (this,tr ("JTTY receive"),tr ("This development step supports the configured local audio input. TCI audio is not connected yet."));
+    m_jttyModeAction->setChecked (false); return;
+  }
+  // Reuse the existing audio/display setup, then replace timed reception.
+  on_stopTxButton_clicked ();
+  ui->cbAutoCQ->setChecked (false); ui->cbAutoCall->setChecked (false);
+  auto_tx_mode (false);
+  bool const saved_keep_frequency = keep_frequency;
+  keep_frequency = true; // Entering experimental RX must not select an FT8 dial frequency.
+  on_actionFT8_triggered ();
+  keep_frequency = saved_keep_frequency;
+  monitor (false);
+  m_jttyActive=true; m_mode="JTTY";
+  m_wideGraph->hide (); // Timed FT8 waterfall is not the JTTY spectrum adapter.
+  ui->cbAutoSeq->setChecked (false);
+  ui->cbAutoSeq->setEnabled (false); ui->cbAutoCQ->setEnabled (false);
+  ui->cbAutoCall->setEnabled (false); ui->autoButton->setEnabled (false);
+  ui->tuneButton->setEnabled (false);
+  m_jttyModeAction->setChecked (true);
+  if (!m_jttyDock) {
+    m_jttyDock=new QDockWidget {tr ("JTTY — continuous reception (transmit not connected)"),this};
+    m_jttyText=new QPlainTextEdit {m_jttyDock}; m_jttyText->setReadOnly (true);
+    m_jttyDock->setWidget (m_jttyText);
+    addDockWidget (Qt::BottomDockWidgetArea,m_jttyDock);
+  }
+  m_jttyDock->show ();
+  mode_label.setText ("JTTY RX");
+  monitor (true);
+  statusBar ()->showMessage (tr ("JTTY receive only: using your configured local audio input. Monitor stops/starts reception."),10000);
+}
+
+void MainWindow::leaveJttyReceive ()
+{
+  m_jttyActive=false; ++m_jttyAudioSession;
+  Q_EMIT jttyReceivePolicy (false,m_jttyAudioSession);
+  m_jttyLive->stop ();
+  if (m_jttyDock) m_jttyDock->hide ();
+  m_jttyModeAction->setChecked (false);
+  ui->cbAutoSeq->setEnabled (true); ui->cbAutoCQ->setEnabled (true);
+  ui->cbAutoCall->setEnabled (true); ui->autoButton->setEnabled (true);
+  ui->tuneButton->setEnabled (true);
+}
+
 void MainWindow::on_actionFT2_triggered()
 {
   // FT2 = FAST FT4: 3.75 s T/R period, twice the tone spacing of FT4 (wider band,
@@ -10560,6 +10639,7 @@ void MainWindow::on_actionFreqCal_triggered()
 
 void MainWindow::switch_mode (Mode mode)
 {
+  if (m_jttyActive && mode != Modes::JTTY) leaveJttyReceive ();
       // Z
   tx_watchdog(false);
   if (m_mode != "Q65" && m_specOp==SpecOp::Q65_PILEUP) {
@@ -10678,6 +10758,7 @@ void MainWindow::on_TxFreqSpinBox_valueChanged(int n)
 
 void MainWindow::on_RxFreqSpinBox_valueChanged(int n)
 {
+  if (m_jttyActive) restartJttyReceive ();
   m_wideGraph->setRxFreq(n);
   if (m_mode == "FreqCal") {
     setRig ();
@@ -11087,6 +11168,7 @@ void MainWindow::on_rptSpinBox_valueChanged(int n)
 
 void MainWindow::on_tuneButton_clicked (bool checked)
 {
+  if (m_jttyActive && checked) { ui->tuneButton->setChecked (false); return; }
   // Z
   if (checked) tx_watchdog(false);
   // prevent tuning on top of a SuperFox message
@@ -11420,6 +11502,7 @@ void MainWindow::rigFailure (QString const& reason)
 
 void MainWindow::transmit (double snr)
 {
+  if (m_jttyActive) return; // No live JTTY transmit adapter yet.
   double toneSpacing=0.0;
   if (m_mode == "JT65") {
     if(m_nSubMode==0) toneSpacing=11025.0/4096.0;

@@ -23,3 +23,6 @@ list (APPEND wsjt_FSRCS
   lib/jtty/gen_syncwave.f90
   lib/jtty/subtract_jtty.f90
 )
+
+# Private stateful FIR adapter; see live/source-manifest.json.
+list (APPEND wsjt_FSRCS wsjtz/jtty/live/fil4_state.f90)

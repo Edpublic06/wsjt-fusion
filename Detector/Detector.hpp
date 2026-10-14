@@ -2,6 +2,8 @@
 #define DETECTOR_HPP__
 #include "Audio/AudioDevice.hpp"
 #include <QScopedArrayPointer>
+#include <QByteArray>
+#include <array>
 
 //
 // output device that distributes data in predefined chunks via a signal
@@ -28,6 +30,8 @@ public:
   void setTRPeriod(double p) {m_period=p;}
   bool reset () override;
 
+  Q_SLOT void setJttyReceive (bool enabled, quint64 session);
+  Q_SIGNAL void jttyPcm (quint64 session, QByteArray pcm) const;
   Q_SIGNAL void framesWritten (qint64) const;
   Q_SLOT void setBlockSize (unsigned);
 
@@ -40,6 +44,9 @@ protected:
   qint64 writeData (char const * data, qint64 maxSize) override;
 
 private:
+  bool m_jttyReceive = false;
+  quint64 m_jttySession = 0;
+  std::array<float,49> m_jttyFir {};
   void clear ();		// discard buffer contents
 
   unsigned m_frameRate;

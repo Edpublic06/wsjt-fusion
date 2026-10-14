@@ -8,6 +8,7 @@
 #include "moc_Detector.cpp"
 
 extern "C" {
+  void fusion_jtty_fil4_state_(qint16*, qint32*, qint16*, qint32*, float*);
   void   fil4_(qint16*, qint32*, qint16*, qint32*);
 }
 
@@ -54,8 +55,39 @@ void Detector::clear ()
   // qFill (dec_data.d2, dec_data.d2 + sizeof (dec_data.d2) / sizeof (dec_data.d2[0]), 0);
 }
 
+void Detector::setJttyReceive (bool enabled, quint64 session)
+{
+  m_jttyReceive=enabled; m_jttySession=session;
+  m_jttyFir.fill (0); m_bufferPos=0;
+}
+
 qint64 Detector::writeData (char const * data, qint64 maxSize)
 {
+  if (m_jttyReceive) {
+    // Consume continuously, independently of UTC period boundaries and dec_data.
+    unsigned frames=unsigned (maxSize/bytesPerFrame ());
+    unsigned offset=0;
+    while (offset<frames) {
+      unsigned block=512*m_downSampleFactor;
+      unsigned count=qMin (block-m_bufferPos,frames-offset);
+      if (m_downSampleFactor>1) store (data+offset*bytesPerFrame (),count,m_buffer.data ()+m_bufferPos);
+      else {
+        short pcm[512]; store (data+offset*bytesPerFrame (),count,pcm);
+        Q_EMIT jttyPcm (m_jttySession,QByteArray (reinterpret_cast<char const *> (pcm),int(count*2)));
+      }
+      offset+=count;
+      if (m_downSampleFactor>1) {
+        m_bufferPos+=count;
+        if (m_bufferPos==block) {
+          short pcm[512]; qint32 input=block,output=512;
+          fusion_jtty_fil4_state_ (m_buffer.data (),&input,pcm,&output,m_jttyFir.data ());
+          Q_EMIT jttyPcm (m_jttySession,QByteArray (reinterpret_cast<char const *> (pcm),output*2));
+          m_bufferPos=0;
+        }
+      }
+    }
+    return maxSize;
+  }
   static unsigned mstr0=999999;
   qint64 ms0 = QDateTime::currentMSecsSinceEpoch() % 86400000;
   unsigned mstr = ms0 % int(1000.0*m_period); // ms into the nominal Tx start time

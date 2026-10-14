@@ -16,11 +16,12 @@ Commit: **57ba9337fa020065dc0ceee2c4ef85e433ea32d4**
 | --- | --- | --- | --- |
 | Codec, FEC, waveform and receive core | `source-manifest.json` | Imported, compiled and tested | Compare pristine source hashes first; port changes into the compiled paths deliberately. |
 | UI, continuous audio, transmit lifecycle and integration context | `ui-audio-source-manifest.json` | Unchanged reference snapshot; not compiled as a second application | Compare the reference tree, then adapt selected changes into Fusion. Never replace Fusion's entire main window or configuration. |
+| Stateful audio FIR | `live/source-manifest.json` | Extracted private routine from upstream `lib/fil4.f90` | Compare original source hash and preserve private state/symbol adaptation. |
 | Personal application adapter | `ui/WavReceiveDialog.*` | Offline WAV panel | Fusion-owned code; adapt to upstream interfaces without attributing it to upstream. |
 | Personal build adapter | `CMakeLists.cmake`, application CMake/menu wiring | Fusion integration | Review whenever source lists, dependencies or upstream APIs change. |
 
 Every upstream entry records its original path, destination, SHA-256 and
-adaptation status. Both inventories must be checked. Preserve source notices,
+adaptation status. All inventories must be checked, including the adapted FIR source in `live/source-manifest.json` (original-source hash and adapted-file hash are separate). Preserve source notices,
 COPYING, AUTHORS and NOTICE.md. The two groups can advance independently;
 record each group's actual integrated revision rather than claiming the whole
 application uses the latest upstream release.

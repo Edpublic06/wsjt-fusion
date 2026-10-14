@@ -1,0 +1,55 @@
+// Fusion live receive adapter, 2026-10-14. GPL-3.0-or-later.
+#include "LiveReceiver.hpp"
+#include <QCoreApplication>
+#include <QDir>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QStringList>
+wsjtz::LiveReceiver::LiveReceiver (QObject * parent) : QObject {parent}
+{
+  connect (&process_,&QProcess::readyReadStandardOutput,this,[this] {
+    pending_+=process_.readAllStandardOutput ();
+    while (pending_.contains ('\n')) {
+      auto end=pending_.indexOf ('\n'); auto line=pending_.left (end); pending_.remove (0,end+1);
+      auto object=QJsonDocument::fromJson (line).object ();
+      if (object.isEmpty ()) continue;
+      auto id=object["id"].toString ().toLongLong ();
+      lines_[id]=QString ("%1 Hz  %2 dB  %3").arg (object["frequency"].toDouble (),0,'f',0)
+        .arg (object["snr"].toInt ()).arg (object["text"].toString ());
+      while (lines_.size ()>200) lines_.erase (lines_.begin ());
+      if (textChanged) textChanged (lines_.values ().join ('\n'));
+    }
+  });
+  connect (&process_,&QProcess::errorOccurred,this,[this] (QProcess::ProcessError) {
+    if (!stopping_ && statusChanged) statusChanged ("JTTY receiver: " + process_.errorString ());
+  });
+  connect (&process_,QOverload<int,QProcess::ExitStatus>::of (&QProcess::finished),
+    this,[this] (int code,QProcess::ExitStatus state) {
+      if (!stopping_ && statusChanged && (code || state!=QProcess::NormalExit))
+        statusChanged ("JTTY receive process stopped. Toggle Monitor to restart reception.");
+    });
+}
+wsjtz::LiveReceiver::~LiveReceiver () { stop (); }
+void wsjtz::LiveReceiver::start (int center,int tolerance)
+{
+  stop (); pending_.clear (); lines_.clear ();
+  if (textChanged) textChanged ({});
+  process_.start (QDir {QCoreApplication::applicationDirPath ()}.filePath ("fusion-jtty-rx"),
+                  {QString::number (center),QString::number (tolerance)});
+}
+void wsjtz::LiveReceiver::stop ()
+{
+  stopping_=true;
+  if (process_.state ()!=QProcess::NotRunning) { process_.kill (); process_.waitForFinished (1000); }
+  stopping_=false;
+}
+void wsjtz::LiveReceiver::append (QByteArray const& pcm)
+{
+  if (process_.state ()!=QProcess::Running) return;
+  if (process_.bytesToWrite ()>3*12000*2) {
+    stop ();
+    if (statusChanged) statusChanged ("JTTY audio overrun: reception stopped. Toggle Monitor to restart.");
+    return;
+  }
+  process_.write (pcm);
+}

@@ -1,0 +1,15 @@
+{
+  "repository": "https://github.com/WSJTX/wsjtx",
+  "tag": "v3.3.0-beta1",
+  "commit": "57ba9337fa020065dc0ceee2c4ef85e433ea32d4",
+  "files": [
+    {
+      "source": "lib/fil4.f90",
+      "destination": "wsjtz/jtty/live/fil4_state.f90",
+      "source_sha256": "0b99c3fb85cf3a522baba5a4a484f5caa0995597667f01189a4584b971a43e8c",
+      "adaptation": "Extract fil4_state; rename to fusion_jtty_fil4_state; dedicated per-Detector state.",
+      "sha256": "bd87733ffe72aae8c475d79c5789fff5da296dea25acd78f08ec0d827a1aafc2"
+    }
+  ],
+  "import_date": "2026-10-14"
+}
