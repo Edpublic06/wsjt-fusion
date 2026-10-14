@@ -3,6 +3,7 @@
 #include "widgets/CurrentPageHeightStackedWidget.hpp"
 #include <QVBoxLayout>
 #include <QTextEdit>
+#include <QSplitter>
 #include <QApplication>
 #include <QSettings>
 #include <QTemporaryDir>
@@ -47,8 +48,24 @@ int main(int argc,char**argv) {
  for(auto control:embedded->findChildren<QLineEdit*>())
    if(control->objectName()!="qt_spinbox_lineedit" && control->height()<control->minimumSizeHint().height()){std::cerr<<control->objectName().toStdString()<<" actual="<<control->height()<<" min="<<control->minimumSizeHint().height()<<"\n";return 14;}
  window.grab().save("/private/tmp/fusion-jtty-embedded-panel.png");
- stack->setCurrentWidget(normal);stack->setMaximumHeight(220);app.processEvents();
+ stack->setCurrentWidget(normal);stack->removeWidget(embedded);embedded->setParent(&window);embedded->hide();
+ stack->setMaximumHeight(220);app.processEvents();
  if(stack->minimumSizeHint().height()>220)return 15;
+ // A hidden wide JTTY page must not change the ordinary stack's width hint.
+ int normalWidth=stack->minimumSizeHint().width();
+ stack->addWidget(embedded);stack->setCurrentWidget(embedded);app.processEvents();
+ stack->setCurrentWidget(normal);stack->removeWidget(embedded);embedded->setParent(&window);embedded->hide();app.processEvents();
+ if(stack->minimumSizeHint().width()!=normalWidth)return 16;
+ QSplitter split;split.addWidget(new QTextEdit(&split));split.addWidget(stack);
+ split.resize(1600,700);split.show();split.setSizes({800,800});app.processEvents();
+ auto before=split.sizes();auto state=split.saveState();
+ stack->setMaximumHeight(QWIDGETSIZE_MAX);stack->addWidget(embedded);stack->setCurrentWidget(embedded);app.processEvents();
+ stack->setCurrentWidget(normal);stack->removeWidget(embedded);embedded->hide();embedded->setParent(&window);
+ stack->setMaximumHeight(220);app.processEvents();
+ if(!split.restoreState(state))return 17;
+ app.processEvents();auto after=split.sizes();
+ int beforeTotal=before[0]+before[1],afterTotal=after[0]+after[1];
+ if(qAbs(after[0]*beforeTotal-before[0]*afterTotal)>beforeTotal)return 18;
  panel.grab().save("/private/tmp/fusion-jtty-original-panel.png");
  std::cout<<"PASS original JTTY page wiring, style persistence, frequency synchronization and TX lock\n";
 }

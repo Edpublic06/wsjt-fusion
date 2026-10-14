@@ -119,3 +119,12 @@ For a changing instantaneous audio trace, select **Current** in Wide Graph.
 **Cumulative** uses the upstream long-term average (up to roughly 180 seconds)
 and can look nearly stationary; 2D gain controls its visual amplitude.
 No personal spectrum setting is rewritten by the layout fix.
+
+### Restore pane proportions when leaving JTTY
+
+The JTTY page is removed from the stacked layout when inactive, so its wide
+macro grid cannot impose a hidden minimum width on ordinary modes. Its widget
+is retained and reattached on the next JTTY entry. The decoder splitter state
+is captured before entering JTTY and restored after the ordinary-mode layout
+settles. Closing while in JTTY saves the pre-JTTY splitter state, not the
+JTTY-expanded proportions. A splitter/layout regression checks the transition.

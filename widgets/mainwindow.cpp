@@ -1720,7 +1720,8 @@ void MainWindow::writeSettings()
   m_settings->setValue ("FT8AP", ui->actionEnable_AP_FT8->isChecked ());
   m_settings->setValue ("JT65AP", ui->actionEnable_AP_JT65->isChecked ());
   m_settings->setValue ("AutoClearAvg", ui->actionAuto_Clear_Avg->isChecked ());
-  m_settings->setValue("SplitterState",ui->decodes_splitter->saveState());
+  m_settings->setValue("SplitterState",m_jttyActive && !m_jttyPreviousSplitterState.isEmpty ()
+                       ? m_jttyPreviousSplitterState : ui->decodes_splitter->saveState());
   m_settings->setValue("Blanker",ui->sbNB->value());
   m_settings->setValue("Score",m_score);
   m_settings->setValue("labDXpedText",ui->labDXped->text());
@@ -9866,6 +9867,7 @@ void MainWindow::enterJttyReceive ()
     MessageBox::warning_message (this,tr ("JTTY receive"),tr ("This development step supports the configured local audio input. TCI audio is not connected yet."));
     m_jttyModeAction->setChecked (false); return;
   }
+  m_jttyPreviousSplitterState = ui->decodes_splitter->saveState ();
   // Reuse the existing audio/display setup, then replace timed reception.
   on_stopTxButton_clicked ();
   Q_EMIT endTransmitMessage (true);
@@ -9910,6 +9912,8 @@ void MainWindow::enterJttyReceive ()
       m_jttyPanel->setFrequencies (ui->RxFreqSpinBox->value (),ui->TxFreqSpinBox->value ());
     });
   }
+  if (ui->controls_stack_widget->indexOf (m_jttyPanel) < 0)
+    ui->controls_stack_widget->addWidget (m_jttyPanel);
   m_jttyPanel->setFrequencies (ui->RxFreqSpinBox->value (),ui->TxFreqSpinBox->value ());
   ui->controls_stack_widget->setCurrentWidget (m_jttyPanel);
   ui->controls_stack_widget->updateGeometry ();
@@ -9931,6 +9935,16 @@ void MainWindow::leaveJttyReceive ()
   Q_EMIT jttyReceivePolicy (false,m_jttyAudioSession);
   m_jttyLive->stop ();
   ui->controls_stack_widget->setCurrentIndex (0);
+  // QStackedWidget includes hidden pages in its width hint. Detach JTTY so
+  // its wide macro grid cannot constrain FT8/FT4/etc. after leaving the mode.
+  ui->controls_stack_widget->removeWidget (m_jttyPanel);
+  m_jttyPanel->hide ();
+  m_jttyPanel->setParent (this);
+  auto const splitterState = m_jttyPreviousSplitterState;
+  QTimer::singleShot (0,this,[this,splitterState] {
+    if (!m_jttyActive && !splitterState.isEmpty ())
+      ui->decodes_splitter->restoreState (splitterState);
+  });
   ui->controls_stack_widget->setMaximumHeight (m_jttyPreviousControlsMaximumHeight);
   ui->controls_stack_widget->updateGeometry ();
   ui->lh_decodes_headings_label->setText (m_jttyOriginalLhHeading);
