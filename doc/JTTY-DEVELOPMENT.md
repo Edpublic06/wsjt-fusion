@@ -16,3 +16,13 @@ radio simultaneously. Back up data before any later live-mode testing.
 First step: isolated offline JTTY WAV receive panel. See
 [the JTTY module notes](../wsjtz/jtty/README.md#fusion-development-adapter--offline-wav-reception).
 This step creates no JTTY transmit or live-audio path and is not a public release.
+
+### Receive dial frequencies
+
+JTTY uses its own entries in Settings → Frequencies. Insert an entry with mode
+JTTY and the desired dial frequency in MHz, then select it from the main frequency
+list. Existing personal frequency tables are preserved; no FT8 frequency is
+substituted. If no JTTY entry exists, entering the mode keeps the current radio
+frequency. For reference, upstream WSJT-X v3.3.0-beta1 lists 14.090 MHz for 20 m
+JTTY in models/FrequencyList.cpp. The RX audio frequency control is separate
+from this radio dial frequency.

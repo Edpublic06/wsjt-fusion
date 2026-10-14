@@ -9829,6 +9829,8 @@ void MainWindow::enterJttyReceive ()
   keep_frequency = saved_keep_frequency;
   monitor (false);
   m_jttyActive=true; m_mode="JTTY";
+  // Use configured JTTY dial frequencies, never the temporary FT8 setup list.
+  switch_mode (Modes::JTTY);
   m_wideGraph->hide (); // Timed FT8 waterfall is not the JTTY spectrum adapter.
   ui->cbAutoSeq->setChecked (false);
   ui->cbAutoSeq->setEnabled (false); ui->cbAutoCQ->setEnabled (false);
