@@ -4,6 +4,7 @@
 
 #include <QMainWindow>
 #include "wsjtz/jtty/live/LiveReceiver.hpp"
+#include "wsjtz/jtty/ui/AudioDisplay.hpp"
 class QDockWidget;
 class QPlainTextEdit;
 #include <QByteArray>
@@ -757,6 +758,7 @@ private:
   bool    m_bOK_to_chk=false;
   bool    m_bSentReport=false;
   wsjtz::IncomingCallPolicy m_incomingCallPolicy;
+  wsjtz::AudioDisplay * m_jttyAudioDisplay = nullptr;
   wsjtz::LiveReceiver * m_jttyLive = nullptr;
   QDockWidget * m_jttyDock = nullptr;
   QPlainTextEdit * m_jttyText = nullptr;

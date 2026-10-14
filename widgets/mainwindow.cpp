@@ -13,6 +13,7 @@
 #include <fftw3.h>
 #include <QApplication>
 #include <QDockWidget>
+#include <QVBoxLayout>
 #include <QPlainTextEdit>
 #include <QStringListModel>
 #include <QSettings>
@@ -807,8 +808,10 @@ MainWindow::MainWindow(QDir const& temp_directory, bool multiple,
   connect (m_jttyModeAction,&QAction::triggered,this,[this] { enterJttyReceive (); });
   connect (this,&MainWindow::jttyReceivePolicy,m_detector,&Detector::setJttyReceive,Qt::QueuedConnection);
   connect (m_detector,&Detector::jttyPcm,this,[this] (quint64 session,QByteArray pcm) {
-    if (m_jttyActive && m_monitoring && session==m_jttyAudioSession && !m_transmitting)
+    if (m_jttyActive && m_monitoring && session==m_jttyAudioSession && !m_transmitting) {
+      if (m_jttyAudioDisplay) m_jttyAudioDisplay->append (pcm);
       m_jttyLive->append (pcm);
+    }
   },Qt::QueuedConnection);
   m_jttyLive->textChanged = [this] (QString const& text) {
     if (m_jttyText) { m_jttyText->setPlainText (text); m_jttyText->moveCursor (QTextCursor::End); }
@@ -9840,9 +9843,15 @@ void MainWindow::enterJttyReceive ()
   if (!m_jttyDock) {
     m_jttyDock=new QDockWidget {tr ("JTTY — continuous reception (transmit not connected)"),this};
     m_jttyText=new QPlainTextEdit {m_jttyDock}; m_jttyText->setReadOnly (true);
-    m_jttyDock->setWidget (m_jttyText);
+    auto panel = new QWidget {m_jttyDock};
+    auto layout = new QVBoxLayout {panel};
+    m_jttyAudioDisplay = new wsjtz::AudioDisplay {panel};
+    layout->addWidget (m_jttyAudioDisplay);
+    layout->addWidget (m_jttyText);
+    m_jttyDock->setWidget (panel);
     addDockWidget (Qt::BottomDockWidgetArea,m_jttyDock);
   }
+  m_jttyAudioDisplay->reset ();
   m_jttyDock->show ();
   mode_label.setText ("JTTY RX");
   monitor (true);

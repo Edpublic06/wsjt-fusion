@@ -26,3 +26,12 @@ substituted. If no JTTY entry exists, entering the mode keeps the current radio
 frequency. For reference, upstream WSJT-X v3.3.0-beta1 lists 14.090 MHz for 20 m
 JTTY in models/FrequencyList.cpp. The RX audio frequency control is separate
 from this radio dial frequency.
+
+### Live audio monitor
+
+The experimental receive panel includes a separate 0–3000 Hz waterfall from
+the same 12 kHz PCM blocks sent to the JTTY worker. A 2048-point Hann-windowed
+FFT updates the waterfall; input RMS is shown in dBFS (not calibrated RF SNR).
+The monitor identifies digital silence, clipping and no PCM for two seconds.
+This is a Fusion diagnostic display, not the full upstream interactive JTTY
+spectrum interface. Reception remains experimental and transmit is disabled.
