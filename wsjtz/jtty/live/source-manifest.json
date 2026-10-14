@@ -186,8 +186,8 @@
       "source": "widgets/displaytext.cpp",
       "destination": "widgets/displaytext.cpp",
       "source_sha256": "4bf9a69f9845ef5d43931ca02557f499d08d8be1a7498eb33dc20762aaadb317",
-      "sha256": "05f989511b27bef19f5ac2f9f60f2b6e56e9d50b2a96866d4843bd5952f26e7b",
-      "adaptation": "Port upstream press-time word capture and double-click selection only for JTTY; preserve legacy selection for other modes."
+      "sha256": "e591e039e5172aa711ac54bc1eadded6b29c01466838ad994b402c99c1d7c4e2",
+      "adaptation": "Port upstream press-time word capture and double-click selection only for JTTY; preserve legacy selection for other modes. Fusion extension: left click highlights the selected word without changing correspondent variables."
     },
     {
       "source": "widgets/displaytext.h",

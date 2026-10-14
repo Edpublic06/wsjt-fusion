@@ -138,3 +138,7 @@ Automatic QSO logging remains deferred until JTTY is reliable.
 The selected JTTY correspondent also updates Fusion’s separate Call Info DX Call
 field through the existing lookup path, clearing the previous station’s details.
 No grid is inferred from unstructured JTTY text.
+
+In JTTY, a single left click highlights the selected word in yellow without
+changing the correspondent. A double click updates DX Call and message variables.
+The highlight is cleared when leaving JTTY.

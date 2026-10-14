@@ -9942,6 +9942,8 @@ void MainWindow::leaveJttyReceive ()
   m_jttyActive=false; ++m_jttyAudioSession;
   ui->decodedTextBrowser->setProperty ("fusionJttySelection",false);
   ui->decodedTextBrowser2->setProperty ("fusionJttySelection",false);
+  ui->decodedTextBrowser->setExtraSelections ({});
+  ui->decodedTextBrowser2->setExtraSelections ({});
   Q_EMIT jttyReceivePolicy (false,m_jttyAudioSession);
   m_jttyLive->stop ();
   ui->controls_stack_widget->setCurrentIndex (0);

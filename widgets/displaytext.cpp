@@ -121,6 +121,15 @@ void DisplayText::mouseDoubleClickEvent(QMouseEvent *e)
      if (property ("fusionJttySelection").toBool ()) {
          captureJttyClick (mouseEvent);
          QTextEdit::mousePressEvent (mouseEvent);
+         if (mouseEvent->button () == Qt::LeftButton) {
+             auto cursor = cursorForPosition (mouseEvent->pos ());
+             cursor.select (QTextCursor::WordUnderCursor);
+             QTextEdit::ExtraSelection highlight;
+             highlight.cursor = cursor;
+             highlight.format.setBackground (QColor (255,235,90));
+             highlight.format.setForeground (Qt::black);
+             setExtraSelections ({highlight});
+         }
          return;
      }
      m_jttyClickCaptured=false;
