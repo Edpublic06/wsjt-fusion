@@ -1,0 +1,807 @@
+{
+  "repository": "https://github.com/WSJTX/wsjtx",
+  "tag": "v3.3.0-beta1",
+  "commit": "57ba9337fa020065dc0ceee2c4ef85e433ea32d4",
+  "retrieved": "2026-10-14",
+  "purpose": "Reference snapshot for JTTY UI, live audio and transmit integration. Not connected to the application build.",
+  "files": [
+    {
+      "source": "AUTHORS",
+      "destination": "wsjtz/jtty/reference-ui-audio/AUTHORS",
+      "sha256": "bcfebe78a974e4f439613d2acfea24a612b2675d75c1428441ddee5d51f2bf55",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "Audio/AudioStreamClock.hpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/Audio/AudioStreamClock.hpp",
+      "sha256": "3e0b64af61d9f8b8395404e591e1a05bc1067796aa83f5479893a5f196bdf94e",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "Audio/AudioStreamDescriptor.cpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/Audio/AudioStreamDescriptor.cpp",
+      "sha256": "a1fed141cc7c6696dd2fbcbf316beefb26cbadae54931a7e4e8091a1d08980eb",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "Audio/AudioStreamDescriptor.hpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/Audio/AudioStreamDescriptor.hpp",
+      "sha256": "583644803ed3d9cdc696e21a8be4fb3883cd2eff6d262eefa644ab6129160cf3",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "CMakeLists.txt",
+      "destination": "wsjtz/jtty/reference-ui-audio/CMakeLists.txt",
+      "sha256": "777065006d326a99a61bbc04ba541cff0e99fb4bb1e2762fef405e477b16cd58",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "COPYING",
+      "destination": "wsjtz/jtty/reference-ui-audio/COPYING",
+      "sha256": "b4bbff835ca86b6051284a77138b7b31db215fb3e8aa70221464126cc9ad60fa",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "Configuration.cpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/Configuration.cpp",
+      "sha256": "e409b0140fa647102c4840b336e1d97921f25a8d0e6ac291e1da31eba7be96c0",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "Configuration.hpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/Configuration.hpp",
+      "sha256": "d3af706a4a8fa9cce3f82e04a543deea1ce29ba358a986c25d8b6abbe6600efc",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "Configuration.ui",
+      "destination": "wsjtz/jtty/reference-ui-audio/Configuration.ui",
+      "sha256": "0be657139a76b1f4b9a5379c04a4ead98fb2dcfd1e820dc430a95db135db0356",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "DecodeOperatingContext.hpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/DecodeOperatingContext.hpp",
+      "sha256": "eb9c0ad0b6c674a4b7e697a669f22cb8ba500e3eeb2a9c1572af6850e30ab411",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "DecoderEngine.h",
+      "destination": "wsjtz/jtty/reference-ui-audio/DecoderEngine.h",
+      "sha256": "626af8ae5c397c6208cc180c738dd3cfee56a99df2adf2f7f90ed735c706911a",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "Detector/Detector.cpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/Detector/Detector.cpp",
+      "sha256": "6d5faa0070c14d5316abf712e02b65330d4423c78babd38c00273064ef3b418d",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "Detector/Detector.hpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/Detector/Detector.hpp",
+      "sha256": "a91a5786940618ce3c0c21cc63e301f8e165b23666f0495a115fbcea9b5d63f5",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "JttyDecoder.hpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/JttyDecoder.hpp",
+      "sha256": "e055c8f32d982d58170a5b993e869615f96fe7fde240795f8fb029cb3eb84b06",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "JttyReceiveAudio.hpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/JttyReceiveAudio.hpp",
+      "sha256": "e3b4c5367dea5ea3bc878c7af5fec03d4ccc3bed528a3910de628995ee0caaa6",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "JttyReceiveHistory.hpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/JttyReceiveHistory.hpp",
+      "sha256": "ac9ce21043f7cf0d4e907d76f960c3d01237b3aed97c16e347503f77c099d6a0",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "JttyReceiveLine.hpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/JttyReceiveLine.hpp",
+      "sha256": "cf85cf7ab1f05e0d682467ff75705edccf95ab7e640e239dff0bea4f7c270039",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "JttyReceiveResultController.cpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/JttyReceiveResultController.cpp",
+      "sha256": "8edd66cda1922972b0a01532b18b0cb1061509326d0757a9e628a075cbd1769a",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "JttyReceiveResultController.hpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/JttyReceiveResultController.hpp",
+      "sha256": "07a4f3f1da1340a298d5a48c8d676bda2de599555da14d1861deaea196187547",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "JttyReceiveTiming.hpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/JttyReceiveTiming.hpp",
+      "sha256": "ee4734bef2575e43e1b2206457d99321dd03d849b325105f4172014538ad0862",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "JttyRecording.cpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/JttyRecording.cpp",
+      "sha256": "5aeb6fab9efe7046c6f052cc9a546b77c1e19e2d2c44d6808fce1a6ec3678142",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "JttyRecording.hpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/JttyRecording.hpp",
+      "sha256": "6f8e83c97f0a21f93d60361ec6ac1b892fe00268c10be22e04670803ee33c60b",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "JttyReplay.hpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/JttyReplay.hpp",
+      "sha256": "a8df27d6b93e34de50dce684cdd56b20a15db73381c3e92f83f3fb7fde2a1fea",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "JttyTxLoopbackTestController.cpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/JttyTxLoopbackTestController.cpp",
+      "sha256": "e21bf719bee3ff12cb8ccbeca892133a396e065a99c2fe532c3754bd530ff85b",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "JttyTxLoopbackTestController.hpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/JttyTxLoopbackTestController.hpp",
+      "sha256": "a31f2f1a71548e86ab57b8a533cac0a1c096ac9f237500fa4d9d3fe4492fec64",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "Modulator/JttyPcmFifo.cpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/Modulator/JttyPcmFifo.cpp",
+      "sha256": "3d63915b6e21139f03df03c314b4166cfe45c6b1b9df25e6f13d577491a3e27a",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "Modulator/JttyPcmFifo.hpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/Modulator/JttyPcmFifo.hpp",
+      "sha256": "a003bc39d41ff5e5add671c76015e05cd61ec6e14141717a9347481066fb2df3",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "Modulator/JttyTxStream.cpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/Modulator/JttyTxStream.cpp",
+      "sha256": "045b97552addd4c2fb5c6b47feca0d230b58c154a96e0e253d87803255b967b8",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "Modulator/JttyTxStream.hpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/Modulator/JttyTxStream.hpp",
+      "sha256": "c8d78cb434dd60048c7e7c684e2d422a5872c220e7f8d744da8c77ed17fcc12f",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "Modulator/Modulator.cpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/Modulator/Modulator.cpp",
+      "sha256": "21582c905e9887fea12cb6b20f9df1c33c3aef5eb7326b36fda047a43bb2e979",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "Modulator/Modulator.hpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/Modulator/Modulator.hpp",
+      "sha256": "2b9255fc725964a8cbb7dcf1c48a01778c6be8cc771764cb73016e53c496c703",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "commons.h",
+      "destination": "wsjtz/jtty/reference-ui-audio/commons.h",
+      "sha256": "5653d43a9d5d24e391b75de80cd743c1c251d276417be33ceb86ad9ef4c212ab",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "doc/common/license.adoc",
+      "destination": "wsjtz/jtty/reference-ui-audio/doc/common/license.adoc",
+      "sha256": "504daf7194be4fd8ba40142b077331c040d3e7a71ea4c38f1534e1653b6764e8",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "doc/user_guide/en/jtty.adoc",
+      "destination": "wsjtz/jtty/reference-ui-audio/doc/user_guide/en/jtty.adoc",
+      "sha256": "c852c60fe6ca9ef7cfc5b6150392dd0d04ed1d51eb50d3bfdbbe6af6525387b7",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "doc/user_guide/en/jtty_n1mm_integration.adoc",
+      "destination": "wsjtz/jtty/reference-ui-audio/doc/user_guide/en/jtty_n1mm_integration.adoc",
+      "sha256": "c729f49ef670d15bec7a4e9238f3dd93f2c6824cebff20f6e8b6c71b4ab36f64",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "lib/jtty/JTTY Messages.mc",
+      "destination": "wsjtz/jtty/reference-ui-audio/lib/jtty/JTTY Messages.mc",
+      "sha256": "95d6274c77fa522dcdf9bab4b28fa0fdac220242c98413a74d2d820ad5c6f10c",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "lib/jtty/ana64a.f90",
+      "destination": "wsjtz/jtty/reference-ui-audio/lib/jtty/ana64a.f90",
+      "sha256": "8417496a9a1cc1c1087db1128cdd5e5a92b342690f4f98389c63814debc363ec",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "lib/jtty/c_funcs.f90",
+      "destination": "wsjtz/jtty/reference-ui-audio/lib/jtty/c_funcs.f90",
+      "sha256": "99aa2380511f6c5ef25c90906e22ecbbb0ab552b22eeed37d0f1b5eeec7f32bf",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "lib/jtty/cdatetime.f90",
+      "destination": "wsjtz/jtty/reference-ui-audio/lib/jtty/cdatetime.f90",
+      "sha256": "f2bc3941f9261d346d689a741fd6143330bfa6b36c319d804c0e8c09d98d537b",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "lib/jtty/decodes.txt",
+      "destination": "wsjtz/jtty/reference-ui-audio/lib/jtty/decodes.txt",
+      "sha256": "e4c8bd78cc4a7666e8ee062ea918f0a1ce467a17ee6d8fe2ed7b19a224994795",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "lib/jtty/gen_jttywave.f90",
+      "destination": "wsjtz/jtty/reference-ui-audio/lib/jtty/gen_jttywave.f90",
+      "sha256": "3b78565e3380650cb73884b26453fea6e8cf50bf413370ee020570bd309ae454",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "lib/jtty/gen_syncwave.f90",
+      "destination": "wsjtz/jtty/reference-ui-audio/lib/jtty/gen_syncwave.f90",
+      "sha256": "63bc6b1ce167ceebf4bd7978f3c9bf70a5d6c14e4da0288e677968287236c7f1",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "lib/jtty/genjtty.f90",
+      "destination": "wsjtz/jtty/reference-ui-audio/lib/jtty/genjtty.f90",
+      "sha256": "d117fb73431a574b9fc964adc8254318248c63e2efb9d24ca352f08158ff2303",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "lib/jtty/jtty.f90",
+      "destination": "wsjtz/jtty/reference-ui-audio/lib/jtty/jtty.f90",
+      "sha256": "9db306865c9592c756c3ebe74e6858eeeb0bedb7f7f321d7908e3e1d9b34f9ea",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "lib/jtty/jtty.ini",
+      "destination": "wsjtz/jtty/reference-ui-audio/lib/jtty/jtty.ini",
+      "sha256": "f11c9c462f4f53c4779519fe0c1f9f15900f4b88b7548e941f67b83a3af03cea",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "lib/jtty/jtty_block_pow.f90",
+      "destination": "wsjtz/jtty/reference-ui-audio/lib/jtty/jtty_block_pow.f90",
+      "sha256": "c6fed9b61530c1fd7ca578475baf203c3de85529fc4615151236c7d366a63cf4",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "lib/jtty/jtty_codewords.f90",
+      "destination": "wsjtz/jtty/reference-ui-audio/lib/jtty/jtty_codewords.f90",
+      "sha256": "65c5c99e5d00943ffba4248dcded89fa7140b6458f5d1b7de686bf8c49b121ce",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "lib/jtty/jtty_decode.f90",
+      "destination": "wsjtz/jtty/reference-ui-audio/lib/jtty/jtty_decode.f90",
+      "sha256": "61258651df94b3b9c38acaf5ccfe80a9c8dc44999c1209ed0337bbacc67de465",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "lib/jtty/jtty_design.md",
+      "destination": "wsjtz/jtty/reference-ui-audio/lib/jtty/jtty_design.md",
+      "sha256": "cf4ff10da1a68e8e1ce2254ae256e635d9da8e6f2136fa3e512f43e117387803",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "lib/jtty/jtty_fec_mod.f90",
+      "destination": "wsjtz/jtty/reference-ui-audio/lib/jtty/jtty_fec_mod.f90",
+      "sha256": "ad0afee7bd8c43276f70b506ffb7f88a3eb7452120a1ccfdc5c49d769ba39a28",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "lib/jtty/jtty_mdecode.f90",
+      "destination": "wsjtz/jtty/reference-ui-audio/lib/jtty/jtty_mdecode.f90",
+      "sha256": "d4a0ec0191dcc2459c7aeb67c5a155daf55117eb5d3c508b7d4487f293bf2400",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "lib/jtty/jtty_mod.f90",
+      "destination": "wsjtz/jtty/reference-ui-audio/lib/jtty/jtty_mod.f90",
+      "sha256": "6e8645d156fe7e85e86918508391652dbb1195a5a4f590a556adb05e777b667a",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "lib/jtty/jtty_msgs.txt",
+      "destination": "wsjtz/jtty/reference-ui-audio/lib/jtty/jtty_msgs.txt",
+      "sha256": "f26eb8e2b43cf9e8356e2a68d965b89f664d4a685c14d3e73b6b578a3c6691b0",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "lib/jtty/jtty_n1mm_integration.md",
+      "destination": "wsjtz/jtty/reference-ui-audio/lib/jtty/jtty_n1mm_integration.md",
+      "sha256": "f503dd544f653dab05434711675691ad3340a6ed0458ea10f390f1c607ea669a",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "lib/jtty/jtty_payload_correlators.f90",
+      "destination": "wsjtz/jtty/reference-ui-audio/lib/jtty/jtty_payload_correlators.f90",
+      "sha256": "71ff24a603226d24caf023e8d46e010f0e01ea648643d49382715130af354bc2",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "lib/jtty/jtty_peakup.f90",
+      "destination": "wsjtz/jtty/reference-ui-audio/lib/jtty/jtty_peakup.f90",
+      "sha256": "fe6c14d01de68dd02f782cbc5772f0ad682af1dc0e83b81ad151182de42f7bb5",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "lib/jtty/jtty_receive_context.f90",
+      "destination": "wsjtz/jtty/reference-ui-audio/lib/jtty/jtty_receive_context.f90",
+      "sha256": "11909dc490881d761dddc8dd4ca26f6ffbeffb64fcc063570cc0b208af75474a",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "lib/jtty/jtty_source_codec.f90",
+      "destination": "wsjtz/jtty/reference-ui-audio/lib/jtty/jtty_source_codec.f90",
+      "sha256": "13a30a32c3084fa4d74d9bff1fda140ebf1b8b767198816a0249e3b83b7150c0",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "lib/jtty/jtty_source_encoding.txt",
+      "destination": "wsjtz/jtty/reference-ui-audio/lib/jtty/jtty_source_encoding.txt",
+      "sha256": "d48d1f9e59644afc4967ca6d8c46a1be63130d3999092b2bb9ea0f83c4eeea93",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "lib/jtty/jtty_spec.f90",
+      "destination": "wsjtz/jtty/reference-ui-audio/lib/jtty/jtty_spec.f90",
+      "sha256": "ec9945684c0e16bd8b955d44ca5b56e3357a11d4859dc685d64cf13aefc991cd",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "lib/jtty/jtty_tbcc_code_profile.f90",
+      "destination": "wsjtz/jtty/reference-ui-audio/lib/jtty/jtty_tbcc_code_profile.f90",
+      "sha256": "9429c79d2aa242b81c474d3b191479fc967455fb9aa72628dba13aa1d7766211",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "lib/jtty/jtty_tbcc_decoder.f90",
+      "destination": "wsjtz/jtty/reference-ui-audio/lib/jtty/jtty_tbcc_decoder.f90",
+      "sha256": "4cd16d4357a0a89ec4281103c7032ea4638f798c1da0b5b51203a9ef50888b4a",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "lib/jtty/jtty_tbcc_list_decoder.f90",
+      "destination": "wsjtz/jtty/reference-ui-audio/lib/jtty/jtty_tbcc_list_decoder.f90",
+      "sha256": "cfbceff85b29212208e3025dce2579267b195d27ca7be984f120a1d1aca03438",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "lib/jtty/jtty_tx_manual_checks.md",
+      "destination": "wsjtz/jtty/reference-ui-audio/lib/jtty/jtty_tx_manual_checks.md",
+      "sha256": "37a3d443016fa7c964a7b0cfc807459fcd31d8628541ec2c1622aa4c2e65fd27",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "lib/jtty/jttyaudio.c",
+      "destination": "wsjtz/jtty/reference-ui-audio/lib/jtty/jttyaudio.c",
+      "sha256": "cd5988bf0958812355a15bde1d24a2c586fe3620c0cbd494f3fb2be16ad20f3e",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "lib/jtty/jttycom.f90",
+      "destination": "wsjtz/jtty/reference-ui-audio/lib/jtty/jttycom.f90",
+      "sha256": "e5ed3232c737fef237a394d36632bd63b1961e10e44c79b667cad1113f40c2a2",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "lib/jtty/portaudio.h",
+      "destination": "wsjtz/jtty/reference-ui-audio/lib/jtty/portaudio.h",
+      "sha256": "f0c8f2146d13c92752c607d20cf1e308f6bc095f617840d0b1309ae33ecb2764",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "lib/jtty/rjtty.f90",
+      "destination": "wsjtz/jtty/reference-ui-audio/lib/jtty/rjtty.f90",
+      "sha256": "1fbe14c7b8908f683e47500c0df8a882b25818472853a1f738226abef20b41bf",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "lib/jtty/rjtty_sub.f90",
+      "destination": "wsjtz/jtty/reference-ui-audio/lib/jtty/rjtty_sub.f90",
+      "sha256": "e812f32895764b5fd688fc292bda80b3dc08e55a32ef9b78878632aa3dcafae6",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "lib/jtty/sjtty.f90",
+      "destination": "wsjtz/jtty/reference-ui-audio/lib/jtty/sjtty.f90",
+      "sha256": "8b470d85a5f85490ba68295eabac1eed596cb7699b9e80e0393d5c1cc22b38cc",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "lib/jtty/sjtty_qrm.f90",
+      "destination": "wsjtz/jtty/reference-ui-audio/lib/jtty/sjtty_qrm.f90",
+      "sha256": "e102f391be686f020d37555a538d0ea9364f9c4749bb7202eec16ec061ba7eac",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "lib/jtty/subtract_jtty.f90",
+      "destination": "wsjtz/jtty/reference-ui-audio/lib/jtty/subtract_jtty.f90",
+      "sha256": "239c11badb96bbd910ca4d5847029b70812267ca3395c1e1f4585f82c55739a2",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "lib/jtty/tbcc.f90",
+      "destination": "wsjtz/jtty/reference-ui-audio/lib/jtty/tbcc.f90",
+      "sha256": "40babc8afe96bed03d39246879387e717ad7e9db3d229f9f12305332bcf6cf48",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "lib/jtty/transmit.f90",
+      "destination": "wsjtz/jtty/reference-ui-audio/lib/jtty/transmit.f90",
+      "sha256": "f6d03c350e97e2fec7a84cae7b21b3eea2b63d36d1bd7bbd34ff3c5a380d13ff",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "lib/jtty/update.f90",
+      "destination": "wsjtz/jtty/reference-ui-audio/lib/jtty/update.f90",
+      "sha256": "038606e70fea2c6b8b73d3ecd71ed26b440e630baf1795e6dc1b0ed4e9e28e9d",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "lib/jtty/wava/rcu_bound_4fsk.f90",
+      "destination": "wsjtz/jtty/reference-ui-audio/lib/jtty/wava/rcu_bound_4fsk.f90",
+      "sha256": "2d8bacd0ff2b58fe50232ffa516bf010073c9f4e204ee6056a7061245186ed7e",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "lib/jtty/wava/tbcc_4fsk_simulation.f90",
+      "destination": "wsjtz/jtty/reference-ui-audio/lib/jtty/wava/tbcc_4fsk_simulation.f90",
+      "sha256": "0c5d9f7eebc515a695722d882a2d73a9be6cf48c2ddb74d6f608c4a91e9b36e1",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "main.cpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/main.cpp",
+      "sha256": "61bc7ece5c2326ea7238eee7e371d11585afac39eca7ec77b3c3645eef74bea6",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "tests/fixtures/jtty/jtty_msgs.txt",
+      "destination": "wsjtz/jtty/reference-ui-audio/tests/fixtures/jtty/jtty_msgs.txt",
+      "sha256": "4efb7202b67e99bc6fd431bd9d435ebdd763bdda23ff29c85a993d7880a978e2",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "tests/integration/jtty/live_audio.expected.txt",
+      "destination": "wsjtz/jtty/reference-ui-audio/tests/integration/jtty/live_audio.expected.txt",
+      "sha256": "b6b20a56e49c49dc555f3fb4e1adbb91cec2a5a18856a72323d35fb0d62aca4e",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "tests/integration/jtty/run_live_audio.cmake",
+      "destination": "wsjtz/jtty/reference-ui-audio/tests/integration/jtty/run_live_audio.cmake",
+      "sha256": "374fac5ea4b99f3310342aaf678e2a80a043eef53677d30b5952f677eba43c00",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "tests/integration/jtty/run_tx_loopback.cmake",
+      "destination": "wsjtz/jtty/reference-ui-audio/tests/integration/jtty/run_tx_loopback.cmake",
+      "sha256": "e3c2b31b9aeb80f74e50b9f6c1128da47a94f6886335312bd6e0b3b24808df26",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "tests/integration/jtty/tx_loopback.expected.txt",
+      "destination": "wsjtz/jtty/reference-ui-audio/tests/integration/jtty/tx_loopback.expected.txt",
+      "sha256": "60654d94fcd5445a9e22de079a6da0f94d088ac2a2267068621b8cc4fade8803",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "tests/unit/jtty/CMakeLists.txt",
+      "destination": "wsjtz/jtty/reference-ui-audio/tests/unit/jtty/CMakeLists.txt",
+      "sha256": "28ccafe0f1a07c91e6a8ec28cc26a849a4ecb63a6e4013899b1879f6da46e7ac",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "tests/unit/jtty/jtty_cpp_n1mm_smoke.cpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/tests/unit/jtty/jtty_cpp_n1mm_smoke.cpp",
+      "sha256": "695946df1883842d63ae8a1de970bc6009e98ae1a8841cfafe21b7b67a8785a7",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "tests/unit/jtty/test_jtty_adjacent_decode.f90",
+      "destination": "wsjtz/jtty/reference-ui-audio/tests/unit/jtty/test_jtty_adjacent_decode.f90",
+      "sha256": "c849b6519588f619a4cb2cd80c05bed6be7808a4871caf2e3c317ac074ab6919",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "tests/unit/jtty/test_jtty_block_pow.f90",
+      "destination": "wsjtz/jtty/reference-ui-audio/tests/unit/jtty/test_jtty_block_pow.f90",
+      "sha256": "dc8a1a2df79e957a0e25b45feb8e79d5bb1bea0672ff64c2bf2a983a5e09c6db",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "tests/unit/jtty/test_jtty_continuous_decode.f90",
+      "destination": "wsjtz/jtty/reference-ui-audio/tests/unit/jtty/test_jtty_continuous_decode.f90",
+      "sha256": "bb4a3706c25c91e6fa71c15df355c99b9cc6265a88ae8db5781a9084f7fc9be3",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "tests/unit/jtty/test_jtty_frequency_window.f90",
+      "destination": "wsjtz/jtty/reference-ui-audio/tests/unit/jtty/test_jtty_frequency_window.f90",
+      "sha256": "fce974afe1afae2233bd9f2f7ab7ab115bdab17bfcc95e7067934bf8974461f6",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "tests/unit/jtty/test_jtty_gap_merge.f90",
+      "destination": "wsjtz/jtty/reference-ui-audio/tests/unit/jtty/test_jtty_gap_merge.f90",
+      "sha256": "ddba54d3361e4d724800184f629b21a72c3e515e37ab21d33d7967bf0fb4d13d",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "tests/unit/jtty/test_jtty_get_updates.f90",
+      "destination": "wsjtz/jtty/reference-ui-audio/tests/unit/jtty/test_jtty_get_updates.f90",
+      "sha256": "2045b8ec884c2abf7ecfb68144ea11b926ab32b55a51ffe6a5ffb7869c1aa0ac",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "tests/unit/jtty/test_jtty_live_entry.cpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/tests/unit/jtty/test_jtty_live_entry.cpp",
+      "sha256": "f8cb3ff88e893e3f1c1e218ed3f8c0eb52f91811d42813adb1251db9c9648ae8",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "tests/unit/jtty/test_jtty_message_matching.f90",
+      "destination": "wsjtz/jtty/reference-ui-audio/tests/unit/jtty/test_jtty_message_matching.f90",
+      "sha256": "3cbc39076ebdd95304e2e6e8eee16c96b22319d7d6cba0ee4fff317fc8df2353",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "tests/unit/jtty/test_jtty_messages.cpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/tests/unit/jtty/test_jtty_messages.cpp",
+      "sha256": "b4d430b14b9669a5aadc4c999865819b3b5175c3ff7e45c164a2e0bcfbcc4d3c",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "tests/unit/jtty/test_jtty_n1mm.cpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/tests/unit/jtty/test_jtty_n1mm.cpp",
+      "sha256": "0407cd571f9e70e540eda4199529ea494dde6c761f5c8d7b30f4f9c1c678486f",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "tests/unit/jtty/test_jtty_overlap_decode.f90",
+      "destination": "wsjtz/jtty/reference-ui-audio/tests/unit/jtty/test_jtty_overlap_decode.f90",
+      "sha256": "7842f60941397ebc402956c228294f95ea557d8cded13f4aa8d48ba180363434",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "tests/unit/jtty/test_jtty_pack.f90",
+      "destination": "wsjtz/jtty/reference-ui-audio/tests/unit/jtty/test_jtty_pack.f90",
+      "sha256": "8f2adb4531ae00565e6561c2f04d8ff4c8970f2734517990c81951a015c686b3",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "tests/unit/jtty/test_jtty_payload_correlators.f90",
+      "destination": "wsjtz/jtty/reference-ui-audio/tests/unit/jtty/test_jtty_payload_correlators.f90",
+      "sha256": "e7129839c3c237dd9d167d6cec3885ea3cd70bcc1c68f0462109fd3f02de64a1",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "tests/unit/jtty/test_jtty_receive_history.cpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/tests/unit/jtty/test_jtty_receive_history.cpp",
+      "sha256": "a43058d39ad2422e08aaad83f03b2be75d155a3a500d67b5ce7e994f39ded219",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "tests/unit/jtty/test_jtty_receive_line.cpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/tests/unit/jtty/test_jtty_receive_line.cpp",
+      "sha256": "22a1a4d88457555f18298fb96388f2c941736c5e41b43405df6e46126aec111e",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "tests/unit/jtty/test_jtty_receive_results.cpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/tests/unit/jtty/test_jtty_receive_results.cpp",
+      "sha256": "7d6ac0d59bf712bdf52d3c8aa85ac18eac9146c4c1161b6e0872053b75e80a17",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "tests/unit/jtty/test_jtty_receive_state.f90",
+      "destination": "wsjtz/jtty/reference-ui-audio/tests/unit/jtty/test_jtty_receive_state.f90",
+      "sha256": "8b61574b726025191210ff1debd3c00af965db33b9bba0b54ae0bf6aa9f6e777",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "tests/unit/jtty/test_jtty_recording.cpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/tests/unit/jtty/test_jtty_recording.cpp",
+      "sha256": "dbc69c2434e9d473470f4ae16d58cf447af992cc4cdf1390fda2ae15c5a9e261",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "tests/unit/jtty/test_jtty_replay_ownership.cpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/tests/unit/jtty/test_jtty_replay_ownership.cpp",
+      "sha256": "3aa25848c3e2496a5285c99c2a87725b096689028b7dd99cdcbe567be8a65d4a",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "tests/unit/jtty/test_jtty_source_codec.f90",
+      "destination": "wsjtz/jtty/reference-ui-audio/tests/unit/jtty/test_jtty_source_codec.f90",
+      "sha256": "e10210177925ab106bb72f2db51e74c14d55d1b409d7fb30de27076fabd998f7",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "tests/unit/jtty/test_jtty_spectrum.cpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/tests/unit/jtty/test_jtty_spectrum.cpp",
+      "sha256": "26f2845c822bd740ab60aee08e32022785a002dbd4695719a272393b754e4092",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "tests/unit/jtty/test_jtty_sticky_retry.f90",
+      "destination": "wsjtz/jtty/reference-ui-audio/tests/unit/jtty/test_jtty_sticky_retry.f90",
+      "sha256": "38cf2e1a47b07b61dc21eb6715d3ecc6c3854a6c075520e82485f6c1fc981155",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "tests/unit/jtty/test_jtty_structured_decode.f90",
+      "destination": "wsjtz/jtty/reference-ui-audio/tests/unit/jtty/test_jtty_structured_decode.f90",
+      "sha256": "68a63f4ff3a01c6c3fc2eeb34ff18a6bb8cba5bab89209f7d190fccea580b0fc",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "tests/unit/jtty/test_jtty_surface_ranges.f90",
+      "destination": "wsjtz/jtty/reference-ui-audio/tests/unit/jtty/test_jtty_surface_ranges.f90",
+      "sha256": "a4fbd918e4d49fe9cbf1c5478200bbe722463554e86f48ca49d83ddc32bff515",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "tests/unit/jtty/test_jtty_tbcc_code_profile.f90",
+      "destination": "wsjtz/jtty/reference-ui-audio/tests/unit/jtty/test_jtty_tbcc_code_profile.f90",
+      "sha256": "a8e808381fa08586dff495802f8509467ea2de752faf548f4f8001bc300e489e",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "tests/unit/jtty/test_jtty_tbcc_decoder.f90",
+      "destination": "wsjtz/jtty/reference-ui-audio/tests/unit/jtty/test_jtty_tbcc_decoder.f90",
+      "sha256": "60b7bd0e3943763ace6e2bb2c8b907b7cf0ee7327d47e5d1f939c799802fc77b",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "tests/unit/jtty/test_jtty_tbcc_list_decoder.f90",
+      "destination": "wsjtz/jtty/reference-ui-audio/tests/unit/jtty/test_jtty_tbcc_list_decoder.f90",
+      "sha256": "a0ae3e825e8fc757a23ca582aa44ef7814098745dacaedf0bb1c1c8b7e6b9236",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "tests/unit/jtty/test_jtty_transmit_queue.cpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/tests/unit/jtty/test_jtty_transmit_queue.cpp",
+      "sha256": "852e74301a28c9e6a662c3a2c32eb761282a48ac65847fee61dee961d95faa7d",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "tests/unit/jtty/test_jtty_tx_lifecycle.cpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/tests/unit/jtty/test_jtty_tx_lifecycle.cpp",
+      "sha256": "4286a4d8d521b0c9e2b068924de9d481c7b9f23273c49dec9f0fb2cc1c620aa7",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "tests/unit/jtty/test_jtty_txstream.cpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/tests/unit/jtty/test_jtty_txstream.cpp",
+      "sha256": "b34e30836d4586fa8991295f2bc605d4059ed8a908212d13eabbdaca04b5a80b",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "tests/unit/jtty/test_jtty_waterfall.cpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/tests/unit/jtty/test_jtty_waterfall.cpp",
+      "sha256": "f66ac32f209946f2c5201369a08e1205e06fc234629cec0a7987bdfb0abbb116",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "tests/unit/jtty/test_jtty_windowed_decode.f90",
+      "destination": "wsjtz/jtty/reference-ui-audio/tests/unit/jtty/test_jtty_windowed_decode.f90",
+      "sha256": "2439cdca8b202e8b110c44484fd71289e3c03921d97f57daf08a47edc4754be7",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "tests/unit/jtty/test_mmttyif.cpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/tests/unit/jtty/test_mmttyif.cpp",
+      "sha256": "71440be032e11abde48e614da9392519404f4e264a5897fe72619b382cb457d4",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "tests/unit/jtty/test_tbcc.f90",
+      "destination": "wsjtz/jtty/reference-ui-audio/tests/unit/jtty/test_tbcc.f90",
+      "sha256": "e2bff07ce586fe5e67ef7d8f2ceb15c2784190bbd1c3612696852764ce37c760",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "widgets/JttyLiveEntry.hpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/widgets/JttyLiveEntry.hpp",
+      "sha256": "b146fe55cf0259826ce1814d890d557c11f89d8862e1cbfedb6da9e3b3683940",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "widgets/JttyMessages.hpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/widgets/JttyMessages.hpp",
+      "sha256": "518c94bab7f30bc0c6c23a0bfce0def79a5edcdc153359bd2c73754d32e3ee7e",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "widgets/JttyMmttyHandoff.hpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/widgets/JttyMmttyHandoff.hpp",
+      "sha256": "805a414767b3e5dfef752a4ce8c0e676804cec10e363791597843e29dfbedd7d",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "widgets/JttyN1mm.hpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/widgets/JttyN1mm.hpp",
+      "sha256": "c31fc2222a41c9f33233efd334384a7461a9449eb80448b9e980d852e294c7cc",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "widgets/JttyN1mmOutput.hpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/widgets/JttyN1mmOutput.hpp",
+      "sha256": "f123a78d3093ddfc85f661c9de915453e691d5b5097326c9baafa2957870d145",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "widgets/JttySpectrum.cpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/widgets/JttySpectrum.cpp",
+      "sha256": "5adb532b1083c4312c5551a75f0f7d136555d5223174c79387dbb88cf65ec28c",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "widgets/JttySpectrum.hpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/widgets/JttySpectrum.hpp",
+      "sha256": "de8981970f44ce24ebb8c1632c91fc3e6334b61c8ae6a0252ec6533e1aeb19dc",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "widgets/JttyTransmitQueue.hpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/widgets/JttyTransmitQueue.hpp",
+      "sha256": "5d1b4d83d88c15079dd8990650ab1e1da17414a252ef270d70806a1c3aac4e15",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "widgets/JttyTxLifecycle.hpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/widgets/JttyTxLifecycle.hpp",
+      "sha256": "2cb0283e6fae7e59475fb11b7a0983fcbb9ec844a6a490fc75a5edf448b47d79",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "widgets/mainwindow.cpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/widgets/mainwindow.cpp",
+      "sha256": "d884381b74deff9aa6c5f8d72615f3bdc206de0b8d316fff95c5d3efd3ec73fa",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "widgets/mainwindow.h",
+      "destination": "wsjtz/jtty/reference-ui-audio/widgets/mainwindow.h",
+      "sha256": "cac8098914565fa2585b8f99da5a78810299c2b5e52750b74e5fa5271654a01e",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "widgets/mainwindow.ui",
+      "destination": "wsjtz/jtty/reference-ui-audio/widgets/mainwindow.ui",
+      "sha256": "e1c48b21ce694bd7754c3b919bc3c8e89393d7792655665ce2d14edc8d7d412f",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "widgets/mainwindow_jtty.cpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/widgets/mainwindow_jtty.cpp",
+      "sha256": "ed8dd18e23ad0ca57201716156bcc03067c5876df2d90f62662698923c15095d",
+      "adaptation": "none; reference only, not compiled"
+    },
+    {
+      "source": "widgets/mainwindow_jtty_receive.cpp",
+      "destination": "wsjtz/jtty/reference-ui-audio/widgets/mainwindow_jtty_receive.cpp",
+      "sha256": "bf6dfc1833d6d46661aa3008c791003c0758c312e88d3976a83b6f219e4d7054",
+      "adaptation": "none; reference only, not compiled"
+    }
+  ]
+}
