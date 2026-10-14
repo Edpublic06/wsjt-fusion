@@ -122,6 +122,8 @@ void MainWindow::startJttyTransmitAudio ()
   request.session_id = TxEvidence::TxSessionId {epoch.value ()};
   request.generation = TxEvidence::TxGeneration {epoch.value ()};
   QMetaObject::invokeMethod (m_jttyTxStream,[this,request] { m_jttyTxStream->start (request,m_soundOutput); },Qt::QueuedConnection);
+  ui->autoButton->setStyleSheet (QStringLiteral (
+    "QPushButton, QPushButton:disabled { background-color: red; color: black; }"));
   tx_status_label.setText (tr ("Tx: JTTY"));
   m_jttyLive->appendTransmit (m_jttyTxText,ui->TxFreqSpinBox->value ());
   write_all ("Tx",m_jttyTxText);
@@ -145,6 +147,7 @@ void MainWindow::stopJttyTransmit ()
   m_tx_when_ready = false;
   m_btxok = false; m_btxok0 = false; g_iptt = 0; m_iptt0 = 0;
   m_transmitting = false;
+  ui->autoButton->setStyleSheet (ui->autoButton->property ("fusionJttyPreviousStyle").toString ());
   // Stop/flush audio before acknowledging stop. PTT release is immediate on abort.
   auto epoch = context->epoch;
   QMetaObject::invokeMethod (m_jttyTxStream,[this,epoch] {

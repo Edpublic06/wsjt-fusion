@@ -152,3 +152,7 @@ are colored individually using the existing logbook new-call, DXCC, continent,
 CQ/ITU-zone, band and LoTW rules. Grid coloring is not inferred from free text.
 Multiple callsigns on a line are evaluated independently; no sender is assumed.
 Colors do not alter selection, logging or automation decisions.
+
+JTTY hides the timed-mode progress bar and restores it on mode exit. Enable Tx
+shows red during JTTY audio transmission and restores its previous style on
+completion/abort and mode exit; this visual indication does not enable timed TX.

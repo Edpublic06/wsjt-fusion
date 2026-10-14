@@ -9891,6 +9891,8 @@ void MainWindow::enterJttyReceive ()
   keep_frequency = saved_keep_frequency;
   monitor (false);
   m_jttyActive=true; m_mode="JTTY";
+  progressBar.hide ();
+  ui->autoButton->setProperty ("fusionJttyPreviousStyle",ui->autoButton->styleSheet ());
   m_jttyHisCallSnr = -10;
   ui->decodedTextBrowser->setProperty ("fusionJttySelection",true);
   ui->decodedTextBrowser2->setProperty ("fusionJttySelection",true);
@@ -9944,6 +9946,8 @@ void MainWindow::leaveJttyReceive ()
   if (m_jttyTxLifecycle->active ()) stopJttyTransmit ();
   m_wideGraph->jttyReceptionEnded ();
   m_jttyActive=false; ++m_jttyAudioSession;
+  progressBar.show ();
+  ui->autoButton->setStyleSheet (ui->autoButton->property ("fusionJttyPreviousStyle").toString ());
   ui->decodedTextBrowser->setProperty ("fusionJttySelection",false);
   ui->decodedTextBrowser2->setProperty ("fusionJttySelection",false);
   ui->decodedTextBrowser->setExtraSelections ({});
