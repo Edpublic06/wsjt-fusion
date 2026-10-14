@@ -1,0 +1,3 @@
+# Correct the inherited local Git identity used for Fusion maintenance commits.
+# Original commit objects and upstream author identities remain unchanged.
+F6FDY <248056123+Edpublic06@users.noreply.github.com> Jérôme Berlioz <j.berlioz@data-moove.fr>
