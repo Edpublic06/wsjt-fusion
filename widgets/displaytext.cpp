@@ -111,7 +111,7 @@ void DisplayText::mouseDoubleClickEvent(QMouseEvent *e)
     auto const word = m_jttyPressedWord;
     m_jttyPressedButton = Qt::NoButton;
     m_jttyClickCaptured = false;
-    Q_EMIT selectJttyCallsign (line,word,e->modifiers ());
+    if (e->button () == Qt::LeftButton) Q_EMIT selectJttyCallsign (line,word,e->modifiers ());
     return;
   }
   Q_EMIT selectCallsign(e->modifiers ());
@@ -129,6 +129,7 @@ void DisplayText::mouseDoubleClickEvent(QMouseEvent *e)
              highlight.format.setBackground (QColor (255,235,90));
              highlight.format.setForeground (Qt::black);
              setExtraSelections ({highlight});
+             Q_EMIT previewJttyCallsign (m_jttyPressedLine,m_jttyPressedWord,mouseEvent->modifiers ());
          }
          return;
      }

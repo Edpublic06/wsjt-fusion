@@ -34,10 +34,11 @@ The original JTTY transmit page was extracted from upstream `mainwindow.ui`
 (`page_4`) into a standalone form, preserving its layout, widgets and labels.
 The codec, local audio queue/stream and lifecycle are integrated with offline
 checks. JTTY now captures the selected word on mouse press and copies it into
-DX Call on double-click, following upstream. `%H` uses DX Call; `%R` uses the
+DX Call on a single click (Fusion extension). A double click also triggers the
+current F2 macro in FT8 message style. `%H` uses DX Call; `%R` uses the
 most recent receive update containing that exact word, searching a bounded
 500-update history as upstream does. An unknown or manually changed DX Call
-falls back to -10 dB. Selecting a callsign does not start transmission.
+falls back to -10 dB. A single click does not start transmission.
 
 Both Fusion panes currently show all JTTY receive results; upstream all/QSO
 admission routing remains to be ported. Grid/exchange extraction, contest TU

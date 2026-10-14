@@ -152,7 +152,7 @@
       "source": "widgets/mainwindow_jtty.cpp",
       "destination": "widgets/mainwindow_jtty_tx.cpp",
       "source_sha256": "ed8dd18e23ad0ca57201716156bcc03067c5876df2d90f62662698923c15095d",
-      "sha256": "5fab1c9fed8989a2c1e66c5009f03eb40c2a95751b85e9a68833438152cf7bbd",
+      "sha256": "1ac077712b6e4296ca00ff24f36bccb6000e3cc3b7292e1a7cdf33666b238f35",
       "adaptation": "Fusion adapter for upstream asynchronous queue/PTT lifecycle. One-shot submission, callbacks, F1-F8 literal expansion. Advanced live typing, native macro atoms and contest auto-log trigger not yet connected."
     },
     {
@@ -186,14 +186,14 @@
       "source": "widgets/displaytext.cpp",
       "destination": "widgets/displaytext.cpp",
       "source_sha256": "4bf9a69f9845ef5d43931ca02557f499d08d8be1a7498eb33dc20762aaadb317",
-      "sha256": "e591e039e5172aa711ac54bc1eadded6b29c01466838ad994b402c99c1d7c4e2",
-      "adaptation": "Port upstream press-time word capture and double-click selection only for JTTY; preserve legacy selection for other modes. Fusion extension: left click highlights the selected word without changing correspondent variables."
+      "sha256": "26d288cf4c20798913d4320d3aa712a1d45bf9f50699a5bc35a10233d109ac50",
+      "adaptation": "Upstream press-time word capture adapted to Fusion: single left click selects and highlights; double left click requests F2 in FT8 style. Other modes retain legacy selection."
     },
     {
       "source": "widgets/displaytext.h",
       "destination": "widgets/displaytext.h",
       "source_sha256": "c7b57b2c2d2f0e319fadb8038ec464d02e62aecbfed8f78423e1cc86663866c0",
-      "sha256": "38baafaada9b340234d7e43ba2873a6ca2018da2b51492d0c9914e3e32a933fc",
+      "sha256": "b270e80efa9b8dec8a8c79252989a44108a3b31b157e8ee3f209488d8232b825",
       "adaptation": "JTTY-only word-selection signal and press-time state adapted to Fusion DisplayText."
     }
   ],

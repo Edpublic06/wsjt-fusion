@@ -139,6 +139,8 @@ The selected JTTY correspondent also updates Fusion’s separate Call Info DX Ca
 field through the existing lookup path, clearing the previous station’s details.
 No grid is inferred from unstructured JTTY text.
 
-In JTTY, a single left click highlights the selected word in yellow without
-changing the correspondent. A double click updates DX Call and message variables.
+In JTTY, a single left click on a callsign highlights it in yellow and updates
+DX Call and message variables. A double left click additionally sends the current
+F2 template when the message style is FT8, using the existing busy/TX guards.
+Other words do not change the correspondent or trigger transmission.
 The highlight is cleared when leaving JTTY.

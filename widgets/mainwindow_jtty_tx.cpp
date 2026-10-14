@@ -8,6 +8,7 @@
 #include "wsjtz/jtty/ui/TransmitPanel.hpp"
 #include "JttyMessages.hpp"
 #include "Audio/soundout.h"
+#include "Radio.hpp"
 #include <QPlainTextEdit>
 #include <QPushButton>
 #include <QStatusBar>
@@ -178,10 +179,10 @@ void MainWindow::sendJttyMacro (QString const& macro)
   sendJttyText (expanded);
 }
 
-void MainWindow::selectJttyCorrespondent (QString const& line,QString const& word)
+void MainWindow::selectJttyCorrespondent (QString const& line,QString const& word,bool sendF2)
 {
   Q_UNUSED (line);
-  if (!m_jttyActive) return;
+  if (!m_jttyActive || !Radio::is_callsign (word)) return;
   // Upstream handleDecodeSelection JTTY branch: DX Call changes first, then
   // restore the matching received SNR (the field-change handler resets it).
   set_dateTimeQSO (-1);
@@ -195,4 +196,6 @@ void MainWindow::selectJttyCorrespondent (QString const& line,QString const& wor
     clearCallInfo ();
     ui->ci_dxcall->setText (word);
   }
+  if (sendF2 && m_jttyPanel && m_jttyPanel->isFt8Style ())
+    m_jttyPanel->triggerMacro (2);
 }

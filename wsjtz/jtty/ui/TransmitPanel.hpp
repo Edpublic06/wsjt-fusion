@@ -19,6 +19,7 @@ public:
   void showPreparedText(QString const&);
   void clearEntry();
   void triggerMacro(int index);
+  bool isFt8Style() const { return style_ == 1; }
   int serial() const;
   QString nextCall() const;
 private:

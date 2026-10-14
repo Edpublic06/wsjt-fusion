@@ -776,7 +776,7 @@ private:
   QString m_jttyOriginalLhHeading, m_jttyOriginalRhHeading;
   int m_jttyTolerance = 1300;
   int m_jttyHisCallSnr = -10;
-  void selectJttyCorrespondent (QString const& line,QString const& word);
+  void selectJttyCorrespondent (QString const& line,QString const& word,bool sendF2=false);
   int m_jttyPreviousControlsMaximumHeight = 220;
   QByteArray m_jttyPreviousSplitterState;
   qint64 m_jttyEnqueueId = 0;

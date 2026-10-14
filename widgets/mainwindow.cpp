@@ -809,8 +809,12 @@ MainWindow::MainWindow(QDir const& temp_directory, bool multiple,
   m_jttyLive = new wsjtz::LiveReceiver {this};
   initializeJttyTransmit ();
   connect (ui->decodedTextBrowser,&DisplayText::selectJttyCallsign,this,
-    [this] (QString const& line,QString const& word,Qt::KeyboardModifiers) { selectJttyCorrespondent (line,word); });
+    [this] (QString const& line,QString const& word,Qt::KeyboardModifiers) { selectJttyCorrespondent (line,word,true); });
   connect (ui->decodedTextBrowser2,&DisplayText::selectJttyCallsign,this,
+    [this] (QString const& line,QString const& word,Qt::KeyboardModifiers) { selectJttyCorrespondent (line,word,true); });
+  connect (ui->decodedTextBrowser,&DisplayText::previewJttyCallsign,this,
+    [this] (QString const& line,QString const& word,Qt::KeyboardModifiers) { selectJttyCorrespondent (line,word); });
+  connect (ui->decodedTextBrowser2,&DisplayText::previewJttyCallsign,this,
     [this] (QString const& line,QString const& word,Qt::KeyboardModifiers) { selectJttyCorrespondent (line,word); });
   m_jttyModeAction = ui->menuMode->addAction (tr ("JTTY (experimental)"));
   m_jttyModeAction->setCheckable (true);

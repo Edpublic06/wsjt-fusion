@@ -25,7 +25,10 @@ int main(int argc,char**argv) {
  entry->setPlainText("CQ F6FDY CQ");send->click();if(sent!="CQ F6FDY CQ")return 3;
  panel.triggerMacro(1);if(macro!="CQ %M CQ")return 4;
  auto style=panel.findChild<QComboBox*>("comboBoxJttyStyle");auto f1=panel.findChild<QLineEdit*>("msg1");
+ if(panel.isFt8Style())return 19;
  f1->setText("TEST CQ %M");style->setCurrentIndex(1);if(f1->text()=="TEST CQ %M")return 5;
+ if(!panel.isFt8Style())return 20;
+ macro.clear();panel.triggerMacro(2);if(macro!="%H %M %R")return 21;
  style->setCurrentIndex(0);if(f1->text()!="TEST CQ %M")return 6;
  int changes=0;panel.rxChanged=[&](int){++changes;};panel.setFrequencies(1200,1500);if(changes)return 7;
  panel.findChild<QSpinBox*>("RxFreqSpinBox_2")->setValue(1300);if(changes!=1)return 8;

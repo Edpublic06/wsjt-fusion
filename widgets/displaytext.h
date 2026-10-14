@@ -48,6 +48,7 @@ public:
   Q_SIGNAL void selectCallsign (Qt::KeyboardModifiers);
   // Z
   Q_SIGNAL void leftClick (Qt::KeyboardModifiers);
+  Q_SIGNAL void previewJttyCallsign (QString const& line,QString const& word,Qt::KeyboardModifiers);
   Q_SIGNAL void selectJttyCallsign (QString const& line,QString const& word,Qt::KeyboardModifiers);
 void log(QString s);
   Q_SIGNAL void erased ();
