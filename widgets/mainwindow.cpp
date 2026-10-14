@@ -9891,6 +9891,8 @@ void MainWindow::enterJttyReceive ()
   ui->tuneButton->setEnabled (false);
   ui->DecodeButton->setEnabled (false);
   m_jttyModeAction->setChecked (true);
+  m_jttyPreviousControlsMaximumHeight = ui->controls_stack_widget->maximumHeight ();
+  ui->controls_stack_widget->setMaximumHeight (QWIDGETSIZE_MAX);
   if (!m_jttyPanel) {
     m_jttyPanel = new wsjtz::TransmitPanel {m_settings,ui->controls_stack_widget};
     ui->controls_stack_widget->addWidget (m_jttyPanel);
@@ -9910,6 +9912,7 @@ void MainWindow::enterJttyReceive ()
   }
   m_jttyPanel->setFrequencies (ui->RxFreqSpinBox->value (),ui->TxFreqSpinBox->value ());
   ui->controls_stack_widget->setCurrentWidget (m_jttyPanel);
+  ui->controls_stack_widget->updateGeometry ();
   m_jttyOriginalLhHeading=ui->lh_decodes_headings_label->text ();
   m_jttyOriginalRhHeading=ui->rh_decodes_headings_label->text ();
   ui->lh_decodes_headings_label->setText (tr ("Freq   dB   Message"));
@@ -9928,6 +9931,8 @@ void MainWindow::leaveJttyReceive ()
   Q_EMIT jttyReceivePolicy (false,m_jttyAudioSession);
   m_jttyLive->stop ();
   ui->controls_stack_widget->setCurrentIndex (0);
+  ui->controls_stack_widget->setMaximumHeight (m_jttyPreviousControlsMaximumHeight);
+  ui->controls_stack_widget->updateGeometry ();
   ui->lh_decodes_headings_label->setText (m_jttyOriginalLhHeading);
   ui->rh_decodes_headings_label->setText (m_jttyOriginalRhHeading);
   m_jttyModeAction->setChecked (false);

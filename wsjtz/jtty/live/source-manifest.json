@@ -168,6 +168,12 @@
       "source_sha256": "3ae54b83bc689de257c0a167228b428eb599ff83be496823e2e3398a98c4e4fa",
       "sha256": "e66252972e9a51030872fb6033bf4e9cefea8cd625b7666bf37179c7f4cdd726",
       "adaptation": "Expose audio-thread bufferSize accessor required by upstream JttyTxStream; retain legacy SoundOutput otherwise."
+    },
+    {
+      "source": "widgets/CurrentPageHeightStackedWidget.hpp",
+      "destination": "widgets/CurrentPageHeightStackedWidget.hpp",
+      "sha256": "7985addd72dfa48db3aa4fba299aa21825902cbb4ce9f96e692e766604b14223",
+      "adaptation": "none; upstream adaptive page-height container used for the main controls stack"
     }
   ],
   "import_date": "2026-10-14"

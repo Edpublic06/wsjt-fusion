@@ -104,3 +104,18 @@ click-to-call and contest automatic log trigger are not claimed by this step.
 See [the upstream QSO audit](JTTY-UPSTREAM-QSO-AUDIT.md) for precisely what
 WSJT-X implements and where. The existing Log QSO form can be used manually;
 review the fields, since automatic JTTY-to-QSO extraction is not connected yet.
+
+### Embedded panel height fix
+
+Fusion's controls stack has a legacy 220-pixel height cap. The original JTTY
+page needs more space at the configured font size, so this cap clipped native
+macOS controls. The unchanged upstream `CurrentPageHeightStackedWidget` now
+sizes the stack from the active page; entering JTTY removes the cap and leaving
+restores the previous maximum. The upstream JTTY page itself is unchanged.
+An embedded large-font layout regression checks buttons/fields are not squeezed
+below their native minimum size and that the ordinary page can shrink again.
+
+For a changing instantaneous audio trace, select **Current** in Wide Graph.
+**Cumulative** uses the upstream long-term average (up to roughly 180 seconds)
+and can look nearly stationary; 2D gain controls its visual amplitude.
+No personal spectrum setting is rewritten by the layout fix.

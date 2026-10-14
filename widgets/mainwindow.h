@@ -775,6 +775,7 @@ private:
   wsjtz::TransmitPanel * m_jttyPanel = nullptr;
   QString m_jttyOriginalLhHeading, m_jttyOriginalRhHeading;
   int m_jttyTolerance = 1300;
+  int m_jttyPreviousControlsMaximumHeight = 220;
   qint64 m_jttyEnqueueId = 0;
   QString m_jttyTxText;
   bool m_jttyReturnToRx = true;

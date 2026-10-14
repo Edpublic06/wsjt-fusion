@@ -1,5 +1,8 @@
 // Offline UI wiring regression. No audio device, radio or personal settings.
 #include "TransmitPanel.hpp"
+#include "widgets/CurrentPageHeightStackedWidget.hpp"
+#include <QVBoxLayout>
+#include <QTextEdit>
 #include <QApplication>
 #include <QSettings>
 #include <QTemporaryDir>
@@ -28,6 +31,24 @@ int main(int argc,char**argv) {
  sent.clear();macro.clear();panel.setBusy(true);send->click();panel.triggerMacro(1);if(!sent.isEmpty()||!macro.isEmpty())return 9;
  panel.setBusy(false);panel.setProgress(59*1536,2*59*1536);if(panel.findChild<QLabel*>("labelJttyFrameCount")->text()!="1 / 2")return 10;
  if(settings.value("WSJTXExisting").toInt()!=42)return 11;
+ // Exercise the embedded controls at a large font, not just the standalone form.
+ QWidget window; auto layout=new QVBoxLayout(&window);
+ layout->addWidget(new QTextEdit(&window),1);
+ auto stack=new CurrentPageHeightStackedWidget(&window);
+ auto normal=new QWidget(stack);auto normalLayout=new QVBoxLayout(normal);normalLayout->addWidget(new QLabel("Timed-mode controls",normal));normal->setMinimumHeight(100);stack->addWidget(normal);
+ auto embedded=new wsjtz::TransmitPanel(&settings,stack);
+ auto font=embedded->font();font.setPointSize(20);embedded->setFont(font);
+ stack->addWidget(embedded);stack->setMaximumHeight(QWIDGETSIZE_MAX);
+ stack->setCurrentWidget(embedded);layout->addWidget(stack);
+ window.resize(1400,950);window.show();app.processEvents();
+ if(stack->height()<embedded->minimumSizeHint().height())return 12;
+ for(auto control:embedded->findChildren<QPushButton*>())
+   if(control->height()<control->minimumSizeHint().height())return 13;
+ for(auto control:embedded->findChildren<QLineEdit*>())
+   if(control->objectName()!="qt_spinbox_lineedit" && control->height()<control->minimumSizeHint().height()){std::cerr<<control->objectName().toStdString()<<" actual="<<control->height()<<" min="<<control->minimumSizeHint().height()<<"\n";return 14;}
+ window.grab().save("/private/tmp/fusion-jtty-embedded-panel.png");
+ stack->setCurrentWidget(normal);stack->setMaximumHeight(220);app.processEvents();
+ if(stack->minimumSizeHint().height()>220)return 15;
  panel.grab().save("/private/tmp/fusion-jtty-original-panel.png");
  std::cout<<"PASS original JTTY page wiring, style persistence, frequency synchronization and TX lock\n";
 }
