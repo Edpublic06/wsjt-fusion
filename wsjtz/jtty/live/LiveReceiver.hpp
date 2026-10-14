@@ -13,12 +13,14 @@ public:
   void start (int center,int tolerance);
   void stop ();
   void append (QByteArray const& pcm);
+  void appendTransmit (QString const& text,int frequency);
   std::function<void(QString const&)> textChanged, statusChanged;
 private:
   bool stopping_ = false;
   QProcess process_;
   QByteArray pending_;
-  QMap<qint64,QString> lines_;
+  quint64 session_ = 0;
+  QMap<QPair<quint64,qint64>,QString> lines_;
 };
 }
 #endif

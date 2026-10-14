@@ -1,6 +1,9 @@
 //---------------------------------------------------------- MainWindow
 #include "mainwindow.h"
+#include "JttyTxLifecycle.hpp"
+#include "Modulator/JttyTxStream.hpp"
 #include "wsjtz/jtty/ui/WavReceiveDialog.hpp"
+#include "wsjtz/jtty/ui/TransmitPanel.hpp"
 
 #include <cinttypes>
 #include <cstring>
@@ -14,6 +17,8 @@
 #include <QApplication>
 #include <QDockWidget>
 #include <QVBoxLayout>
+#include <QPushButton>
+#include <QLabel>
 #include <QPlainTextEdit>
 #include <QStringListModel>
 #include <QSettings>
@@ -802,7 +807,8 @@ MainWindow::MainWindow(QDir const& temp_directory, bool multiple,
   ui->actionQ65->setActionGroup(modeGroup);
   ui->actionFreqCal->setActionGroup(modeGroup);
   m_jttyLive = new wsjtz::LiveReceiver {this};
-  m_jttyModeAction = ui->menuMode->addAction (tr ("JTTY (receive only — experimental)"));
+  initializeJttyTransmit ();
+  m_jttyModeAction = ui->menuMode->addAction (tr ("JTTY (experimental)"));
   m_jttyModeAction->setCheckable (true);
   m_jttyModeAction->setActionGroup (modeGroup);
   connect (m_jttyModeAction,&QAction::triggered,this,[this] { enterJttyReceive (); });
@@ -822,7 +828,12 @@ MainWindow::MainWindow(QDir const& temp_directory, bool multiple,
     }
   },Qt::QueuedConnection);
   m_jttyLive->textChanged = [this] (QString const& text) {
-    if (m_jttyText) { m_jttyText->setPlainText (text); m_jttyText->moveCursor (QTextCursor::End); }
+    if (m_jttyActive) {
+      ui->decodedTextBrowser->setPlainText (text);
+      ui->decodedTextBrowser2->setPlainText (text);
+      ui->decodedTextBrowser->moveCursor (QTextCursor::End);
+      ui->decodedTextBrowser2->moveCursor (QTextCursor::End);
+    }
   };
   m_jttyLive->statusChanged = [this] (QString const& text) { statusBar ()->showMessage (text,10000); };
 
@@ -1574,6 +1585,8 @@ void MainWindow::on_the_minute ()
 //--------------------------------------------------- MainWindow destructor
 MainWindow::~MainWindow()
 {
+  if (m_jttyTxStream && m_audioThread.isRunning ())
+    QMetaObject::invokeMethod (m_jttyTxStream,[this] { m_jttyTxStream->stop (); },Qt::BlockingQueuedConnection);
   if (m_jttyLive) { m_jttyLive->textChanged = {}; m_jttyLive->statusChanged = {}; m_jttyLive->stop (); }
   if(m_astroWidget) m_astroWidget.reset ();
   auto fname {QDir::toNativeSeparators(m_config.writeable_data_dir ().absoluteFilePath ("wsjtx_wisdom.dat"))};
@@ -2753,6 +2766,7 @@ void MainWindow::showSoundInError(const QString& errorMsg)
 
 void MainWindow::showSoundOutError(const QString& errorMsg)
 {
+  if (m_jttyTxLifecycle->active ()) stopJttyTransmit ();
   if (m_splash && m_splash->isVisible ()) m_splash->hide ();
   MessageBox::critical_message (this, tr ("Error in Sound Output"), errorMsg);
 }
@@ -2764,6 +2778,7 @@ void MainWindow::showStatusMessage(const QString& statusMsg)
 
 void MainWindow::on_actionSettings_triggered()               //Setup Dialog
 {
+  if (m_jttyTxLifecycle->active ()) stopJttyTransmit ();
   if (m_mode=="FT8") keep_frequency = true;
   // things that might change that we need know about
   auto callsign = m_config.my_callsign ();
@@ -3056,6 +3071,10 @@ void MainWindow::auto_tx_mode (bool state)
 
 void MainWindow::keyPressEvent (QKeyEvent * e)
 {
+  if (m_jttyActive && m_jttyPanel && e->key () >= Qt::Key_F1 && e->key () <= Qt::Key_F8) {
+    m_jttyPanel->triggerMacro (e->key () - Qt::Key_F1 + 1); e->accept (); return;
+  }
+
   if(SpecOp::FOX == m_specOp) {
     switch (e->key()) {
       case Qt::Key_Return:
@@ -3909,6 +3928,7 @@ void MainWindow::subProcessError (QProcess * process, QProcess::ProcessError)
 
 void MainWindow::closeEvent(QCloseEvent * e)
 {
+  if (m_jttyTxLifecycle->active ()) stopJttyTransmit ();
   m_valid = false;              // suppresses subprocess errors
   m_config.transceiver_offline ();
   writeSettings ();
@@ -4679,6 +4699,7 @@ void MainWindow::on_DecodeButton_clicked (bool /* checked */) //Decode request
 
 void MainWindow::freezeDecode(int n)                          //freezeDecode()
 {
+  if (m_jttyActive) return; // Continuous waterfall row replay is not integrated yet.
   if((n%100)==2) {
     if(m_mode=="FST4" and m_config.single_decode() and ui->sbFtol->value()>10) ui->sbFtol->setValue(10);
     on_DecodeButton_clicked (true);
@@ -6743,6 +6764,12 @@ void MainWindow::decodeBusy(bool b)                             //decodeBusy()
 //------------------------------------------------------------- //guiUpdate()
 void MainWindow::guiUpdate()
 {
+  // JTTY has its own asynchronous PTT/audio lifecycle; never run timed TX logic.
+  if (m_jttyActive) {
+    ui->labUTC->setText (QDateTime::currentDateTimeUtc ().time ().toString () + " ");
+    displayDialFrequency ();
+    return;
+  }
   static char message[38];
   static char msgsent[38];
   double txDuration;
@@ -7566,6 +7593,7 @@ void MainWindow::useNextCall()
 
 void MainWindow::startTx2()
 {
+  if (m_jttyActive) { startJttyTransmitAudio (); return; }
   bool modulator_active;
   bool tci_active = m_tci_audio;
   if (tci_active) modulator_active = m_tci_mod_active;
@@ -7603,6 +7631,7 @@ void MainWindow::startTx2()
 
 void MainWindow::stopTx()
 {
+  if (m_jttyTxLifecycle->active ()) { stopJttyTransmit (); return; }
   if (m_tci_audio) Q_EMIT m_config.transceiver_modulator_stop();
   else Q_EMIT endTransmitMessage ();
   m_btxok = false;
@@ -7929,6 +7958,10 @@ void MainWindow::doubleClickOnCall2(Qt::KeyboardModifiers modifiers)
 
 void MainWindow::doubleClickOnCall(Qt::KeyboardModifiers modifiers)
 {
+  if (m_jttyActive) {
+    statusBar ()->showMessage (tr ("For now, enter the JTTY correspondent in DX Call manually."),10000);
+    return;
+  }
   QTextCursor cursor;
   if(m_mode=="FST4W") {
     MessageBox::information_message (this,
@@ -9822,7 +9855,7 @@ void MainWindow::restartJttyReceive ()
   m_wideGraph->jttyReceptionEnded ();
   m_jttySpectrumSample = 0;
   m_jttySpectrum.begin (m_jttyAudioSession,0,QDateTime::currentDateTimeUtc ().toMSecsSinceEpoch ());
-  m_jttyLive->start (qBound (200,ui->RxFreqSpinBox->value (),2800),1300);
+  m_jttyLive->start (qBound (200,ui->RxFreqSpinBox->value (),5000),m_jttyTolerance);
   Q_EMIT jttyReceivePolicy (true,m_jttyAudioSession);
 }
 
@@ -9835,6 +9868,10 @@ void MainWindow::enterJttyReceive ()
   }
   // Reuse the existing audio/display setup, then replace timed reception.
   on_stopTxButton_clicked ();
+  Q_EMIT endTransmitMessage (true);
+  ptt0Timer.stop (); ptt1Timer.stop ();
+  m_tx_when_ready = false; g_iptt = 0; m_transmitting = false;
+  m_config.transceiver_ptt (false);
   ui->cbAutoCQ->setChecked (false); ui->cbAutoCall->setChecked (false);
   auto_tx_mode (false);
   bool const saved_keep_frequency = keep_frequency;
@@ -9852,30 +9889,52 @@ void MainWindow::enterJttyReceive ()
   ui->cbAutoSeq->setEnabled (false); ui->cbAutoCQ->setEnabled (false);
   ui->cbAutoCall->setEnabled (false); ui->autoButton->setEnabled (false);
   ui->tuneButton->setEnabled (false);
+  ui->DecodeButton->setEnabled (false);
   m_jttyModeAction->setChecked (true);
-  if (!m_jttyDock) {
-    m_jttyDock=new QDockWidget {tr ("JTTY — continuous reception (transmit not connected)"),this};
-    m_jttyText=new QPlainTextEdit {m_jttyDock}; m_jttyText->setReadOnly (true);
-    m_jttyDock->setWidget (m_jttyText);
-    addDockWidget (Qt::BottomDockWidgetArea,m_jttyDock);
+  if (!m_jttyPanel) {
+    m_jttyPanel = new wsjtz::TransmitPanel {m_settings,ui->controls_stack_widget};
+    ui->controls_stack_widget->addWidget (m_jttyPanel);
+    m_jttyPanel->sendText = [this] (QString const& text) { sendJttyText (text); };
+    m_jttyPanel->sendMacro = [this] (QString const& macro) { sendJttyMacro (macro); };
+    m_jttyPanel->rxChanged = [this] (int n) { ui->RxFreqSpinBox->setValue (n); };
+    m_jttyPanel->txChanged = [this] (int n) { ui->TxFreqSpinBox->setValue (n); };
+    m_jttyPanel->toleranceChanged = [this] (int n) {
+      m_jttyTolerance=n; m_wideGraph->setTol (n); restartJttyReceive ();
+    };
+    connect (ui->RxFreqSpinBox,qOverload<int> (&QSpinBox::valueChanged),this,[this] {
+      m_jttyPanel->setFrequencies (ui->RxFreqSpinBox->value (),ui->TxFreqSpinBox->value ());
+    });
+    connect (ui->TxFreqSpinBox,qOverload<int> (&QSpinBox::valueChanged),this,[this] {
+      m_jttyPanel->setFrequencies (ui->RxFreqSpinBox->value (),ui->TxFreqSpinBox->value ());
+    });
   }
-  m_jttyDock->show ();
-  mode_label.setText ("JTTY RX");
+  m_jttyPanel->setFrequencies (ui->RxFreqSpinBox->value (),ui->TxFreqSpinBox->value ());
+  ui->controls_stack_widget->setCurrentWidget (m_jttyPanel);
+  m_jttyOriginalLhHeading=ui->lh_decodes_headings_label->text ();
+  m_jttyOriginalRhHeading=ui->rh_decodes_headings_label->text ();
+  ui->lh_decodes_headings_label->setText (tr ("Freq   dB   Message"));
+  ui->rh_decodes_headings_label->setText (tr ("Freq   dB   Message"));
+  ui->decodedTextBrowser->clear (); ui->decodedTextBrowser2->clear ();
+  mode_label.setText ("JTTY");
   monitor (true);
-  statusBar ()->showMessage (tr ("JTTY receive only: using your configured local audio input. Monitor stops/starts reception."),10000);
+  statusBar ()->showMessage (tr ("JTTY experimental: use F1-F8 or Send message; Halt Tx stops transmission."),10000);
 }
 
 void MainWindow::leaveJttyReceive ()
 {
+  if (m_jttyTxLifecycle->active ()) stopJttyTransmit ();
   m_wideGraph->jttyReceptionEnded ();
   m_jttyActive=false; ++m_jttyAudioSession;
   Q_EMIT jttyReceivePolicy (false,m_jttyAudioSession);
   m_jttyLive->stop ();
-  if (m_jttyDock) m_jttyDock->hide ();
+  ui->controls_stack_widget->setCurrentIndex (0);
+  ui->lh_decodes_headings_label->setText (m_jttyOriginalLhHeading);
+  ui->rh_decodes_headings_label->setText (m_jttyOriginalRhHeading);
   m_jttyModeAction->setChecked (false);
   ui->cbAutoSeq->setEnabled (true); ui->cbAutoCQ->setEnabled (true);
   ui->cbAutoCall->setEnabled (true); ui->autoButton->setEnabled (true);
   ui->tuneButton->setEnabled (true);
+  ui->DecodeButton->setEnabled (true);
 }
 
 void MainWindow::on_actionFT2_triggered()
@@ -11259,6 +11318,7 @@ void MainWindow::stopTuneATU()
 
 void MainWindow::on_stopTxButton_clicked()                    //Stop Tx
 {
+  if (m_jttyTxLifecycle->active ()) stopJttyTransmit ();
   // Z
   if (m_zdebug) log("stopTXButton");
   if (m_config.rxTotxFreq()) on_pbT2R_clicked();
@@ -11391,6 +11451,10 @@ void MainWindow::setFreq4(int rxFreq, int txFreq)
 void MainWindow::handle_transceiver_update (Transceiver::TransceiverState const& s)
 {
   Transceiver::TransceiverState old_state {m_rigState};
+  if (m_jttyTxLifecycle->phase () == JttyTxLifecycle::Phase::Transmitting && !s.ptt ()) {
+    stopJttyTransmit ();
+    statusBar ()->showMessage (tr ("JTTY stopped: the radio left transmit mode."),10000);
+  }
   //transmitDisplay (s.ptt ());
   if (s.ptt () // && !m_rigState.ptt ()
       ) { // safe to start audio
@@ -11521,7 +11585,7 @@ void MainWindow::rigFailure (QString const& reason)
 
 void MainWindow::transmit (double snr)
 {
-  if (m_jttyActive) return; // No live JTTY transmit adapter yet.
+  if (m_jttyActive) return; // JTTY uses the separate upstream asynchronous stream.
   double toneSpacing=0.0;
   if (m_mode == "JT65") {
     if(m_nSubMode==0) toneSpacing=11025.0/4096.0;

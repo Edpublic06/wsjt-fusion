@@ -15,7 +15,17 @@ radio simultaneously. Back up data before any later live-mode testing.
 
 First step: isolated offline JTTY WAV receive panel. See
 [the JTTY module notes](../wsjtz/jtty/README.md#fusion-development-adapter--offline-wav-reception).
-This step creates no JTTY transmit or live-audio path and is not a public release.
+That initial step created no transmit/live-audio path. The later development
+steps below add those paths; no public release is created here.
+
+### Agreed scope and sequence — 14 October 2026
+
+F6FDY requested that reliable JTTY integration based on the original WSJT-X
+code and UI takes priority. Preserve the upstream display/QSO/logging audit
+for the next phase. **Do not implement Fusion automatic QSO logging yet.**
+Once JTTY operation has been implemented reliably and validated, discuss the
+Fusion-specific automatic logging design separately. Manual review through
+the existing Log QSO dialog remains available during development.
 
 ### Receive dial frequencies
 
@@ -38,9 +48,59 @@ Wide Graph and signal meter from the same PCM blocks as the decoder.
 The Fusion plotter adds isolated JTTY branches for the upstream cumulative and
 linear-average spectra and continuous UTC labels. Timed FT8/FT4 buffers are not
 used for JTTY plotting. The temporary separate FFT monitor has been removed.
-Upstream interactive row re-decoding/history and transmit are not connected yet.
+Upstream interactive row re-decoding/history is not connected yet.
+See the transmit section below for the local one-message send adapter.
 
 The imported spectrum regression suite retains its continuous-stream tests.
 Its timed-spectrum comparison uses an analytical coherent-tone check instead:
 Fusion's baseline symspec has an older ABI and different level conventions.
 All imports and adaptations are recorded in `wsjtz/jtty/live/source-manifest.json`.
+
+### Experimental local transmission
+
+The development application now embeds the original upstream JTTY UI page:
+RX/TX offsets, F Tol, F1–F8 with editable macros, Contest/FT8 message style,
+Send message, frame progress, Call next and Serial Number. F1 sends the CQ
+template; Send message sends the editor text once. The existing main-window
+Halt Tx button stops transmission. Both use the TX audio offset, configured output
+device/channel, output attenuation, radio PTT method and TX lead delay.
+The radio must acknowledge PTT before audio playback starts.
+
+The upstream `genjtty_profile` and `gen_jttywave` codec/waveform sources remain
+unchanged, as do `JttyMessages`, `TxAudioQueue`, `JttyPcmFifo`, `JttyTxStream`
+and `JttyTxLifecycle`. Their exact provenance is recorded in the live manifest.
+Fusion's adapters are `wsjtz/jtty/tx/Encode.cpp` and
+`widgets/mainwindow_jtty_tx.cpp`; the extracted form and adapter live in
+`wsjtz/jtty/ui/JttyTransmitPanel.ui` and `TransmitPanel.cpp`. SoundOutput exposes the device buffer size
+so the upstream stream can wait for the full audio tail to drain.
+
+Sending locks frequency/settings controls, suspends reception, then releases
+PTT and restores reception if Monitor was active. Halt Tx, radio/audio errors,
+mode changes, application close and PTT/queue/completion timeouts cancel the
+operation. Stale callbacks are checked against the queue epoch.
+
+Limits: one message at a time, at most 320 characters and 60 seconds of
+rendered audio. No continuous typing/filler, queued sends, TCI output or
+interactive waterfall replay is claimed. The published beta2 remains unchanged.
+
+The Cumulative 2D spectrum now uses the same scratch-copy/decibel conversion
+as upstream; this fixes the previously nearly flat cumulative JTTY curve.
+
+Validation: upstream stream and lifecycle tests plus offline codec/waveform
+to continuous-receiver loopback. These tests do not key a radio. Actual
+transmit level, PTT operation and a complete over-the-air QSO require operator
+validation on the development application. Live receive was confirmed by F6FDY.
+
+### Original UI and remaining receive/logging integration
+
+The imported form keeps the upstream page layout and widget names. Runtime
+wiring supports one-shot sends and F1–F8 text expansion, style-specific template
+persistence under Fusion/JTTY, RX/TX synchronization, tolerance and progress.
+Live typing shortcuts are not advertised until that lifecycle is implemented.
+The 200-line RX/TX transcript survives receive-worker restarts.
+
+The native-atom macro encoder, selected-message metadata, QSO-pane filtering,
+click-to-call and contest automatic log trigger are not claimed by this step.
+See [the upstream QSO audit](JTTY-UPSTREAM-QSO-AUDIT.md) for precisely what
+WSJT-X implements and where. The existing Log QSO form can be used manually;
+review the fields, since automatic JTTY-to-QSO extraction is not connected yet.

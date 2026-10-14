@@ -195,6 +195,12 @@ void CPlotter::draw(float swide[], bool bScroll, bool bRed)
     if(!m_bReplot && m_mode != "JTTY") flat4_(&dec_data.savg[j0],&jz,&m_Flatten);
   }
 
+  std::vector<float> jttyAverage;
+  if (m_mode == "JTTY" && bScroll && j0 < JttySpectrumFrame::BinCount) {
+    int count = std::min (jz,JttySpectrumFrame::BinCount-j0);
+    jttyAverage.assign (m_jttyCumulative.begin ()+j0,m_jttyCumulative.begin ()+j0+count);
+    flat4_ (jttyAverage.data (),&count,&m_Flatten);
+  }
   ymin=1.e30;
   if(swide[0]>1.e29 and swide[0]< 1.5e30) painter1.setPen(Qt::green);
   if(swide[0]>1.4e30) painter1.setPen(Qt::red);
@@ -214,6 +220,7 @@ void CPlotter::draw(float swide[], bool bScroll, bool bRed)
   }
   m_line++;
 
+  if (m_mode == "JTTY") ymin=0; // Same flattened-spectrum origin as upstream.
   float y2min=1.e30;
   float y2max=-1.e30;
   for(int i=0; i<iz; i++) {
@@ -224,8 +231,10 @@ void CPlotter::draw(float swide[], bool bScroll, bool bRed)
     if(bScroll) {
       float sum=0.0;
       int j=j0+m_binsPerPixel*i;
-      for(int k=0; k<m_binsPerPixel; k++) {
-        sum += m_mode == "JTTY" ? m_jttyCumulative[j++] : dec_data.savg[j++];
+      for(int k=0; k<m_binsPerPixel; k++,j++) {
+        if (m_mode == "JTTY") {
+          if (j-j0 < int(jttyAverage.size ())) sum += jttyAverage[j-j0];
+        } else sum += dec_data.savg[j];
       }
       m_sum[i]=sum;
     }

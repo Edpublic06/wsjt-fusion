@@ -1372,6 +1372,33 @@ target_link_libraries (wsjtz_incoming_call_regression Qt5::Core)
 add_executable (wsjtz_cq_reply_queue_regression wsjtz/automation/test_cq_reply_queue.cpp)
 target_link_libraries (wsjtz_cq_reply_queue_regression Qt5::Core)
 
+# Unchanged WSJT-X asynchronous transmit components, isolated from timed modes.
+add_library (fusion_jtty_tx STATIC
+  Audio/TxAudioQueue.cpp Modulator/JttyPcmFifo.cpp Modulator/JttyTxStream.cpp
+  wsjtz/jtty/tx/Encode.cpp
+  wsjtz/jtty/ui/TransmitPanel.cpp wsjtz/jtty/ui/JttyTransmitPanel.ui)
+set_target_properties (fusion_jtty_tx PROPERTIES AUTOMOC ON CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES)
+target_link_libraries (fusion_jtty_tx wsjt_fort wsjt_cxx wsjt_qt wsjt_qtmm Qt5::Multimedia)
+foreach (tx_test txstream tx_lifecycle)
+  add_executable (test_fusion_jtty_${tx_test} tests/unit/jtty/test_jtty_${tx_test}.cpp)
+  set_target_properties (test_fusion_jtty_${tx_test} PROPERTIES AUTOMOC ON CXX_STANDARD 17)
+  target_link_libraries (test_fusion_jtty_${tx_test} fusion_jtty_tx Qt5::Test Qt5::Widgets)
+  add_test (NAME fusion_jtty_${tx_test} COMMAND test_fusion_jtty_${tx_test})
+  set_tests_properties (fusion_jtty_${tx_test} PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+endforeach ()
+target_sources (test_fusion_jtty_txstream PRIVATE Audio/soundout.cpp)
+
+add_executable (test_fusion_jtty_panel wsjtz/jtty/ui/TestTransmitPanel.cpp)
+set_target_properties (test_fusion_jtty_panel PROPERTIES CXX_STANDARD 17)
+target_link_libraries (test_fusion_jtty_panel fusion_jtty_tx)
+add_test (NAME fusion_jtty_panel COMMAND test_fusion_jtty_panel)
+set_tests_properties (fusion_jtty_panel PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+
+add_executable (test_fusion_jtty_tx_encode wsjtz/jtty/tx/TestEncode.cpp)
+set_target_properties (test_fusion_jtty_tx_encode PROPERTIES CXX_STANDARD 17)
+target_link_libraries (test_fusion_jtty_tx_encode fusion_jtty_tx)
+add_test (NAME fusion_jtty_tx_encode COMMAND test_fusion_jtty_tx_encode $<TARGET_FILE:fusion-jtty-rx>)
+
 add_executable (fusion-jtty-rx wsjtz/jtty/live/ReceiveStream.cpp)
 set_target_properties (fusion-jtty-rx PROPERTIES CXX_STANDARD 14 CXX_STANDARD_REQUIRED YES)
 target_link_libraries (fusion-jtty-rx wsjt_fort wsjt_cxx Qt5::Core)
@@ -1634,6 +1661,7 @@ add_executable (wsjtx MACOSX_BUNDLE
   ${wsjtx_CXXSRCS}
   wsjtz/jtty/ui/WavReceiveDialog.cpp
   wsjtz/jtty/live/LiveReceiver.cpp
+  widgets/mainwindow_jtty_tx.cpp
   ${wsjtx_GENUISRCS}
   ${WSJTX_ICON_FILE}
   ${wsjtx_RESOURCES_RCC}
@@ -1657,6 +1685,13 @@ set_target_properties (wsjtx PROPERTIES
   MACOSX_BUNDLE_GUI_IDENTIFIER "org.k1jt.wsjtx"
   )
 
+# Keep the legacy application at C++11; only the JTTY lifecycle bridge needs 17.
+if (MSVC)
+  set_property (SOURCE widgets/mainwindow.cpp widgets/mainwindow_jtty_tx.cpp APPEND PROPERTY COMPILE_OPTIONS /std:c++17)
+else ()
+  set_property (SOURCE widgets/mainwindow.cpp widgets/mainwindow_jtty_tx.cpp APPEND PROPERTY COMPILE_OPTIONS -std=c++17)
+endif ()
+target_link_libraries (wsjtx fusion_jtty_tx)
 target_include_directories (wsjtx PRIVATE ${FFTW3_INCLUDE_DIRS})
 if ((NOT ${OPENMP_FOUND}) OR APPLE)
   target_link_libraries (wsjtx wsjt_fort)

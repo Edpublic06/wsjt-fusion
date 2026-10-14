@@ -5,6 +5,10 @@
 #include <QMainWindow>
 #include "wsjtz/jtty/live/LiveReceiver.hpp"
 #include "JttySpectrum.hpp"
+class JttyTxLifecycle;
+class JttyTxStream;
+class TxAudioQueue;
+namespace wsjtz { class TransmitPanel; }
 class QDockWidget;
 class QPlainTextEdit;
 #include <QByteArray>
@@ -765,6 +769,21 @@ private:
   QPlainTextEdit * m_jttyText = nullptr;
   QAction * m_jttyModeAction = nullptr;
   quint64 m_jttyAudioSession = 0;
+  std::unique_ptr<TxAudioQueue> m_jttyTxQueue;
+  JttyTxStream * m_jttyTxStream = nullptr;
+  std::unique_ptr<JttyTxLifecycle> m_jttyTxLifecycle;
+  wsjtz::TransmitPanel * m_jttyPanel = nullptr;
+  QString m_jttyOriginalLhHeading, m_jttyOriginalRhHeading;
+  int m_jttyTolerance = 1300;
+  qint64 m_jttyEnqueueId = 0;
+  QString m_jttyTxText;
+  bool m_jttyReturnToRx = true;
+  void initializeJttyTransmit ();
+  void sendJttyText (QString const& text);
+  void sendJttyMacro (QString const& macro);
+  void stopJttyTransmit ();
+  void startJttyTransmitAudio ();
+  void updateJttyTxControls (bool busy);
   bool m_jttyActive = false;
   void enterJttyReceive ();
   void leaveJttyReceive ();

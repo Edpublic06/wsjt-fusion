@@ -307,6 +307,7 @@ void WideGraph::setTxFreq(int n)                                   //setTxFreq
 
 void WideGraph::setMode(QString mode)                              //setMode
 {
+  setWindowTitle ("WSJT-Fusion — Wide Graph");
   m_mode=mode;
   ui->fSplitSpinBox->setEnabled(m_mode.startsWith("FST4"));
   ui->widePlot->setMode(mode);

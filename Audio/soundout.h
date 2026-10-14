@@ -25,6 +25,7 @@ public:
   {
   }
 
+  int bufferSize () const { return m_stream ? m_stream->bufferSize () : 0; }
   qreal attenuation () const;
 
 public Q_SLOTS:

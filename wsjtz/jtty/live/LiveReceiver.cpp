@@ -14,7 +14,7 @@ wsjtz::LiveReceiver::LiveReceiver (QObject * parent) : QObject {parent}
       auto object=QJsonDocument::fromJson (line).object ();
       if (object.isEmpty ()) continue;
       auto id=object["id"].toString ().toLongLong ();
-      lines_[id]=QString ("%1 Hz  %2 dB  %3").arg (object["frequency"].toDouble (),0,'f',0)
+      lines_[qMakePair (session_,id)]=QString ("%1 Hz  %2 dB  %3").arg (object["frequency"].toDouble (),0,'f',0)
         .arg (object["snr"].toInt ()).arg (object["text"].toString ());
       while (lines_.size ()>200) lines_.erase (lines_.begin ());
       if (textChanged) textChanged (lines_.values ().join ('\n'));
@@ -32,8 +32,8 @@ wsjtz::LiveReceiver::LiveReceiver (QObject * parent) : QObject {parent}
 wsjtz::LiveReceiver::~LiveReceiver () { stop (); }
 void wsjtz::LiveReceiver::start (int center,int tolerance)
 {
-  stop (); pending_.clear (); lines_.clear ();
-  if (textChanged) textChanged ({});
+  stop (); pending_.clear (); ++session_;
+  if (textChanged) textChanged (lines_.values ().join ('\n'));
   process_.start (QDir {QCoreApplication::applicationDirPath ()}.filePath ("fusion-jtty-rx"),
                   {QString::number (center),QString::number (tolerance)});
 }
@@ -52,4 +52,11 @@ void wsjtz::LiveReceiver::append (QByteArray const& pcm)
     return;
   }
   process_.write (pcm);
+}
+
+void wsjtz::LiveReceiver::appendTransmit (QString const& text,int frequency)
+{
+  lines_[qMakePair (++session_,qint64 (0))]=QString ("%1 Hz  TX  %2").arg (frequency).arg (text);
+  while (lines_.size ()>200) lines_.erase (lines_.begin ());
+  if (textChanged) textChanged (lines_.values ().join ('\n'));
 }

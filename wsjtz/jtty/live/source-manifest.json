@@ -33,7 +33,7 @@
       "source": "widgets/widegraph.cpp",
       "destination": "widgets/widegraph.cpp",
       "source_sha256": "3f03eff71b06ddd8a1c86bac23d0eb4848e6469689acf40ccbfbb0f75c5c8e3b",
-      "sha256": "66ca3a160872d5f86c462f68750ef4626323e9188c775f513b0f5ff789148bb7",
+      "sha256": "52f477ad13139070f89a81a137b0687727c8f419b3487491451e264ddbb789ac",
       "adaptation": "Partial JTTY spectrum bridge port into existing Fusion UI; preserve other mode paths. WideGraph methods imported unchanged; plotter uses Fusion geometry and continuous UTC labels. Row replay/history not yet ported."
     },
     {
@@ -47,7 +47,7 @@
       "source": "widgets/plotter.cpp",
       "destination": "widgets/plotter.cpp",
       "source_sha256": "113ff54262c65ed217b18dc85aa2a8e0b975e618ad37309a66c2f2b7ec472dde",
-      "sha256": "77ab24e99e6dda9c6d02de1d59f0a014a5deeba1a2e191f577bb46741090bc18",
+      "sha256": "4253c0fa59c27bb4cf7287c83f837996fcf7c767a86c1d483c8a937c60ffeede",
       "adaptation": "Partial JTTY spectrum bridge port into existing Fusion UI; preserve other mode paths. WideGraph methods imported unchanged; plotter uses Fusion geometry and continuous UTC labels. Row replay/history not yet ported."
     },
     {
@@ -56,6 +56,118 @@
       "source_sha256": "b30e4317b7370ffe2f12554b73905f0bf83b00c5b9e456c1348ae5d4242b47ae",
       "sha256": "4e5f833cf4d91bd5740f3453364979cad29a137b93d77a16eef643222afba7a4",
       "adaptation": "Partial JTTY spectrum bridge port into existing Fusion UI; preserve other mode paths. WideGraph methods imported unchanged; plotter uses Fusion geometry and continuous UTC labels. Row replay/history not yet ported."
+    },
+    {
+      "source": "Audio/TxAudioQueue.hpp",
+      "destination": "Audio/TxAudioQueue.hpp",
+      "sha256": "05a954e1c58b71d8505c39102d49644339d4680793b8e84e55916927fe55f09b",
+      "adaptation": "none; upstream JTTY transmit component or regression test"
+    },
+    {
+      "source": "Audio/TxAudioQueue.cpp",
+      "destination": "Audio/TxAudioQueue.cpp",
+      "sha256": "68d871106e38f1db1e32f35942dade13d3d1ff2abf4fb48ae60fb86a37de59ae",
+      "adaptation": "none; upstream JTTY transmit component or regression test"
+    },
+    {
+      "source": "Audio/TxAudioQueueEpochSnapshot.hpp",
+      "destination": "Audio/TxAudioQueueEpochSnapshot.hpp",
+      "sha256": "5d4d88c912265e6159d42d3e147f3dc690777c41cb4d387daaecde17cda229f3",
+      "adaptation": "none; upstream JTTY transmit component or regression test"
+    },
+    {
+      "source": "Audio/TxIdentity.hpp",
+      "destination": "Audio/TxIdentity.hpp",
+      "sha256": "fcb70ec35b063ada236ebb7b1aea60b0708fe762a0913b89644b1f1484f3d1a1",
+      "adaptation": "none; upstream JTTY transmit component or regression test"
+    },
+    {
+      "source": "Audio/TxPlaybackEvidence.hpp",
+      "destination": "Audio/TxPlaybackEvidence.hpp",
+      "sha256": "936c2ab8f7343f5b85ce6e2cc77b15eb8716e6f56c24960a5c5991697180fb88",
+      "adaptation": "none; upstream JTTY transmit component or regression test"
+    },
+    {
+      "source": "Audio/TxRequest.hpp",
+      "destination": "Audio/TxRequest.hpp",
+      "sha256": "c69e1fe0a0f7a00641d2164b2dbdf316c22c2487455adf01947201128d723a3f",
+      "adaptation": "none; upstream JTTY transmit component or regression test"
+    },
+    {
+      "source": "Modulator/JttyPcmFifo.hpp",
+      "destination": "Modulator/JttyPcmFifo.hpp",
+      "sha256": "a003bc39d41ff5e5add671c76015e05cd61ec6e14141717a9347481066fb2df3",
+      "adaptation": "none; upstream JTTY transmit component or regression test"
+    },
+    {
+      "source": "Modulator/JttyPcmFifo.cpp",
+      "destination": "Modulator/JttyPcmFifo.cpp",
+      "sha256": "3d63915b6e21139f03df03c314b4166cfe45c6b1b9df25e6f13d577491a3e27a",
+      "adaptation": "none; upstream JTTY transmit component or regression test"
+    },
+    {
+      "source": "Modulator/JttyTxStream.hpp",
+      "destination": "Modulator/JttyTxStream.hpp",
+      "sha256": "c8d78cb434dd60048c7e7c684e2d422a5872c220e7f8d744da8c77ed17fcc12f",
+      "adaptation": "none; upstream JTTY transmit component or regression test"
+    },
+    {
+      "source": "Modulator/JttyTxStream.cpp",
+      "destination": "Modulator/JttyTxStream.cpp",
+      "sha256": "045b97552addd4c2fb5c6b47feca0d230b58c154a96e0e253d87803255b967b8",
+      "adaptation": "none; upstream JTTY transmit component or regression test"
+    },
+    {
+      "source": "widgets/JttyTxLifecycle.hpp",
+      "destination": "widgets/JttyTxLifecycle.hpp",
+      "sha256": "2cb0283e6fae7e59475fb11b7a0983fcbb9ec844a6a490fc75a5edf448b47d79",
+      "adaptation": "none; upstream JTTY transmit component or regression test"
+    },
+    {
+      "source": "widgets/JttyMessages.hpp",
+      "destination": "widgets/JttyMessages.hpp",
+      "sha256": "518c94bab7f30bc0c6c23a0bfce0def79a5edcdc153359bd2c73754d32e3ee7e",
+      "adaptation": "none; upstream JTTY transmit component or regression test"
+    },
+    {
+      "source": "tests/unit/jtty/test_jtty_txstream.cpp",
+      "destination": "tests/unit/jtty/test_jtty_txstream.cpp",
+      "sha256": "b34e30836d4586fa8991295f2bc605d4059ed8a908212d13eabbdaca04b5a80b",
+      "adaptation": "none; upstream JTTY transmit component or regression test"
+    },
+    {
+      "source": "tests/unit/jtty/test_jtty_tx_lifecycle.cpp",
+      "destination": "tests/unit/jtty/test_jtty_tx_lifecycle.cpp",
+      "sha256": "4286a4d8d521b0c9e2b068924de9d481c7b9f23273c49dec9f0fb2cc1c620aa7",
+      "adaptation": "none; upstream JTTY transmit component or regression test"
+    },
+    {
+      "source": "widgets/mainwindow.ui",
+      "destination": "wsjtz/jtty/ui/JttyTransmitPanel.ui",
+      "source_sha256": "e1c48b21ce694bd7754c3b919bc3c8e89393d7792655665ce2d14edc8d7d412f",
+      "sha256": "2c353c8edff4a0d32c9bf705c7b982b1d7ae98faad929606c8787c429352603f",
+      "adaptation": "Extract page_4 with unchanged widget/layout tree; rename root and add standalone UI class/custom-widget declaration. Runtime adapter disables unsupported live-typing tooltip."
+    },
+    {
+      "source": "widgets/mainwindow_jtty.cpp",
+      "destination": "widgets/mainwindow_jtty_tx.cpp",
+      "source_sha256": "ed8dd18e23ad0ca57201716156bcc03067c5876df2d90f62662698923c15095d",
+      "sha256": "2098cfcf2cf7a62e2222e39948e7fd4e90e73adbde3791785841aa0e4fefdc57",
+      "adaptation": "Fusion adapter for upstream asynchronous queue/PTT lifecycle. One-shot submission, callbacks, F1-F8 literal expansion. Advanced live typing, native macro atoms and contest auto-log trigger not yet connected."
+    },
+    {
+      "source": "widgets/mainwindow_jtty.cpp",
+      "destination": "wsjtz/jtty/tx/Encode.cpp",
+      "source_sha256": "ed8dd18e23ad0ca57201716156bcc03067c5876df2d90f62662698923c15095d",
+      "sha256": "469a24a21219acf9e4664563efdd67c96a8c715464ada61877b91b1530db3647",
+      "adaptation": "Extract text segmentation, genjtty_profile/gen_jttywave parameters and PCM conversion; cap one message at 320 characters/60 seconds. No protocol or Fortran source changes."
+    },
+    {
+      "source": "Audio/soundout.h",
+      "destination": "Audio/soundout.h",
+      "source_sha256": "3ae54b83bc689de257c0a167228b428eb599ff83be496823e2e3398a98c4e4fa",
+      "sha256": "e66252972e9a51030872fb6033bf4e9cefea8cd625b7666bf37179c7f4cdd726",
+      "adaptation": "Expose audio-thread bufferSize accessor required by upstream JttyTxStream; retain legacy SoundOutput otherwise."
     }
   ],
   "import_date": "2026-10-14"

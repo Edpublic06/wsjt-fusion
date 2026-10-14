@@ -22,7 +22,7 @@ int main (int argc,char ** argv)
   bool ok1=false,ok2=false;
   float center=QString::fromLocal8Bit (argv[1]).toFloat (&ok1);
   float tolerance=QString::fromLocal8Bit (argv[2]).toFloat (&ok2);
-  if (!ok1 || !ok2 || center<200 || center>2800 || tolerance<1 || tolerance>2600) return 2;
+  if (!ok1 || !ok2 || center<200 || center>5000 || tolerance<1 || tolerance>5000) return 2;
   Jtty::Decoder decoder;
   if (!decoder.valid ()) return 3;
   decoder.begin (1,0,0);
@@ -51,7 +51,7 @@ int main (int argc,char ** argv)
       auto stop=decoder.nextSearchSample ()+window;
       if (required<first || stop>end) return 5;
       auto processed=decoder.process (history.data ()+(required-first),int (stop-required),
-                                      required,stop,1,200,2800,center,tolerance);
+                                      required,stop,1,200,5000,center,tolerance);
       if (processed<0) return 6;
       updates ();
       if (!processed) break;

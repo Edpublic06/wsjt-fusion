@@ -68,10 +68,11 @@ the worker. Returning to another mode restores the timed Detector path.
 This step supports **local sound-card input only**, not TCI audio. The JTTY
 spectrum now feeds Wide Graph through the unchanged upstream JttySpectrum
 module and adapted upstream WideGraph/plotter bridge. Interactive waterfall row
-re-decoding and transmission lifecycle are not connected yet.
+re-decoding is not connected yet. Local one-message transmission is now
+available through the original F1–F8 / Send message page and main Halt Tx button; see the development guide.
 Auto CQ/Auto Call/Auto Seq, Enable Tx and Tune are disabled in JTTY receive mode;
-the transmit/PTT paths are also guarded. No live JTTY transmit capability is
-claimed. Until startup mode restoration is integrated, closing in JTTY stores
+the transmit/PTT paths are also guarded. The normal timed transmit buttons remain disabled; JTTY uses its own
+asynchronous upstream stream. Live RF transmission still needs operator testing. Until startup mode restoration is integrated, closing in JTTY stores
 FT8 as the next startup mode, preserving compatibility with beta2.
 
 Validation (14 October 2026): eleven tests passed, including six upstream JTTY
@@ -85,3 +86,5 @@ Spectrum validation (14 October 2026): upstream continuous-spectrum regression
 cases pass, with a coherent-tone frequency/power check replacing comparison to
 the older Fusion timed-spectrum ABI. See `doc/JTTY-DEVELOPMENT.md` and
 `live/source-manifest.json` for the exact import/adaptation boundary.
+
+See [the development guide](../../../doc/JTTY-DEVELOPMENT.md) for transmit limits, validation and upstream/adaptation boundaries.
