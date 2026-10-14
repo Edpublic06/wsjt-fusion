@@ -160,3 +160,6 @@ completion/abort and mode exit; this visual indication does not enable timed TX.
 The shared Pwr column uses equal explicit vertical stretch for the TX slider
 and receive meter, keeping the same distribution in JTTY and timed modes
 regardless of the active transmit panel’s size hints.
+
+The shared receive meter has a fixed 60 logical-pixel width (its previous maximum)
+so the wider JTTY controls cannot compress the Pwr column horizontally.
