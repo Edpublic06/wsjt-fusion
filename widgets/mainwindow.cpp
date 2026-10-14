@@ -1,5 +1,6 @@
 //---------------------------------------------------------- MainWindow
 #include "mainwindow.h"
+#include "wsjtz/jtty/ui/WavReceiveDialog.hpp"
 
 #include <cinttypes>
 #include <cstring>
@@ -815,6 +816,9 @@ MainWindow::MainWindow(QDir const& temp_directory, bool multiple,
   ui->actionDeepestDecode->setActionGroup(DepthGroup);
 
   // FT8 thread-count radio group (ported from WSJTX 3.0 / JTDX)
+  auto jttyWavTest = ui->menuDecode->addAction (tr ("JTTY WAV receive test (experimental)…"));
+  connect (jttyWavTest, &QAction::triggered, this, [this] { wsjtz::openJttyWavReceiver (this); });
+
   QActionGroup* FT8threadsGroup = new QActionGroup(this);
   ui->actionMTAuto->setActionGroup(FT8threadsGroup);
   ui->actionMT1->setActionGroup(FT8threadsGroup);

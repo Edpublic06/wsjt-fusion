@@ -76,7 +76,7 @@ set (PROJECT_MANUAL_DIRECTORY_URL https://github.com/Edpublic06/wsjt-fusion/tree
 set (PROJECT_SAMPLES_URL https://sourceforge.net/projects/wsjt/files/)
 #set (PROJECT_SAMPLES_UPLOAD_DEST frs.sourceforge.net:/home/frs/project/wsjt/)
 # WSJT-Z mod version suffix shown in UI and package metadata.
-set (VERSION_Z "1.0.0-beta2")
+set (VERSION_Z "1.0.0-beta3-dev")
 message (STATUS "******************************************************")
 message (STATUS "Building ${PROJECT_BUNDLE_NAME} ${VERSION_Z} (base WSJT-X ${PROJECT_VERSION}) for ${CMAKE_SYSTEM_NAME}-${PROJECT_ARCHITECTURE}")
 message (STATUS "******************************************************")
@@ -1374,6 +1374,7 @@ target_link_libraries (wsjtz_cq_reply_queue_regression Qt5::Core)
 foreach (jtty_tool sjtty rjtty)
   add_executable (${jtty_tool} lib/jtty/${jtty_tool}.f90)
   target_link_libraries (${jtty_tool} wsjt_fort wsjt_cxx)
+  install (TARGETS ${jtty_tool} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 endforeach ()
 foreach (jtty_test source_codec frequency_window continuous_decode get_updates
     receive_state tbcc_decoder)
@@ -1614,6 +1615,7 @@ generate_version_info (wsjtx_VERSION_RESOURCES
 
 add_executable (wsjtx MACOSX_BUNDLE
   ${wsjtx_CXXSRCS}
+  wsjtz/jtty/ui/WavReceiveDialog.cpp
   ${wsjtx_GENUISRCS}
   ${WSJTX_ICON_FILE}
   ${wsjtx_RESOURCES_RCC}
@@ -1947,7 +1949,7 @@ set (CPACK_PACKAGE_NAME "wsjt-fusion")
 set (CPACK_PACKAGE_VERSION_Z "${VERSION_Z}")
 set (CPACK_PACKAGE_VERSION_MAJOR 1)
 set (CPACK_PACKAGE_VERSION_MINOR 0)
-set (CPACK_PACKAGE_VERSION_PATCH "0-beta2")
+set (CPACK_PACKAGE_VERSION_PATCH "0-beta3-dev")
 set (CPACK_PACKAGE_VERSION "${VERSION_Z}")
 
 
