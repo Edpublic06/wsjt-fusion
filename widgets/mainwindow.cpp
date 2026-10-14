@@ -809,7 +809,15 @@ MainWindow::MainWindow(QDir const& temp_directory, bool multiple,
   connect (this,&MainWindow::jttyReceivePolicy,m_detector,&Detector::setJttyReceive,Qt::QueuedConnection);
   connect (m_detector,&Detector::jttyPcm,this,[this] (quint64 session,QByteArray pcm) {
     if (m_jttyActive && m_monitoring && session==m_jttyAudioSession && !m_transmitting) {
-      if (m_jttyAudioDisplay) m_jttyAudioDisplay->append (pcm);
+      std::vector<qint16> samples (pcm.size () / 2);
+      std::memcpy (samples.data (),pcm.constData (),samples.size () * sizeof (qint16));
+      m_jttySpectrum.process (m_jttySpectrumSample,samples.data (),int (samples.size ()),
+        m_inGain,m_config.lowSidelobes (),m_wideGraph->smoothYellow () - 1,
+        [this] (JttySpectrumFrame const& frame) {
+          m_wideGraph->jttyDataSink (frame);
+          ui->signal_meter_widget->setValue (frame.powerDb,frame.maxPowerDb);
+        });
+      m_jttySpectrumSample += samples.size ();
       m_jttyLive->append (pcm);
     }
   },Qt::QueuedConnection);
@@ -2941,7 +2949,7 @@ void MainWindow::monitor (bool state)
   m_monitoring = state;
   if (m_jttyActive) {
     if (state) restartJttyReceive ();
-    else { ++m_jttyAudioSession; Q_EMIT jttyReceivePolicy (true,m_jttyAudioSession); m_jttyLive->stop (); }
+    else { m_wideGraph->jttyReceptionEnded (); ++m_jttyAudioSession; Q_EMIT jttyReceivePolicy (true,m_jttyAudioSession); m_jttyLive->stop (); }
   }
 }
 
@@ -9811,6 +9819,9 @@ void MainWindow::restartJttyReceive ()
 {
   if (!m_jttyActive || !m_monitoring) return;
   ++m_jttyAudioSession;
+  m_wideGraph->jttyReceptionEnded ();
+  m_jttySpectrumSample = 0;
+  m_jttySpectrum.begin (m_jttyAudioSession,0,QDateTime::currentDateTimeUtc ().toMSecsSinceEpoch ());
   m_jttyLive->start (qBound (200,ui->RxFreqSpinBox->value (),2800),1300);
   Q_EMIT jttyReceivePolicy (true,m_jttyAudioSession);
 }
@@ -9834,7 +9845,9 @@ void MainWindow::enterJttyReceive ()
   m_jttyActive=true; m_mode="JTTY";
   // Use configured JTTY dial frequencies, never the temporary FT8 setup list.
   switch_mode (Modes::JTTY);
-  m_wideGraph->hide (); // Timed FT8 waterfall is not the JTTY spectrum adapter.
+  m_wideGraph->setMode (m_mode);
+  m_wideGraph->setPeriod (m_TRperiod,JttySpectrum::FftSize);
+  m_wideGraph->show ();
   ui->cbAutoSeq->setChecked (false);
   ui->cbAutoSeq->setEnabled (false); ui->cbAutoCQ->setEnabled (false);
   ui->cbAutoCall->setEnabled (false); ui->autoButton->setEnabled (false);
@@ -9843,15 +9856,9 @@ void MainWindow::enterJttyReceive ()
   if (!m_jttyDock) {
     m_jttyDock=new QDockWidget {tr ("JTTY — continuous reception (transmit not connected)"),this};
     m_jttyText=new QPlainTextEdit {m_jttyDock}; m_jttyText->setReadOnly (true);
-    auto panel = new QWidget {m_jttyDock};
-    auto layout = new QVBoxLayout {panel};
-    m_jttyAudioDisplay = new wsjtz::AudioDisplay {panel};
-    layout->addWidget (m_jttyAudioDisplay);
-    layout->addWidget (m_jttyText);
-    m_jttyDock->setWidget (panel);
+    m_jttyDock->setWidget (m_jttyText);
     addDockWidget (Qt::BottomDockWidgetArea,m_jttyDock);
   }
-  m_jttyAudioDisplay->reset ();
   m_jttyDock->show ();
   mode_label.setText ("JTTY RX");
   monitor (true);
@@ -9860,6 +9867,7 @@ void MainWindow::enterJttyReceive ()
 
 void MainWindow::leaveJttyReceive ()
 {
+  m_wideGraph->jttyReceptionEnded ();
   m_jttyActive=false; ++m_jttyAudioSession;
   Q_EMIT jttyReceivePolicy (false,m_jttyAudioSession);
   m_jttyLive->stop ();

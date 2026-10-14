@@ -593,3 +593,55 @@ void WideGraph::restartTotalPower()
 {
   ui->widePlot->restartTotalPower();
 }
+
+// JTTY bridge from WSJT-X v3.3.0-beta1; see live/source-manifest.json.
+void WideGraph::jttyDataSink (JttySpectrumFrame const& frame)
+{
+  if (m_jttyLastRow.reception &&
+      (m_jttyLastRow.reception != frame.row.reception ||
+       m_jttyLastRow.endSample != frame.row.beginSample)) {
+    jttyReceptionEnded ();
+  }
+  ui->widePlot->setJttySpectrum (frame.cumulative, frame.linearAverage);
+  if (ui->widePlot->TotalPower ()) ui->widePlot->drawTotalPower (frame.powerDb);
+  if (!m_jttySpectrumCount) m_jttyAverageRow = frame.row;
+  m_jttyAverageRow.endSample = frame.row.endSample;
+  m_jttyAverageRow.utcEndMs = frame.row.utcEndMs;
+  m_jttyLastRow = frame.row;
+  for (int i = 0; i < JttySpectrumFrame::BinCount; ++i) m_jttySpectrumSum[i] += frame.bins[i];
+  if (++m_jttySpectrumCount >= std::max (1, m_waterfallAvg)) drawJttyAverage ();
+}
+
+void WideGraph::drawJttyAverage ()
+{
+  if (!m_jttySpectrumCount) return;
+  int const nbpp = ui->widePlot->binsPerPixel ();
+  int bin = int (ui->widePlot->startFreq () / JttySpectrumFrame::BinWidth + 0.5);
+  m_jz = std::min (MAX_SCREENSIZE, int (5000.0f / (nbpp * JttySpectrumFrame::BinWidth)));
+  std::fill (std::begin (m_swide), std::end (m_swide), 0);
+  for (int pixel = 0; pixel < m_jz; ++pixel) {
+    double sum = 0;
+    for (int k = 0; k < nbpp; ++k, ++bin) {
+      if (bin >= 0 && bin < JttySpectrumFrame::BinCount - 1) sum += m_jttySpectrumSum[bin];
+    }
+    m_swide[pixel] = nbpp * sum / m_jttySpectrumCount;
+  }
+  ui->widePlot->setJttyRow (m_jttyAverageRow);
+  ui->widePlot->draw (m_swide, true, false);
+  m_jttySpectrumCount = 0;
+  m_jttySpectrumSum.fill (0);
+}
+
+void WideGraph::jttyReceptionEnded ()
+{
+  drawJttyAverage ();
+  if (m_jttyLastRow.reception) {
+    auto gap = m_jttyLastRow;
+    gap.beginSample = gap.endSample;
+    gap.gap = true;
+    std::fill (std::begin (m_swide), std::end (m_swide), 1.0e30f);
+    ui->widePlot->setJttyRow (gap);
+    ui->widePlot->draw (m_swide, true, false);
+  }
+  m_jttyLastRow = {};
+}

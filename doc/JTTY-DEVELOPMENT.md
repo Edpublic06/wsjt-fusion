@@ -27,11 +27,20 @@ frequency. For reference, upstream WSJT-X v3.3.0-beta1 lists 14.090 MHz for 20 m
 JTTY in models/FrequencyList.cpp. The RX audio frequency control is separate
 from this radio dial frequency.
 
-### Live audio monitor
+### Live spectrum and waterfall
 
-The experimental receive panel includes a separate 0–3000 Hz waterfall from
-the same 12 kHz PCM blocks sent to the JTTY worker. A 2048-point Hann-windowed
-FFT updates the waterfall; input RMS is shown in dBFS (not calibrated RF SNR).
-The monitor identifies digital silence, clipping and no PCM for two seconds.
-This is a Fusion diagnostic display, not the full upstream interactive JTTY
-spectrum interface. Reception remains experimental and transmit is disabled.
+The continuous JTTY spectrum implementation (`widgets/JttySpectrum.hpp/.cpp`)
+is compiled unchanged from WSJT-X v3.3.0-beta1. It uses the upstream 16384-point
+FFT, 3456-sample hop, windowing, power estimates and rolling spectrum averages.
+The upstream WideGraph averaging and drawing methods feed Fusion's existing
+Wide Graph and signal meter from the same PCM blocks as the decoder.
+
+The Fusion plotter adds isolated JTTY branches for the upstream cumulative and
+linear-average spectra and continuous UTC labels. Timed FT8/FT4 buffers are not
+used for JTTY plotting. The temporary separate FFT monitor has been removed.
+Upstream interactive row re-decoding/history and transmit are not connected yet.
+
+The imported spectrum regression suite retains its continuous-stream tests.
+Its timed-spectrum comparison uses an analytical coherent-tone check instead:
+Fusion's baseline symspec has an older ABI and different level conventions.
+All imports and adaptations are recorded in `wsjtz/jtty/live/source-manifest.json`.

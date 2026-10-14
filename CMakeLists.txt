@@ -283,6 +283,7 @@ set (wsjtx_CXXSRCS
   widgets/meterwidget.cpp
   widgets/signalmeter.cpp
   widgets/plotter.cpp
+  widgets/JttySpectrum.cpp
   widgets/widegraph.cpp
   widgets/echograph.cpp
   widgets/echoplot.cpp
@@ -1027,7 +1028,7 @@ endif ()
 #
 
 # Widgets finds its own dependencies.
-find_package (Qt5 COMPONENTS Widgets SerialPort Multimedia PrintSupport Sql LinguistTools WebSockets REQUIRED)
+find_package (Qt5 COMPONENTS Widgets SerialPort Multimedia PrintSupport Sql LinguistTools WebSockets Test REQUIRED)
 
 if (WIN32)
   add_definitions (-DQT_NEEDS_QTMAIN)
@@ -1378,6 +1379,11 @@ install (TARGETS fusion-jtty-rx RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 add_executable (test_fusion_jtty_audio wsjtz/jtty/live/TestContinuousAudio.cpp Detector/Detector.cpp Audio/AudioDevice.cpp)
 set_target_properties (test_fusion_jtty_audio PROPERTIES AUTOMOC ON)
 target_link_libraries (test_fusion_jtty_audio wsjt_fort wsjt_cxx Qt5::Core)
+set_source_files_properties (widgets/JttySpectrum.cpp PROPERTIES COMPILE_FLAGS "-std=c++14")
+add_executable (test_fusion_jtty_spectrum tests/unit/jtty/test_jtty_spectrum.cpp widgets/JttySpectrum.cpp)
+set_target_properties (test_fusion_jtty_spectrum PROPERTIES AUTOMOC ON CXX_STANDARD 14)
+target_link_libraries (test_fusion_jtty_spectrum wsjt_fort wsjt_cxx Qt5::Test)
+add_test (NAME fusion_jtty_spectrum COMMAND test_fusion_jtty_spectrum)
 add_executable (test_fusion_jtty_stream wsjtz/jtty/live/TestReceiveStream.cpp)
 target_link_libraries (test_fusion_jtty_stream Qt5::Core)
 

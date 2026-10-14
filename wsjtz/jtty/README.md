@@ -66,7 +66,9 @@ receiver and ask the operator to restart Monitor. Closing the application stops
 the worker. Returning to another mode restores the timed Detector path.
 
 This step supports **local sound-card input only**, not TCI audio. The JTTY
-waterfall/spectrum interface and transmission lifecycle are not connected yet.
+spectrum now feeds Wide Graph through the unchanged upstream JttySpectrum
+module and adapted upstream WideGraph/plotter bridge. Interactive waterfall row
+re-decoding and transmission lifecycle are not connected yet.
 Auto CQ/Auto Call/Auto Seq, Enable Tx and Tune are disabled in JTTY receive mode;
 the transmit/PTT paths are also guarded. No live JTTY transmit capability is
 claimed. Until startup mode restoration is integrated, closing in JTTY stores
@@ -78,3 +80,8 @@ with irregular partitions/session reset/return to timed mode, and progressive
 text decoding through the stream process. Hardware input, interactive mode
 switching and radio operation still require operator validation. The earlier
 WAV panel was confirmed working by the user.
+
+Spectrum validation (14 October 2026): upstream continuous-spectrum regression
+cases pass, with a coherent-tone frequency/power check replacing comparison to
+the older Fusion timed-spectrum ABI. See `doc/JTTY-DEVELOPMENT.md` and
+`live/source-manifest.json` for the exact import/adaptation boundary.

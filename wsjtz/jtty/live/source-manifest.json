@@ -9,6 +9,53 @@
       "source_sha256": "0b99c3fb85cf3a522baba5a4a484f5caa0995597667f01189a4584b971a43e8c",
       "adaptation": "Extract fil4_state; rename to fusion_jtty_fil4_state; dedicated per-Detector state.",
       "sha256": "bd87733ffe72aae8c475d79c5789fff5da296dea25acd78f08ec0d827a1aafc2"
+    },
+    {
+      "source": "widgets/JttySpectrum.hpp",
+      "destination": "widgets/JttySpectrum.hpp",
+      "sha256": "de8981970f44ce24ebb8c1632c91fc3e6334b61c8ae6a0252ec6533e1aeb19dc",
+      "adaptation": "none; compiled upstream spectrum and regression tests"
+    },
+    {
+      "source": "widgets/JttySpectrum.cpp",
+      "destination": "widgets/JttySpectrum.cpp",
+      "sha256": "5adb532b1083c4312c5551a75f0f7d136555d5223174c79387dbb88cf65ec28c",
+      "adaptation": "none; compiled upstream spectrum and regression tests"
+    },
+    {
+      "source": "tests/unit/jtty/test_jtty_spectrum.cpp",
+      "destination": "tests/unit/jtty/test_jtty_spectrum.cpp",
+      "sha256": "8455e755342713a9b59adda8f74041ddd4d0ca21900be2c0c5a982213652a597",
+      "adaptation": "Tests: retain upstream continuous-stream cases; replace newer timed-symspec comparison with analytical coherent-tone frequency and level check for the Fusion baseline ABI.",
+      "source_sha256": "26f2845c822bd740ab60aee08e32022785a002dbd4695719a272393b754e4092"
+    },
+    {
+      "source": "widgets/widegraph.cpp",
+      "destination": "widgets/widegraph.cpp",
+      "source_sha256": "3f03eff71b06ddd8a1c86bac23d0eb4848e6469689acf40ccbfbb0f75c5c8e3b",
+      "sha256": "66ca3a160872d5f86c462f68750ef4626323e9188c775f513b0f5ff789148bb7",
+      "adaptation": "Partial JTTY spectrum bridge port into existing Fusion UI; preserve other mode paths. WideGraph methods imported unchanged; plotter uses Fusion geometry and continuous UTC labels. Row replay/history not yet ported."
+    },
+    {
+      "source": "widgets/widegraph.h",
+      "destination": "widgets/widegraph.h",
+      "source_sha256": "431981eaec6ab18c19b5bd489256fca231f8c997a30f7c4bcf91b6d64c8ae5bc",
+      "sha256": "55da0d3e27a9208283bdcf59164b0ffb756cb2f792e80a75f024ca7b89208585",
+      "adaptation": "Partial JTTY spectrum bridge port into existing Fusion UI; preserve other mode paths. WideGraph methods imported unchanged; plotter uses Fusion geometry and continuous UTC labels. Row replay/history not yet ported."
+    },
+    {
+      "source": "widgets/plotter.cpp",
+      "destination": "widgets/plotter.cpp",
+      "source_sha256": "113ff54262c65ed217b18dc85aa2a8e0b975e618ad37309a66c2f2b7ec472dde",
+      "sha256": "77ab24e99e6dda9c6d02de1d59f0a014a5deeba1a2e191f577bb46741090bc18",
+      "adaptation": "Partial JTTY spectrum bridge port into existing Fusion UI; preserve other mode paths. WideGraph methods imported unchanged; plotter uses Fusion geometry and continuous UTC labels. Row replay/history not yet ported."
+    },
+    {
+      "source": "widgets/plotter.h",
+      "destination": "widgets/plotter.h",
+      "source_sha256": "b30e4317b7370ffe2f12554b73905f0bf83b00c5b9e456c1348ae5d4242b47ae",
+      "sha256": "4e5f833cf4d91bd5740f3453364979cad29a137b93d77a16eef643222afba7a4",
+      "adaptation": "Partial JTTY spectrum bridge port into existing Fusion UI; preserve other mode paths. WideGraph methods imported unchanged; plotter uses Fusion geometry and continuous UTC labels. Row replay/history not yet ported."
     }
   ],
   "import_date": "2026-10-14"

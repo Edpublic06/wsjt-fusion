@@ -4,7 +4,7 @@
 
 #include <QMainWindow>
 #include "wsjtz/jtty/live/LiveReceiver.hpp"
-#include "wsjtz/jtty/ui/AudioDisplay.hpp"
+#include "JttySpectrum.hpp"
 class QDockWidget;
 class QPlainTextEdit;
 #include <QByteArray>
@@ -758,7 +758,8 @@ private:
   bool    m_bOK_to_chk=false;
   bool    m_bSentReport=false;
   wsjtz::IncomingCallPolicy m_incomingCallPolicy;
-  wsjtz::AudioDisplay * m_jttyAudioDisplay = nullptr;
+  JttySpectrum m_jttySpectrum;
+  qint64 m_jttySpectrumSample = 0;
   wsjtz::LiveReceiver * m_jttyLive = nullptr;
   QDockWidget * m_jttyDock = nullptr;
   QPlainTextEdit * m_jttyText = nullptr;

@@ -8,6 +8,7 @@
 #include <QHash>
 #include <QVariant>
 #include "WFPalette.hpp"
+#include "JttySpectrum.hpp"
 
 #define MAX_SCREENSIZE 2048
 
@@ -26,6 +27,9 @@ public:
   explicit WideGraph(QSettings *, QWidget *parent = 0);
   ~WideGraph ();
 
+  void jttyDataSink (JttySpectrumFrame const& frame);
+  void drawJttyAverage ();
+  void jttyReceptionEnded ();
   void   dataSink2(float s[], float df3, int ihsym, int ndiskdata, float pdB);
   void   setRxFreq(int n);
   int    rxFreq();
@@ -126,6 +130,9 @@ private:
   QString m_rxBand;
   QString m_mode;
   QString m_waterfallPalette;  
+  std::array<double,JttySpectrumFrame::BinCount> m_jttySpectrumSum {};
+  int m_jttySpectrumCount = 0;
+  JttyWaterfallRow m_jttyAverageRow, m_jttyLastRow;
   float   m_swide[MAX_SCREENSIZE];
   QString m_user_defined;
 };

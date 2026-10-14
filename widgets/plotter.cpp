@@ -145,7 +145,7 @@ void CPlotter::paintEvent(QPaintEvent *)                                // paint
 
 void CPlotter::draw(float swide[], bool bScroll, bool bRed)
 {
-  if (!m_TRperiod) return;      // not ready to plot yet
+  if (m_mode != "JTTY" && !m_TRperiod) return;      // not ready to plot yet
   int j,j0;
   float y,y2,ymin;
   double fac = sqrt(m_binsPerPixel*m_waterfallAvg/15.0);
@@ -192,7 +192,7 @@ void CPlotter::draw(float swide[], bool bScroll, bool bRed)
   m_fMax=FreqfromX(iz);
   if(bScroll and swide[0]<1.e29) {
     flat4_(swide,&iz,&m_Flatten);
-    if(!m_bReplot) flat4_(&dec_data.savg[j0],&jz,&m_Flatten);
+    if(!m_bReplot && m_mode != "JTTY") flat4_(&dec_data.savg[j0],&jz,&m_Flatten);
   }
 
   ymin=1.e30;
@@ -225,7 +225,7 @@ void CPlotter::draw(float swide[], bool bScroll, bool bRed)
       float sum=0.0;
       int j=j0+m_binsPerPixel*i;
       for(int k=0; k<m_binsPerPixel; k++) {
-        sum+=dec_data.savg[j++];
+        sum += m_mode == "JTTY" ? m_jttyCumulative[j++] : dec_data.savg[j++];
       }
       m_sum[i]=sum;
     }
@@ -236,7 +236,7 @@ void CPlotter::draw(float swide[], bool bScroll, bool bRed)
       float sum=0.0;
       int j=j0+m_binsPerPixel*i;
       for(int k=0; k<m_binsPerPixel; k++) {
-        sum+=spectra_.syellow[j++];
+        sum += m_mode == "JTTY" ? m_jttyLinearAverage[j++] : spectra_.syellow[j++];
       }
       y2=2.0*gain2d*sum/m_binsPerPixel + m_plot2dZero;
     }
@@ -263,7 +263,14 @@ void CPlotter::draw(float swide[], bool bScroll, bool bRed)
   if(swide[0]>1.0e29) m_line=0;
   if(m_mode=="FT4" and m_line==34) m_line=0;
   if(m_mode=="FT2" and m_line==17) m_line=0;
-  if(m_line == painter1.fontMetrics ().height ()) {
+  if (m_mode == "JTTY" && m_line >= painter1.fontMetrics ().height ()) {
+    painter1.setPen (Qt::white);
+    QString label = QDateTime::fromMSecsSinceEpoch (m_pendingJttyRow.utcEndMs,Qt::UTC).toString ("hh:mm:ss");
+    if (m_pendingJttyRow.gap) label += "  " + tr ("Input interrupted");
+    painter1.drawText (5,painter1.fontMetrics ().ascent (),label);
+    m_line = 0;
+  }
+  if(m_mode != "JTTY" && m_line == painter1.fontMetrics ().height ()) {
     painter1.setPen(Qt::white);
     QString t;
     if(m_nUTC<0) {
@@ -498,6 +505,7 @@ void CPlotter::DrawOverlay()                   //DrawOverlay()
   }
 
   float bw=9.0*12000.0/m_nsps;               //JT9
+  if(m_mode=="JTTY") bw=3*12000.0/384.0;
   if(m_mode=="FT4") bw=3*12000.0/576.0;      //FT4  ### (3x, or 4x???) ###
   if(m_mode=="FT2") bw=3*12000.0/288.0;      //FT2 (2x FT4 tone spacing → 2x waterfall marker)
   if(m_mode=="FT8") {
@@ -1070,4 +1078,13 @@ void CPlotter::clear()
 
     DrawOverlay();
     update();
+}
+
+// From WSJT-X v3.3.0-beta1: isolate continuous JTTY spectra from timed dec_data.
+void CPlotter::setJttySpectrum (
+    std::array<float,JttySpectrumFrame::BinCount> const& cumulative,
+    std::array<float,JttySpectrumFrame::BinCount> const& linearAverage)
+{
+  m_jttyCumulative = cumulative;
+  m_jttyLinearAverage = linearAverage;
 }

@@ -9,6 +9,7 @@
 #define PLOTTER_H_
 
 #include <QFrame>
+#include "JttySpectrum.hpp"
 #include <QSize>
 #include <QImage>
 #include <QVector>
@@ -98,6 +99,9 @@ public:
   void restartTotalPower();
 
   bool scaleOK () const {return m_bScaleOK;}
+  void setJttyRow (JttyWaterfallRow const& row) { m_pendingJttyRow = row; }
+  void setJttySpectrum (std::array<float,JttySpectrumFrame::BinCount> const& cumulative,
+                        std::array<float,JttySpectrumFrame::BinCount> const& linearAverage);
 signals:
   void freezeDecode1(int n);
   void setFreq1(int rxFreq, int txFreq);
@@ -164,6 +168,8 @@ private:
   QSize   m_Size;
   QString m_Str;
   QString m_HDivText[483];
+  JttyWaterfallRow m_pendingJttyRow;
+  std::array<float,JttySpectrumFrame::BinCount> m_jttyCumulative {}, m_jttyLinearAverage {};
   QString m_mode;
   QString m_mode0;
   QString m_rxBand;
