@@ -186,14 +186,14 @@
       "source": "widgets/displaytext.cpp",
       "destination": "widgets/displaytext.cpp",
       "source_sha256": "4bf9a69f9845ef5d43931ca02557f499d08d8be1a7498eb33dc20762aaadb317",
-      "sha256": "26d288cf4c20798913d4320d3aa712a1d45bf9f50699a5bc35a10233d109ac50",
+      "sha256": "286324cbe2fc9bc8d2bc4c473af51d53586bf337fcad7ad5fde4ad7b20d2d7d0",
       "adaptation": "Upstream press-time word capture adapted to Fusion: single left click selects and highlights; double left click requests F2 in FT8 style. Other modes retain legacy selection."
     },
     {
       "source": "widgets/displaytext.h",
       "destination": "widgets/displaytext.h",
       "source_sha256": "c7b57b2c2d2f0e319fadb8038ec464d02e62aecbfed8f78423e1cc86663866c0",
-      "sha256": "b270e80efa9b8dec8a8c79252989a44108a3b31b157e8ee3f209488d8232b825",
+      "sha256": "912b04392ae2a00fe5988900b914fd0af7ca23d372c1cc57aa1201030e4c20a2",
       "adaptation": "JTTY-only word-selection signal and press-time state adapted to Fusion DisplayText."
     }
   ],

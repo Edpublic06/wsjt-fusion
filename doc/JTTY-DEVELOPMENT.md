@@ -144,3 +144,11 @@ DX Call and message variables. A double left click additionally sends the curren
 F2 template when the message style is FT8, using the existing busy/TX guards.
 Other words do not change the correspondent or trigger transmission.
 The highlight is cleared when leaving JTTY.
+
+### Configured decode colors
+Both JTTY receive panes use the existing Colors settings and their enabled
+priorities. TX, own callsign and CQ apply to lines. Other explicit callsigns
+are colored individually using the existing logbook new-call, DXCC, continent,
+CQ/ITU-zone, band and LoTW rules. Grid coloring is not inferred from free text.
+Multiple callsigns on a line are evaluated independently; no sender is assumed.
+Colors do not alter selection, logging or automation decisions.

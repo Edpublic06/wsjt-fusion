@@ -15,6 +15,7 @@
 #include <QScrollBar>
 
 #include "Configuration.hpp"
+#include "Radio.hpp"
 #include "Decoder/decodedtext.h"
 #include "Network/LotWUsers.hpp"
 #include "models/DecodeHighlightingModel.hpp"
@@ -185,6 +186,55 @@ namespace
   }
 }
 
+void DisplayText::displayJttyText (QString const& text,QString const& myCall,
+                                   LogBook const& logBook,QString const& band)
+{
+  setPlainText (text);
+  static QRegularExpression const header {QStringLiteral ("^([0-9]+ Hz  )(TX|[-+]?[0-9]+ dB)  ")};
+  static QRegularExpression const token {QStringLiteral ("[A-Z0-9/]+")};
+  for (auto block = document ()->begin (); block.isValid (); block = block.next ()) {
+    auto const line = block.text ();
+    auto const match = header.match (line);
+    if (!match.hasMatch ()) continue;
+    auto const message = line.mid (match.capturedLength ());
+    bool const tx = match.captured (2) == "TX";
+    auto words = token.globalMatch (message);
+    bool ownCall = false;
+    while (words.hasNext ()) if (words.next ().captured () == myCall) ownCall = true;
+    QColor bg,fg;
+    if (tx) set_colours (m_config,&bg,&fg,{Highlight::Tx});
+    else if (ownCall) set_colours (m_config,&bg,&fg,{Highlight::MyCall});
+    else if (message.split (' ',Qt::SkipEmptyParts).contains ("CQ"))
+      set_colours (m_config,&bg,&fg,{Highlight::CQ});
+    QTextCursor row (block);
+    auto blockFormat = row.blockFormat ();
+    if (bg.isValid ()) blockFormat.setBackground (bg);
+    row.setBlockFormat (blockFormat);
+    row.select (QTextCursor::BlockUnderCursor);
+    QTextCharFormat format;
+    if (fg.isValid ()) { format.setForeground (fg); row.mergeCharFormat (format); }
+    // Free JTTY text has no reliable sender position. Color each explicit
+    // callsign independently rather than attributing the whole line to one.
+    if (tx || ownCall) continue;
+    words = token.globalMatch (message);
+    while (words.hasNext ()) {
+      auto const word = words.next ();
+      auto const call = word.captured ();
+      if (kReGrid.match (call).hasMatch () || !Radio::is_callsign (call)) continue;
+      QColor callBg,callFg;
+      appendWorkedB4 (call,call,QString {},&callBg,&callFg,logBook,band,"JTTY",QString {},true);
+      QTextCursor cursor (document ());
+      cursor.setPosition (block.position () + match.capturedLength () + word.capturedStart ());
+      cursor.setPosition (cursor.position () + call.size (),QTextCursor::KeepAnchor);
+      QTextCharFormat callFormat;
+      if (callBg.isValid ()) callFormat.setBackground (callBg);
+      if (callFg.isValid ()) callFormat.setForeground (callFg);
+      cursor.mergeCharFormat (callFormat);
+    }
+  }
+  moveCursor (QTextCursor::End);
+}
+
 void DisplayText::insertText(QString const& text, QColor bg, QColor fg
                              , QString const& call1, QString const& call2, QTextCursor::MoveOperation location, bool psk_highlight)
 {
@@ -320,7 +370,7 @@ void DisplayText::new_period ()
 QString DisplayText::appendWorkedB4 (QString message, QString call, QString const& grid,
                                      QColor * bg, QColor * fg, LogBook const& logBook,
                                      QString const& currentBand, QString const& currentMode,
-                                     QString extra)
+                                     QString extra,bool coloursOnly)
 {
   QString countryName;
   bool callB4;
@@ -354,7 +404,7 @@ QString DisplayText::appendWorkedB4 (QString message, QString call, QString cons
     gridB4onBand=true;
   }
 
-  if(callB4onBand) m_points=0;
+  if(!coloursOnly && callB4onBand) m_points=0;
 
   message = message.trimmed ();
 
@@ -402,6 +452,7 @@ QString DisplayText::appendWorkedB4 (QString message, QString call, QString cons
     }
   types.push_back (Highlight::CQ);
   auto top_highlight = set_colours (m_config, bg, fg, types);
+  if (coloursOnly) return message;
 
   switch (top_highlight)
     {

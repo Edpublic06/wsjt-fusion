@@ -837,8 +837,8 @@ MainWindow::MainWindow(QDir const& temp_directory, bool multiple,
   },Qt::QueuedConnection);
   m_jttyLive->textChanged = [this] (QString const& text) {
     if (m_jttyActive) {
-      ui->decodedTextBrowser->setPlainText (text);
-      ui->decodedTextBrowser2->setPlainText (text);
+      ui->decodedTextBrowser->displayJttyText (text,m_config.my_callsign (),m_logBook,m_currentBand);
+      ui->decodedTextBrowser2->displayJttyText (text,m_config.my_callsign (),m_logBook,m_currentBand);
       ui->decodedTextBrowser->moveCursor (QTextCursor::End);
       ui->decodedTextBrowser2->moveCursor (QTextCursor::End);
     }

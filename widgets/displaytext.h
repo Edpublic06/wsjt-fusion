@@ -35,6 +35,7 @@ public:
                           bool haveFSpread = false, float fSpread = 0.0, bool bDisplayPoints=false,
                           int points=-99,
                           bool incl73=false, bool colourAll=false, QString distance = "", QString state = "", bool filtered = false);
+  void displayJttyText (QString const& text,QString const& myCall,LogBook const& logBook,QString const& band);
   void displayTransmittedText(QString text, QString modeTx, qint32 txFreq, bool bFastMode,
                               double TRperiod, bool bSuperfox);
   void displayQSY(QString text);
@@ -84,7 +85,7 @@ private:
   QString appendWorkedB4(QString message, QString callsign
                          , QString const& grid, QColor * bg, QColor * fg
                          , LogBook const& logBook, QString const& currentBand
-                         , QString const& currentMode, QString extra);
+                         , QString const& currentMode, QString extra,bool coloursOnly=false);
   QFont char_font_;
   QAction * erase_action_;
 
