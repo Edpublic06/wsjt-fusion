@@ -33,11 +33,16 @@ This describes upstream behavior, not a claim that all of it is integrated into 
 The original JTTY transmit page was extracted from upstream `mainwindow.ui`
 (`page_4`) into a standalone form, preserving its layout, widgets and labels.
 The codec, local audio queue/stream and lifecycle are integrated with offline
-checks. This phase does not claim upstream receive-line metadata, selected-peer
-SNR mapping, all/QSO pane routing, click-to-call selection, contest TU logging or
-MMTTY integration. For now enter DX Call and review Log QSO manually. Do not
-infer a successful logged QSO from a received line or a queued transmission.
-These remaining connections should be ported explicitly from the above sources.
+checks. JTTY now captures the selected word on mouse press and copies it into
+DX Call on double-click, following upstream. `%H` uses DX Call; `%R` uses the
+most recent receive update containing that exact word, searching a bounded
+500-update history as upstream does. An unknown or manually changed DX Call
+falls back to -10 dB. Selecting a callsign does not start transmission.
+
+Both Fusion panes currently show all JTTY receive results; upstream all/QSO
+admission routing remains to be ported. Grid/exchange extraction, contest TU
+logging and MMTTY integration are still deferred. Review Log QSO manually.
+Do not infer a successful logged QSO from a received line or queued transmission.
 
 ### Received TU example
 

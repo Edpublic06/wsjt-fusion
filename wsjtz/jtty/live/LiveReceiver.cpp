@@ -14,6 +14,7 @@ wsjtz::LiveReceiver::LiveReceiver (QObject * parent) : QObject {parent}
       auto object=QJsonDocument::fromJson (line).object ();
       if (object.isEmpty ()) continue;
       auto id=object["id"].toString ().toLongLong ();
+      snrHistory_.observe (object["text"].toString (),object["snr"].toInt (),true);
       lines_[qMakePair (session_,id)]=QString ("%1 Hz  %2 dB  %3").arg (object["frequency"].toDouble (),0,'f',0)
         .arg (object["snr"].toInt ()).arg (object["text"].toString ());
       while (lines_.size ()>200) lines_.erase (lines_.begin ());

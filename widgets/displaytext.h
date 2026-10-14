@@ -48,6 +48,7 @@ public:
   Q_SIGNAL void selectCallsign (Qt::KeyboardModifiers);
   // Z
   Q_SIGNAL void leftClick (Qt::KeyboardModifiers);
+  Q_SIGNAL void selectJttyCallsign (QString const& line,QString const& word,Qt::KeyboardModifiers);
 void log(QString s);
   Q_SIGNAL void erased ();
 
@@ -58,6 +59,11 @@ void log(QString s);
   Q_SLOT void highlight_callsign_line (QString const& callsign, QColor const& bg, QColor const& fg, bool last_period_only, bool psk_highlight);
 
 private:
+  // Capture the word before a progressive JTTY decode can rewrite the document.
+  void captureJttyClick (QMouseEvent const * event);
+  QString m_jttyPressedLine, m_jttyPressedWord;
+  Qt::MouseButton m_jttyPressedButton = Qt::NoButton;
+  bool m_jttyClickCaptured = false;
   QString leftJustifyAppendage (QString message, QString const& appendage) const;
   void mouseDoubleClickEvent (QMouseEvent *) override;
   // Z

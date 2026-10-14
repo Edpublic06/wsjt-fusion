@@ -167,7 +167,7 @@ void MainWindow::sendJttyMacro (QString const& macro)
   Jtty::NativeMacroContext context;
   context.myCall=m_config.my_callsign (); context.grid=m_config.my_grid ();
   context.hisCall=ui->dxCallEntry->text ().trimmed ().toUpper ();
-  context.serialNumber=m_jttyPanel->serial (); context.snr=m_rpt.toInt ();
+  context.serialNumber=m_jttyPanel->serial (); context.snr=m_jttyHisCallSnr;
   if ((macro.contains ("%H") && context.hisCall.isEmpty ()) ||
       (macro.contains ("%Q") && m_jttyPanel->nextCall ().isEmpty ())) {
     statusBar ()->showMessage (tr ("Enter the other station's callsign before sending this message."),10000); return;
@@ -176,4 +176,16 @@ void MainWindow::sendJttyMacro (QString const& macro)
   expanded.replace ("%Q",m_jttyPanel->nextCall ());
   expanded=Jtty::expandLiteralMacro (expanded,context);
   sendJttyText (expanded);
+}
+
+void MainWindow::selectJttyCorrespondent (QString const& line,QString const& word)
+{
+  Q_UNUSED (line);
+  if (!m_jttyActive) return;
+  // Upstream handleDecodeSelection JTTY branch: DX Call changes first, then
+  // restore the matching received SNR (the field-change handler resets it).
+  set_dateTimeQSO (-1);
+  m_deCall = word;
+  ui->dxCallEntry->setText (m_deCall);
+  m_jttyHisCallSnr = m_jttyLive->snrForSelectedWord (word);
 }

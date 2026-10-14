@@ -152,7 +152,7 @@
       "source": "widgets/mainwindow_jtty.cpp",
       "destination": "widgets/mainwindow_jtty_tx.cpp",
       "source_sha256": "ed8dd18e23ad0ca57201716156bcc03067c5876df2d90f62662698923c15095d",
-      "sha256": "2098cfcf2cf7a62e2222e39948e7fd4e90e73adbde3791785841aa0e4fefdc57",
+      "sha256": "d172c051035794c00501a703280412e41dd4b0de4131bbee9f6129a49c908f69",
       "adaptation": "Fusion adapter for upstream asynchronous queue/PTT lifecycle. One-shot submission, callbacks, F1-F8 literal expansion. Advanced live typing, native macro atoms and contest auto-log trigger not yet connected."
     },
     {
@@ -174,6 +174,27 @@
       "destination": "widgets/CurrentPageHeightStackedWidget.hpp",
       "sha256": "7985addd72dfa48db3aa4fba299aa21825902cbb4ce9f96e692e766604b14223",
       "adaptation": "none; upstream adaptive page-height container used for the main controls stack"
+    },
+    {
+      "source": "JttyReceiveResultController.cpp",
+      "destination": "wsjtz/jtty/selection/SnrHistory.hpp",
+      "source_sha256": "8edd66cda1922972b0a01532b18b0cb1061509326d0757a9e628a075cbd1769a",
+      "sha256": "f226c4a2c3becce8e5bd4fae0e3b3fbea9f3530f7064b82d7a681276cbf9b80c",
+      "adaptation": "Extract bounded 500-update history and exact-word reverse lookup; both Fusion panes currently show all results."
+    },
+    {
+      "source": "widgets/displaytext.cpp",
+      "destination": "widgets/displaytext.cpp",
+      "source_sha256": "4bf9a69f9845ef5d43931ca02557f499d08d8be1a7498eb33dc20762aaadb317",
+      "sha256": "05f989511b27bef19f5ac2f9f60f2b6e56e9d50b2a96866d4843bd5952f26e7b",
+      "adaptation": "Port upstream press-time word capture and double-click selection only for JTTY; preserve legacy selection for other modes."
+    },
+    {
+      "source": "widgets/displaytext.h",
+      "destination": "widgets/displaytext.h",
+      "source_sha256": "c7b57b2c2d2f0e319fadb8038ec464d02e62aecbfed8f78423e1cc86663866c0",
+      "sha256": "38baafaada9b340234d7e43ba2873a6ca2018da2b51492d0c9914e3e32a933fc",
+      "adaptation": "JTTY-only word-selection signal and press-time state adapted to Fusion DisplayText."
     }
   ],
   "import_date": "2026-10-14"

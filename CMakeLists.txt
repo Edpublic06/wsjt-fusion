@@ -2052,3 +2052,7 @@ configure_file ("${PROJECT_SOURCE_DIR}/CMakeCPackOptions.cmake.in"
 set (CPACK_PROJECT_CONFIG_FILE "${PROJECT_BINARY_DIR}/CMakeCPackOptions.cmake")
 
 include (CPack)
+
+add_executable (test_fusion_jtty_selection wsjtz/jtty/selection/TestSnrHistory.cpp)
+target_link_libraries (test_fusion_jtty_selection Qt5::Core)
+add_test (NAME fusion_jtty_selection COMMAND test_fusion_jtty_selection)

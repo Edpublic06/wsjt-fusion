@@ -128,3 +128,9 @@ is retained and reattached on the next JTTY entry. The decoder splitter state
 is captured before entering JTTY and restored after the ordinary-mode layout
 settles. Closing while in JTTY saves the pre-JTTY splitter state, not the
 JTTY-expanded proportions. A splitter/layout regression checks the transition.
+
+### Selected correspondent (upstream parity)
+JTTY double-click now fills DX Call using the word captured on mouse press.
+The report macro uses the upstream bounded exact-word SNR history lookup,
+with -10 dB fallback. Other modes retain their existing selection path.
+Automatic QSO logging remains deferred until JTTY is reliable.

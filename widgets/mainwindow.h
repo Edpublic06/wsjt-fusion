@@ -775,6 +775,8 @@ private:
   wsjtz::TransmitPanel * m_jttyPanel = nullptr;
   QString m_jttyOriginalLhHeading, m_jttyOriginalRhHeading;
   int m_jttyTolerance = 1300;
+  int m_jttyHisCallSnr = -10;
+  void selectJttyCorrespondent (QString const& line,QString const& word);
   int m_jttyPreviousControlsMaximumHeight = 220;
   QByteArray m_jttyPreviousSplitterState;
   qint64 m_jttyEnqueueId = 0;

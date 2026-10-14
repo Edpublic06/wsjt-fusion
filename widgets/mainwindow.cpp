@@ -808,6 +808,10 @@ MainWindow::MainWindow(QDir const& temp_directory, bool multiple,
   ui->actionFreqCal->setActionGroup(modeGroup);
   m_jttyLive = new wsjtz::LiveReceiver {this};
   initializeJttyTransmit ();
+  connect (ui->decodedTextBrowser,&DisplayText::selectJttyCallsign,this,
+    [this] (QString const& line,QString const& word,Qt::KeyboardModifiers) { selectJttyCorrespondent (line,word); });
+  connect (ui->decodedTextBrowser2,&DisplayText::selectJttyCallsign,this,
+    [this] (QString const& line,QString const& word,Qt::KeyboardModifiers) { selectJttyCorrespondent (line,word); });
   m_jttyModeAction = ui->menuMode->addAction (tr ("JTTY (experimental)"));
   m_jttyModeAction->setCheckable (true);
   m_jttyModeAction->setActionGroup (modeGroup);
@@ -9384,6 +9388,7 @@ void MainWindow::on_dxCallEntry_textChanged (QString const& call)
       tx_watchdog (false);
     }
   m_hisCall = call;
+  if (m_jttyActive) m_jttyHisCallSnr = -10;
   ui->dxGridEntry->clear();
   statusChanged();
   statusUpdate ();
@@ -9882,6 +9887,9 @@ void MainWindow::enterJttyReceive ()
   keep_frequency = saved_keep_frequency;
   monitor (false);
   m_jttyActive=true; m_mode="JTTY";
+  m_jttyHisCallSnr = -10;
+  ui->decodedTextBrowser->setProperty ("fusionJttySelection",true);
+  ui->decodedTextBrowser2->setProperty ("fusionJttySelection",true);
   // Use configured JTTY dial frequencies, never the temporary FT8 setup list.
   switch_mode (Modes::JTTY);
   m_wideGraph->setMode (m_mode);
@@ -9932,6 +9940,8 @@ void MainWindow::leaveJttyReceive ()
   if (m_jttyTxLifecycle->active ()) stopJttyTransmit ();
   m_wideGraph->jttyReceptionEnded ();
   m_jttyActive=false; ++m_jttyAudioSession;
+  ui->decodedTextBrowser->setProperty ("fusionJttySelection",false);
+  ui->decodedTextBrowser2->setProperty ("fusionJttySelection",false);
   Q_EMIT jttyReceivePolicy (false,m_jttyAudioSession);
   m_jttyLive->stop ();
   ui->controls_stack_widget->setCurrentIndex (0);

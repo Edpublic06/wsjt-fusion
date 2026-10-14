@@ -92,12 +92,38 @@ void DisplayText::setContentFont(QFont const& font)
     }
 }
 
+void DisplayText::captureJttyClick (QMouseEvent const * event)
+{
+  // From WSJT-X DisplayText::captureClick (v3.3.0-beta1).
+  auto cursor = cursorForPosition (event->pos ());
+  m_jttyPressedLine = cursor.block ().text ();
+  cursor.select (QTextCursor::WordUnderCursor);
+  m_jttyPressedWord = cursor.selectedText ();
+  m_jttyPressedButton = event->button ();
+  m_jttyClickCaptured = true;
+}
+
 void DisplayText::mouseDoubleClickEvent(QMouseEvent *e)
 {
+  if (property ("fusionJttySelection").toBool ()) {
+    if (!m_jttyClickCaptured || m_jttyPressedButton != e->button ()) captureJttyClick (e);
+    auto const line = m_jttyPressedLine;
+    auto const word = m_jttyPressedWord;
+    m_jttyPressedButton = Qt::NoButton;
+    m_jttyClickCaptured = false;
+    Q_EMIT selectJttyCallsign (line,word,e->modifiers ());
+    return;
+  }
   Q_EMIT selectCallsign(e->modifiers ());
 }
  // Z
  void DisplayText::mousePressEvent(QMouseEvent *mouseEvent) {
+     if (property ("fusionJttySelection").toBool ()) {
+         captureJttyClick (mouseEvent);
+         QTextEdit::mousePressEvent (mouseEvent);
+         return;
+     }
+     m_jttyClickCaptured=false;
      QTextCursor textCursor = cursorForPosition(mouseEvent->pos());
      if (Qt::RightButton == mouseEvent->button()) {
          textCursor.select(QTextCursor::LineUnderCursor);

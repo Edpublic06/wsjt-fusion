@@ -5,6 +5,7 @@
 #include <QProcess>
 #include <QMap>
 #include <functional>
+#include "wsjtz/jtty/selection/SnrHistory.hpp"
 namespace wsjtz {
 class LiveReceiver : public QObject {
 public:
@@ -13,9 +14,11 @@ public:
   void start (int center,int tolerance);
   void stop ();
   void append (QByteArray const& pcm);
+  int snrForSelectedWord (QString const& word) const { return snrHistory_.snrForSelectedWord (word,JttySnrHistory::Pane::All); }
   void appendTransmit (QString const& text,int frequency);
   std::function<void(QString const&)> textChanged, statusChanged;
 private:
+  JttySnrHistory snrHistory_;
   bool stopping_ = false;
   QProcess process_;
   QByteArray pending_;
