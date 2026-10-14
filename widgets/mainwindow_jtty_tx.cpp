@@ -188,4 +188,11 @@ void MainWindow::selectJttyCorrespondent (QString const& line,QString const& wor
   m_deCall = word;
   ui->dxCallEntry->setText (m_deCall);
   m_jttyHisCallSnr = m_jttyLive->snrForSelectedWord (word);
+  // Fusion has a separate Call Info DX Call field, absent from upstream.
+  // Use the same lookup path as structured-mode correspondent selection.
+  dxLookup (word,QString {});
+  if (!ui->w_callInfo->isVisible ()) {
+    clearCallInfo ();
+    ui->ci_dxcall->setText (word);
+  }
 }

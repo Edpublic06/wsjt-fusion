@@ -152,7 +152,7 @@
       "source": "widgets/mainwindow_jtty.cpp",
       "destination": "widgets/mainwindow_jtty_tx.cpp",
       "source_sha256": "ed8dd18e23ad0ca57201716156bcc03067c5876df2d90f62662698923c15095d",
-      "sha256": "d172c051035794c00501a703280412e41dd4b0de4131bbee9f6129a49c908f69",
+      "sha256": "5fab1c9fed8989a2c1e66c5009f03eb40c2a95751b85e9a68833438152cf7bbd",
       "adaptation": "Fusion adapter for upstream asynchronous queue/PTT lifecycle. One-shot submission, callbacks, F1-F8 literal expansion. Advanced live typing, native macro atoms and contest auto-log trigger not yet connected."
     },
     {

@@ -134,3 +134,7 @@ JTTY double-click now fills DX Call using the word captured on mouse press.
 The report macro uses the upstream bounded exact-word SNR history lookup,
 with -10 dB fallback. Other modes retain their existing selection path.
 Automatic QSO logging remains deferred until JTTY is reliable.
+
+The selected JTTY correspondent also updates Fusion’s separate Call Info DX Call
+field through the existing lookup path, clearing the previous station’s details.
+No grid is inferred from unstructured JTTY text.
