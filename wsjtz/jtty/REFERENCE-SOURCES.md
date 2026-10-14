@@ -22,3 +22,5 @@ Next integration work: map continuous receive events from Detector into a
 serialized decoder owner, connect the operating UI and mode transition lifecycle,
 then adapt the transmit queue/PCM stream with explicit PTT and stop handling.
 Use upstream tests as behavior references and retain Fusion automation boundaries.
+
+For subsequent WSJT-X versions, follow [UPDATE-POLICY.md](UPDATE-POLICY.md). Both manifests remain authoritative for their own imported/reference groups.
