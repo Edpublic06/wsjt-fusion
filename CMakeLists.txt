@@ -2056,3 +2056,7 @@ include (CPack)
 add_executable (test_fusion_jtty_selection wsjtz/jtty/selection/TestSnrHistory.cpp)
 target_link_libraries (test_fusion_jtty_selection Qt5::Core)
 add_test (NAME fusion_jtty_selection COMMAND test_fusion_jtty_selection)
+
+add_executable (test_fusion_jtty_receive_history wsjtz/jtty/display/TestReceiveHistory.cpp)
+target_link_libraries (test_fusion_jtty_receive_history Qt5::Core)
+add_test (NAME fusion_jtty_receive_history COMMAND test_fusion_jtty_receive_history)

@@ -163,3 +163,10 @@ regardless of the active transmit panel’s size hints.
 
 The shared receive meter has a fixed 60 logical-pixel width (its previous maximum)
 so the wider JTTY controls cannot compress the Pwr column horizontally.
+
+### Receive-pane separation
+Band Activity retains all JTTY messages. Rx Frequency contains messages whose
+reported audio frequency lies in Rx ± F Tol, plus local transmissions. Stored
+frequency metadata keeps progressive updates distinct; moving Rx or changing
+F Tol refilters existing history. The red waterfall bars show TX bandwidth,
+not this receive window. F Tol 1300 intentionally admits a broad range.

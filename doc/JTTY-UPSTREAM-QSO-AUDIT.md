@@ -40,8 +40,10 @@ most recent receive update containing that exact word, searching a bounded
 500-update history as upstream does. An unknown or manually changed DX Call
 falls back to -10 dB. A single click does not start transmission.
 
-Both Fusion panes currently show all JTTY receive results; upstream all/QSO
-admission routing remains to be ported. Grid/exchange extraction, contest TU
+Fusion now separates both panes: Band Activity shows all results, while Rx
+Frequency shows results within the current Rx ± F Tol plus local TX. History
+is refiltered immediately on retuning; unlike upstream sticky admission, old
+messages outside the current window are hidden. Grid/exchange extraction, contest TU
 logging and MMTTY integration are still deferred. Review Log QSO manually.
 Do not infer a successful logged QSO from a received line or queued transmission.
 

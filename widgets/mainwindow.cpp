@@ -835,10 +835,10 @@ MainWindow::MainWindow(QDir const& temp_directory, bool multiple,
       m_jttyLive->append (pcm);
     }
   },Qt::QueuedConnection);
-  m_jttyLive->textChanged = [this] (QString const& text) {
+  m_jttyLive->textChanged = [this] (QString const& all,QString const& qso) {
     if (m_jttyActive) {
-      ui->decodedTextBrowser->displayJttyText (text,m_config.my_callsign (),m_logBook,m_currentBand);
-      ui->decodedTextBrowser2->displayJttyText (text,m_config.my_callsign (),m_logBook,m_currentBand);
+      ui->decodedTextBrowser->displayJttyText (all,m_config.my_callsign (),m_logBook,m_currentBand);
+      ui->decodedTextBrowser2->displayJttyText (qso,m_config.my_callsign (),m_logBook,m_currentBand);
       ui->decodedTextBrowser->moveCursor (QTextCursor::End);
       ui->decodedTextBrowser2->moveCursor (QTextCursor::End);
     }
@@ -9860,7 +9860,9 @@ void MainWindow::on_actionFST4W_triggered()
 
 void MainWindow::restartJttyReceive ()
 {
-  if (!m_jttyActive || !m_monitoring) return;
+  if (!m_jttyActive) return;
+  m_jttyLive->setSelection (qBound (200,ui->RxFreqSpinBox->value (),5000),m_jttyTolerance);
+  if (!m_monitoring) return;
   ++m_jttyAudioSession;
   m_wideGraph->jttyReceptionEnded ();
   m_jttySpectrumSample = 0;
@@ -9899,6 +9901,7 @@ void MainWindow::enterJttyReceive ()
   // Use configured JTTY dial frequencies, never the temporary FT8 setup list.
   switch_mode (Modes::JTTY);
   m_wideGraph->setMode (m_mode);
+  m_wideGraph->setTol (m_jttyTolerance);
   m_wideGraph->setPeriod (m_TRperiod,JttySpectrum::FftSize);
   m_wideGraph->show ();
   ui->cbAutoSeq->setChecked (false);
