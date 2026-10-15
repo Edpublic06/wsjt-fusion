@@ -4,15 +4,30 @@
 #include <QSettings>
 #include <QShortcut>
 #include <QSignalBlocker>
+#include <QLabel>
+#include <QGridLayout>
+#include <QEvent>
+#include <QFontMetrics>
 namespace wsjtz {
 TransmitPanel::TransmitPanel(QSettings* settings,QWidget* parent):QWidget(parent),ui_(new Ui::JttyTransmitPanel),settings_(settings) {
   ui_->setupUi(this);
+  ui_->gridLayout_15->setRowMinimumHeight(3,22);
+  for(int n=1;n<=8;++n){
+    auto label=findChild<QLabel*>("macroPreview"+QString::number(n));
+label->setAutoFillBackground(false);
+    label->setStyleSheet("background: transparent;");
+    label->setTextInteractionFlags(Qt::TextSelectableByMouse);
+    label->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Minimum);
+  }
+  updatePreviewFonts();
+  ui_->label_3->setMaximumWidth(QWIDGETSIZE_MAX);
   ui_->Tx_Message->setToolTip(tr("Ctrl+K sends the current message once. Ctrl+Shift+K clears the field."));
   connect(ui_->pbSendMessage,&QPushButton::clicked,this,[this]{if(sendText)sendText(ui_->Tx_Message->toPlainText());});
   QLineEdit* fields[]={ui_->msg1,ui_->msg2,ui_->msg3,ui_->msg4,ui_->msg5,ui_->msg6,ui_->msg7,ui_->msg8};
   QPushButton* buttons[]={ui_->pbF1,ui_->pbF2,ui_->pbF3,ui_->pbF4,ui_->pbF5,ui_->pbF6,ui_->pbF7,ui_->pbF8};
   for(int i=0;i<8;++i){
     connect(buttons[i],&QPushButton::clicked,this,[this,i]{triggerMacro(i+1);});
+    connect(fields[i],&QLineEdit::textChanged,this,[this]{refreshPreviews();});
     connect(fields[i],&QLineEdit::editingFinished,this,[this]{saveTemplates();});
   }
   auto send=new QShortcut(QKeySequence("Ctrl+K"),this);
@@ -27,8 +42,22 @@ TransmitPanel::TransmitPanel(QSettings* settings,QWidget* parent):QWidget(parent
   ui_->sbFtol_2->values({1,2,5,10,20,50,100,200,300,500,1000,1300,2000,3000,5000});
   ui_->sbFtol_2->setValue(1300);
   connect(ui_->sbFtol_2,qOverload<int>(&QSpinBox::valueChanged),this,[this](int n){if(toleranceChanged)toleranceChanged(n);});
+  connect(ui_->lineEdit,&QLineEdit::textChanged,this,[this]{refreshPreviews();});
+  connect(ui_->sbSerialNumber_2,qOverload<int>(&QSpinBox::valueChanged),this,[this]{refreshPreviews();});
+  refreshPreviews();
   connect(ui_->pbR2T_2,&QPushButton::clicked,this,[this]{ui_->TxFreqSpinBox_2->setValue(ui_->RxFreqSpinBox_2->value());});
   connect(ui_->pbT2R_2,&QPushButton::clicked,this,[this]{ui_->RxFreqSpinBox_2->setValue(ui_->TxFreqSpinBox_2->value());});
+}
+void TransmitPanel::updatePreviewFonts(){
+  auto small=font();small.setPointSizeF(qMax(9.0,small.pointSizeF()*0.80));small.setBold(false);
+  for(int n=1;n<=8;++n){
+    auto label=findChild<QLabel*>("macroPreview"+QString::number(n));
+    if(label){label->setFont(small);label->setMinimumHeight(QFontMetrics(small).lineSpacing()*2);}
+  }
+}
+void TransmitPanel::changeEvent(QEvent* event){
+  QWidget::changeEvent(event);
+  if(event->type()==QEvent::FontChange)updatePreviewFonts();
 }
 TransmitPanel::~TransmitPanel()=default;
 void TransmitPanel::saveTemplates(){
@@ -42,6 +71,31 @@ void TransmitPanel::loadStyle(int style){
   QLineEdit* fields[]={ui_->msg1,ui_->msg2,ui_->msg3,ui_->msg4,ui_->msg5,ui_->msg6,ui_->msg7,ui_->msg8};
   for(int i=0;i<8;++i)fields[i]->setText(settings_->value("Fusion/JTTY/"+Jtty::messageStyleSettingsKey(static_cast<Jtty::MessageStyle>(style),i+1),Jtty::messageStyleDefaultTemplate(static_cast<Jtty::MessageStyle>(style),i+1)).toString());
   settings_->setValue("Fusion/JTTY/MessageStyle",style);
+  refreshPreviews();
+}
+void TransmitPanel::setMacroContext(QString const& myCall,QString const& hisCall,QString const& grid,int snr){
+  if(myCall_==myCall && hisCall_==hisCall && grid_==grid && snr_==snr)return;
+  myCall_=myCall;hisCall_=hisCall;grid_=grid;snr_=snr;refreshPreviews();
+}
+QString TransmitPanel::expandedMacro(QString const& macro) const {
+  Jtty::NativeMacroContext context;
+  context.myCall=myCall_;context.hisCall=hisCall_;context.grid=grid_;
+  context.snr=snr_;context.serialNumber=serial();
+  auto expanded=macro;expanded.replace("%Q",nextCall());
+  return Jtty::prepareTransmitText(Jtty::expandLiteralMacro(expanded,context)).text;
+}
+void TransmitPanel::refreshPreviews(){
+  QLineEdit* fields[]={ui_->msg1,ui_->msg2,ui_->msg3,ui_->msg4,ui_->msg5,ui_->msg6,ui_->msg7,ui_->msg8};
+  for(int i=0;i<8;++i){
+    auto label=findChild<QLabel*>("macroPreview"+QString::number(i+1));
+    auto const macro=fields[i]->text();QString text;
+    if(macro.trimmed().isEmpty())text.clear();
+    else if(macro.contains("%H") && hisCall_.isEmpty())text=tr("Select a DX Call");
+    else if(macro.contains("%Q") && nextCall().isEmpty())text=tr("Enter Call next");
+    else if(macro.contains("%M") && myCall_.isEmpty())text=tr("Set your callsign");
+    else text=expandedMacro(macro);
+    label->setText(text);label->setToolTip(text);
+  }
 }
 void TransmitPanel::triggerMacro(int n){
   QLineEdit* fields[]={ui_->msg1,ui_->msg2,ui_->msg3,ui_->msg4,ui_->msg5,ui_->msg6,ui_->msg7,ui_->msg8};

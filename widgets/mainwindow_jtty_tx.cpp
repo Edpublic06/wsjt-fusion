@@ -168,22 +168,23 @@ void MainWindow::stopJttyTransmit ()
   statusUpdate ();
 }
 
+void MainWindow::refreshJttyMacroPreviews ()
+{
+  if(!m_jttyPanel || !m_jttyActive)return;
+  auto const average=m_jttyLive->peerAverage ();
+  m_jttyPanel->setMacroContext(m_config.my_callsign (),ui->dxCallEntry->text ().trimmed ().toUpper (),
+    m_config.my_grid (),average.count ? average.snr : m_jttyHisCallSnr);
+}
+
 void MainWindow::sendJttyMacro (QString const& macro)
 {
   if (!m_jttyPanel) return;
-  Jtty::NativeMacroContext context;
-  context.myCall=m_config.my_callsign (); context.grid=m_config.my_grid ();
-  context.hisCall=ui->dxCallEntry->text ().trimmed ().toUpper ();
-  context.serialNumber=m_jttyPanel->serial ();
-  auto const average=m_jttyLive->peerAverage ();
-  context.snr=average.count ? average.snr : m_jttyHisCallSnr;
-  if ((macro.contains ("%H") && context.hisCall.isEmpty ()) ||
+  refreshJttyMacroPreviews ();
+  if ((macro.contains ("%H") && ui->dxCallEntry->text ().trimmed ().isEmpty ()) ||
       (macro.contains ("%Q") && m_jttyPanel->nextCall ().isEmpty ())) {
     statusBar ()->showMessage (tr ("Enter the other station's callsign before sending this message."),10000); return;
   }
-  auto expanded=macro;
-  expanded.replace ("%Q",m_jttyPanel->nextCall ());
-  expanded=Jtty::expandLiteralMacro (expanded,context);
+  auto const expanded=m_jttyPanel->expandedMacro(macro);
   sendJttyText (expanded);
 }
 
@@ -197,6 +198,7 @@ void MainWindow::selectJttyCorrespondent (QString const& line,QString const& wor
   ui->dxCallEntry->setText (m_deCall);
   m_jttyLive->selectPeer(word,line);
   m_jttyHisCallSnr = m_jttyLive->snrForSelectedWord (word);
+  refreshJttyMacroPreviews ();
   // Fusion has a separate Call Info DX Call field, absent from upstream.
   // Use the same lookup path as structured-mode correspondent selection.
   dxLookup (word,QString {});

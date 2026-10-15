@@ -147,14 +147,14 @@
       "source": "widgets/mainwindow.ui",
       "destination": "wsjtz/jtty/ui/JttyTransmitPanel.ui",
       "source_sha256": "e1c48b21ce694bd7754c3b919bc3c8e89393d7792655665ce2d14edc8d7d412f",
-      "sha256": "2c353c8edff4a0d32c9bf705c7b982b1d7ae98faad929606c8787c429352603f",
-      "adaptation": "Extract page_4 with unchanged widget/layout tree; rename root and add standalone UI class/custom-widget declaration. Runtime adapter disables unsupported live-typing tooltip."
+      "sha256": "003d7e5148ab577357ce14c23f15aca2d3f8851af66dadcad10b9e8d1cc7e389",
+      "adaptation": "Extract upstream page_4 as a standalone panel; Fusion adds live expanded macro preview labels, extra spacing between macro groups, and a shared row for Call next and Serial Number."
     },
     {
       "source": "widgets/mainwindow_jtty.cpp",
       "destination": "widgets/mainwindow_jtty_tx.cpp",
       "source_sha256": "ed8dd18e23ad0ca57201716156bcc03067c5876df2d90f62662698923c15095d",
-      "sha256": "179750b9f8072ba25251eae1c4184974e65e399c4a5f3a47da8a6e740f7ab0e1",
+      "sha256": "8da9166acda4de596b6df1e7e697ed3535928cc43359f5b5745f11a19fa2d671",
       "adaptation": "Fusion adapter for upstream asynchronous queue/PTT lifecycle. One-shot submission, callbacks, F1-F8 literal expansion. Advanced live typing, native macro atoms and contest auto-log trigger not yet connected."
     },
     {

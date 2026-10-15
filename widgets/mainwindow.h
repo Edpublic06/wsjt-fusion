@@ -785,6 +785,7 @@ private:
   void initializeJttyTransmit ();
   void sendJttyText (QString const& text);
   void sendJttyMacro (QString const& macro);
+  void refreshJttyMacroPreviews ();
   void stopJttyTransmit ();
   void startJttyTransmitAudio ();
   void updateJttyTxControls (bool busy);

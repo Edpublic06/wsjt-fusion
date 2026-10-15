@@ -846,6 +846,7 @@ MainWindow::MainWindow(QDir const& temp_directory, bool multiple,
   },Qt::QueuedConnection);
   m_jttyLive->textChanged = [this] (QString const& all,QString const& qso) {
     if (m_jttyActive) {
+      refreshJttyMacroPreviews ();
       ui->decodedTextBrowser->displayJttyText (all,m_config.my_callsign (),m_logBook,m_currentBand);
       ui->decodedTextBrowser2->displayJttyText (qso,m_config.my_callsign (),m_logBook,m_currentBand);
       ui->decodedTextBrowser->moveCursor (QTextCursor::End);
@@ -6784,6 +6785,7 @@ void MainWindow::guiUpdate()
 {
   // JTTY has its own asynchronous PTT/audio lifecycle; never run timed TX logic.
   if (m_jttyActive) {
+    refreshJttyMacroPreviews ();
     ui->labUTC->setText (QDateTime::currentDateTimeUtc ().time ().toString () + " ");
     displayDialFrequency ();
     return;
@@ -9404,6 +9406,7 @@ void MainWindow::on_dxCallEntry_textChanged (QString const& call)
   if (m_jttyActive) {
     m_jttyHisCallSnr = -10;
     m_jttyLive->selectPeer(call);
+    refreshJttyMacroPreviews ();
     if (previous_base != next_base) { m_rptSent.clear (); m_rptRcvd.clear (); }
   }
   ui->dxGridEntry->clear();
@@ -9547,7 +9550,10 @@ void MainWindow::on_logQSOButton_clicked()                 //Log QSO button
           int n=m_rptSent.toInt();
           m_rptSent = m_rptSent.asprintf("%+2.2d",n);
       }
-      m_logDlg->initLogQSO (m_hisCall, grid, m_mode, m_rptSent , m_rptRcvd,
+      // JTTY uses an independent UI over the baseline mode: export its actual mode
+      // through the common logging dialog, ADIF and UDP logger paths.
+      QString const logMode = m_jttyActive ? QStringLiteral ("JTTY") : m_mode;
+      m_logDlg->initLogQSO (m_hisCall, grid, logMode, m_rptSent , m_rptRcvd,
                             m_dateTimeQSOOn, dateTimeQSOOff, m_freqNominal +
                            ui->TxFreqSpinBox->value(), m_noSuffix, m_xSent, m_xRcvd,
                            ui->cbAutoCQ->isChecked() || ui->cbAutoCall->isChecked());
@@ -9948,6 +9954,7 @@ void MainWindow::enterJttyReceive ()
     ui->controls_stack_widget->addWidget (m_jttyPanel);
   m_jttyPanel->setFrequencies (ui->RxFreqSpinBox->value (),ui->TxFreqSpinBox->value ());
   ui->controls_stack_widget->setCurrentWidget (m_jttyPanel);
+  refreshJttyMacroPreviews ();
   ui->controls_stack_widget->updateGeometry ();
   m_jttyOriginalLhHeading=ui->lh_decodes_headings_label->text ();
   m_jttyOriginalRhHeading=ui->rh_decodes_headings_label->text ();

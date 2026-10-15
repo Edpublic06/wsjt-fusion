@@ -199,3 +199,9 @@ messages. Progressive updates replace their own SNR, never add extra samples.
 The fourth message is ignored. The arithmetic mean in dB is rounded to an
 integer and feeds %R; RSTS stores the report actually emitted. Switching peer
 resets the average. No automatic QSO logging is introduced.
+
+### Live macro previews and logger mode
+
+The JTTY macro panel shows the expanded transmit text below each editable template, in smaller text directly on the panel background. Previews update immediately when selecting a correspondent or changing callsign, grid, report, serial number, next call or template. Sending and previewing share the same expansion function. The two macro groups have additional vertical spacing; Call next and Serial Number share a row. These are Fusion interface changes.
+
+Manual JTTY QSO logging explicitly supplies `JTTY` to the common logging dialog, so ADIF and UDP QSO notifications carry the same mode for every connected logger, independently of the macro message style.
