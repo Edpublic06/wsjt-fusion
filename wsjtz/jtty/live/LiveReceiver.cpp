@@ -6,6 +6,8 @@
 #include <QJsonObject>
 #include <QStringList>
 #include <cmath>
+#include "Radio.hpp"
+#include "wsjtz/jtty/display/Sender.hpp"
 wsjtz::LiveReceiver::LiveReceiver (QObject * parent) : QObject {parent}
 {
   connect (&process_,&QProcess::readyReadStandardOutput,this,[this] {
@@ -16,6 +18,8 @@ wsjtz::LiveReceiver::LiveReceiver (QObject * parent) : QObject {parent}
       if (object.isEmpty ()) continue;
       auto id=object["id"].toString ().toLongLong ();
       double const frequency=object["frequency"].toDouble ();
+      auto const sender=wsjtz::jttySender(object["text"].toString(),[](QString const& call){return Radio::is_callsign(call);});
+      average_.observe(session_,id,sender,object["snr"].toInt());
       snrHistory_.observe (object["text"].toString (),object["snr"].toInt (),
         std::abs(frequency-center_) <= tolerance_);
       lines_.put(session_,id,QString ("%1 Hz  %2 dB  %3").arg (frequency,0,'f',0)
@@ -70,4 +74,11 @@ void wsjtz::LiveReceiver::setSelection(int center,int tolerance)
 void wsjtz::LiveReceiver::publish()
 {
   if(textChanged)textChanged(lines_.all(),lines_.within(center_-tolerance_,center_+tolerance_));
+}
+
+void wsjtz::LiveReceiver::selectPeer(QString const& call,QString const& line)
+{
+  average_.select(call);
+  QPair<quint64,qint64> key;
+  if(lines_.keyForText(line,key))average_.seed(key);
 }

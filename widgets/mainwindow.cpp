@@ -9401,7 +9401,11 @@ void MainWindow::on_dxCallEntry_textChanged (QString const& call)
       tx_watchdog (false);
     }
   m_hisCall = call;
-  if (m_jttyActive) m_jttyHisCallSnr = -10;
+  if (m_jttyActive) {
+    m_jttyHisCallSnr = -10;
+    m_jttyLive->selectPeer(call);
+    if (previous_base != next_base) { m_rptSent.clear (); m_rptRcvd.clear (); }
+  }
   ui->dxGridEntry->clear();
   statusChanged();
   statusUpdate ();
@@ -9499,7 +9503,7 @@ void MainWindow::on_logQSOButton_clicked()                 //Log QSO button
     // Z
   if (grid.length() == 0 || (ui->ci_grid->text().length() > grid.length() && ui->ci_grid->text().startsWith(grid)))  grid = ui->ci_grid->text();
 
-  switch( m_specOp )
+  if (!m_jttyActive) switch( m_specOp )
     {
       case SpecOp::NA_VHF:
         m_xSent=m_config.my_grid().left(4);
@@ -9538,7 +9542,7 @@ void MainWindow::on_logQSOButton_clicked()                 //Log QSO button
   // Z
   if (m_lastCall != m_hisCall) {
       QString callLogged = m_hisCall;  // Save before initLogQSO triggers signal/slot that clears DX
-      if (m_rptSent.isEmpty()) {
+      if (m_rptSent.isEmpty() && !m_jttyActive) {
           m_rptSent = QString::number(ui->rptSpinBox->value());
           int n=m_rptSent.toInt();
           m_rptSent = m_rptSent.asprintf("%+2.2d",n);
@@ -9902,6 +9906,8 @@ void MainWindow::enterJttyReceive ()
   keep_frequency = saved_keep_frequency;
   monitor (false);
   m_jttyActive=true; m_mode="JTTY";
+  m_rptSent.clear (); m_rptRcvd.clear (); m_xSent.clear (); m_xRcvd.clear ();
+  m_jttyLive->selectPeer(QString {});
   progressBar.hide ();
   ui->autoButton->setProperty ("fusionJttyPreviousStyle",ui->autoButton->styleSheet ());
   m_jttyHisCallSnr = -10;

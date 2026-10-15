@@ -9,6 +9,7 @@
 #include "JttyMessages.hpp"
 #include "Audio/soundout.h"
 #include "Radio.hpp"
+#include "wsjtz/jtty/selection/SentReport.hpp"
 #include <QPlainTextEdit>
 #include <QPushButton>
 #include <QStatusBar>
@@ -125,6 +126,8 @@ void MainWindow::startJttyTransmitAudio ()
   ui->autoButton->setStyleSheet (QStringLiteral (
     "QPushButton, QPushButton:disabled { background-color: red; color: black; }"));
   tx_status_label.setText (tr ("Tx: JTTY"));
+  auto const sentReport = wsjtz::jttySentReport (m_jttyTxText,m_hisCall,m_config.my_callsign ());
+  if (!sentReport.isEmpty ()) m_rptSent = sentReport;
   m_jttyLive->appendTransmit (m_jttyTxText,ui->TxFreqSpinBox->value ());
   write_all ("Tx",m_jttyTxText);
   // Completion comes from the upstream audio queue's device-buffer drain guard.
@@ -171,7 +174,9 @@ void MainWindow::sendJttyMacro (QString const& macro)
   Jtty::NativeMacroContext context;
   context.myCall=m_config.my_callsign (); context.grid=m_config.my_grid ();
   context.hisCall=ui->dxCallEntry->text ().trimmed ().toUpper ();
-  context.serialNumber=m_jttyPanel->serial (); context.snr=m_jttyHisCallSnr;
+  context.serialNumber=m_jttyPanel->serial ();
+  auto const average=m_jttyLive->peerAverage ();
+  context.snr=average.count ? average.snr : m_jttyHisCallSnr;
   if ((macro.contains ("%H") && context.hisCall.isEmpty ()) ||
       (macro.contains ("%Q") && m_jttyPanel->nextCall ().isEmpty ())) {
     statusBar ()->showMessage (tr ("Enter the other station's callsign before sending this message."),10000); return;
@@ -184,13 +189,13 @@ void MainWindow::sendJttyMacro (QString const& macro)
 
 void MainWindow::selectJttyCorrespondent (QString const& line,QString const& word,bool sendF2)
 {
-  Q_UNUSED (line);
   if (!m_jttyActive || !Radio::is_callsign (word)) return;
   // Upstream handleDecodeSelection JTTY branch: DX Call changes first, then
   // restore the matching received SNR (the field-change handler resets it).
   set_dateTimeQSO (-1);
   m_deCall = word;
   ui->dxCallEntry->setText (m_deCall);
+  m_jttyLive->selectPeer(word,line);
   m_jttyHisCallSnr = m_jttyLive->snrForSelectedWord (word);
   // Fusion has a separate Call Info DX Call field, absent from upstream.
   // Use the same lookup path as structured-mode correspondent selection.

@@ -184,3 +184,18 @@ is applied and previous formatting is reset before progressive updates.
 JttyMessages.hpp advances unchanged to beta2; codec files unchanged between
 betas keep their exact beta1 hashes. Unencodable TX segments are refused
 atomically rather than retried with shorter pieces.
+
+### Manual logging: sent report consistency
+RSTS is derived from the report token in the JTTY message whose transmission
+starts for the selected peer (FT8-style signed reports or contest RST). A later
+receive SNR does not overwrite the sent report. Changing JTTY peer or entering
+JTTY clears inherited reports; manual JTTY logging never falls back to the
+timed-mode report spin box. Received reports remain manually reviewable; no
+automatic logging or unstructured received-report inference is added.
+
+The operator selected the first three messages for averaging. The selected
+receive line seeds the first sample, followed by the peer's next identifiable
+messages. Progressive updates replace their own SNR, never add extra samples.
+The fourth message is ignored. The arithmetic mean in dB is rounded to an
+integer and feeds %R; RSTS stores the report actually emitted. Switching peer
+resets the average. No automatic QSO logging is introduced.

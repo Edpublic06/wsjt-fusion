@@ -6,6 +6,7 @@
 #include <QMap>
 #include <functional>
 #include "wsjtz/jtty/selection/SnrHistory.hpp"
+#include "wsjtz/jtty/selection/PeerSnrAverage.hpp"
 #include "wsjtz/jtty/display/ReceiveHistory.hpp"
 namespace wsjtz {
 class LiveReceiver : public QObject {
@@ -16,12 +17,15 @@ public:
   void stop ();
   void append (QByteArray const& pcm);
   int snrForSelectedWord (QString const& word) const { return snrHistory_.snrForSelectedWord (word,JttySnrHistory::Pane::All); }
+  void selectPeer(QString const& call,QString const& line=QString {});
+  PeerSnrAverage::Result peerAverage() const { return average_.average(); }
   void appendTransmit (QString const& text,int frequency);
   std::function<void(QString const&,QString const&)> textChanged;
   std::function<void(QString const&)> statusChanged;
   void setSelection(int center,int tolerance);
 private:
   JttySnrHistory snrHistory_;
+  PeerSnrAverage average_;
   bool stopping_ = false;
   QProcess process_;
   QByteArray pending_;

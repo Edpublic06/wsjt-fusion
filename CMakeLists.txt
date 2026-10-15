@@ -2108,3 +2108,11 @@ set_tests_properties (fusion_beta2_bridge PROPERTIES TIMEOUT 90)
 add_executable (test_fusion_beta2_gui_decoders wsjtz/decoding/wsjtx-beta2/adapters/TestGuiDecoders.cpp)
 target_link_libraries (test_fusion_beta2_gui_decoders wsjt_cxx)
 add_test (NAME fusion_beta2_gui_decoders COMMAND test_fusion_beta2_gui_decoders)
+
+add_executable (test_fusion_jtty_sent_report wsjtz/jtty/selection/TestSentReport.cpp)
+target_link_libraries (test_fusion_jtty_sent_report Qt5::Core)
+add_test (NAME fusion_jtty_sent_report COMMAND test_fusion_jtty_sent_report)
+
+add_executable (test_fusion_jtty_snr_average wsjtz/jtty/selection/TestPeerSnrAverage.cpp)
+target_link_libraries (test_fusion_jtty_snr_average Qt5::Core)
+add_test (NAME fusion_jtty_snr_average COMMAND test_fusion_jtty_snr_average)
