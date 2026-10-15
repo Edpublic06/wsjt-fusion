@@ -85,3 +85,10 @@ fetch. It is an inventory aid, not a complete dependency or compatibility analys
 Fusion **v1.0.0-beta2** remains at
 `8345c155a878185f11736e9dec8df278ab7f1c49`, also referenced by `backup/beta2`.
 Never move that tag or overwrite its release assets for a JTTY update.
+
+## Fusion beta3 maintenance policy
+Decoding target: WSJT-X 3.3.0-beta2; FT2 remains separately tracked from
+WS/Improved. Report upstream UI/ergonomics changes and obtain F6FDY's explicit
+decision before importing them. Beta3's current isolated engine inventory is
+wsjtz/decoding/wsjtx-beta2/source-manifest.json. Individual JTTY entries may
+record a later source_commit/source_tag than their group's original snapshot.

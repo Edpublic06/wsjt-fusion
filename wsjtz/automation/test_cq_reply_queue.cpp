@@ -51,8 +51,8 @@ int main () {
   check (q.calls ().size ()==3);
   check (q.take (1,false).call=="B"); // priority, not raw decode order
   q.add (reply ("B",-1,200));check (q.calls ().size ()==2); // active duplicate
+  q.complete ();check (q.take (1,false).call=="A"); // strict FIFO after first selection
   q.complete ();check (q.take (1,false).call=="C");
-  q.complete ();check (q.take (1,false).call=="A");
   q.complete ();check (q.empty () && !q.session ()); // exhaustion
   q.add (reply ("A",-10,100));q.add (reply ("B",-10,100));
   check (q.take (0,false).call=="A");q.complete ();check (q.take (0,false).call=="B");
@@ -64,7 +64,13 @@ int main () {
   q.add (reply ("A",-1,100));q.add (reply ("B",-20,100,true));
   check (q.take (1,true).call=="B");
   q.clear ();
+  q.attach_current ("CURRENT");
+  q.add (reply ("FIRST",-20,10));q.add (reply ("LAST",5,900,true));
+  q.add (reply ("FIRST",-15,20));q.highlight ("LAST",9);
+  q.complete ();check (q.take (2,true).call=="FIRST");
+  q.complete ();check (q.take (1,true).call=="LAST");
+  q.clear ();
   q.add (reply ("A",-1,100));q.add (reply ("B",-20,100));
   q.highlight ("B",3);check (q.take (1,false).call=="B");
-  std::cout << "PASS: CQ queue priorities, FIFO ties, deduplication, completion and manual/context cancellation\n";
+  std::cout << "PASS: CQ queue priorities, strict FIFO after first selection, deduplication, completion and manual/context cancellation\n";
 }

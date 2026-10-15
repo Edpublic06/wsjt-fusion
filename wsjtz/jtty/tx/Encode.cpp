@@ -21,13 +21,12 @@ JttyEncoded encodeJtty(QString const& text,int frequency) {
       auto segment=Jtty::nextTransmitTextSegment(line,offset);
       if(segment.text.trimmed().isEmpty()){offset+=segment.length;continue;}
       int tones[944]{}, starts[16]{}, symbols=0;
-      for(;;) {
-        auto frame=Jtty::transmitFrame(segment.text).toLatin1();
-        int const profile=0, finalFlag=(offset+segment.length>=line.size())?1:0;
-        genjtty_profile_(frame.data(),&profile,tones,&symbols,starts,&finalFlag,size_t(80));
-        if(symbols>0)break;
-        if(segment.length<=1){result.error="JTTY text could not be encoded.";result.pcm.clear();return result;}
-        segment=Jtty::nextTransmitTextSegment(line,offset,segment.length-1);
+      auto frame=Jtty::transmitFrame(segment.text).toLatin1();
+      int const profile=0, finalFlag=(offset+segment.length>=line.size())?1:0;
+      genjtty_profile_(frame.data(),&profile,tones,&symbols,starts,&finalFlag,size_t(80));
+      if(symbols<=0){
+        result.error="JTTY text not sent: a line does not fit once encoded; shorten it and send again.";
+        result.pcm.clear();return result;
       }
       // Same waveform parameters and PCM conversion as mainwindow_jtty.cpp.
       int nsps=4*384,complex=0,count=nsps*symbols;

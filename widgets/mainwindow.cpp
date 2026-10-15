@@ -126,13 +126,22 @@
 
 #define FCL fortran_charlen_t
 
+// Other platforms keep their existing decoders until their beta3 port is validated.
+#if !defined(__APPLE__) || !defined(__aarch64__)
+#define fusion_hspec_ hspec_
+#define fusion_avecho_ avecho_
+#define fusion_save_echo_params_ save_echo_params_
+#define fusion_freqcal_ freqcal_
+#define fusion_fast_decode_ fast_decode_
+#endif
+
 extern "C" {
   //----------------------------------------------------- C and Fortran routines
   void symspec_(struct dec_data *, int* k, double* trperiod, int* nsps, int* ingain,
                 bool* bLowSidelobes, int* minw, float* px, float s[], float* df3,
                 int* nhsym, int* npts8, float *m_pxmax, int* npct);
 
-  void hspec_(short int d2[], int* k, int* nutc0, int* ntrperiod, int* nrxfreq, int* ntol,
+  void fusion_hspec_(short int d2[], int* k, int* nutc0, int* ntrperiod, int* nrxfreq, int* ntol,
               bool* bmsk144, bool* btrain, double const pcoeffs[], int* ingain,
               char const * mycall, char const * hiscall, bool* bshmsg, bool* bswl,
               char const * ddir, float green[],
@@ -186,14 +195,14 @@ extern "C" {
 
   int savec2_(char const * fname, int* TR_seconds, double* dial_freq, fortran_charlen_t);
 
-  void save_echo_params_(int* ndoptotal, int* ndop, int* nfrit, float* f1, float* fspread, short id2[], int* idir);
+  void fusion_save_echo_params_(int* ndoptotal, int* ndop, int* nfrit, float* f1, float* fspread, short id2[], int* idir);
 
-  void avecho_( short id2[], int* dop, int* nfrit, int* nauto, int* ndf, int* navg, int* nqual,
+  void fusion_avecho_( short id2[], int* dop, int* nfrit, int* nauto, int* ndf, int* navg, int* nqual,
                 float* f1, float* level, float* sigdb, float* snr, float* dfreq,
                 float* width, bool* bDiskData, bool* bEchoCall,
                 char* txcall, char* rxcall, FCL txcall_len, FCL rxcall_len);
 
-  void fast_decode_(short id2[], int narg[], double * trperiod,
+  void fusion_fast_decode_(short id2[], int narg[], double * trperiod,
                     char msg[], char mycall[], char hiscall[],
                     fortran_charlen_t, fortran_charlen_t, fortran_charlen_t);
   void degrade_snr_(short d2[], int* n, float* db, float* bandwidth);
@@ -203,7 +212,7 @@ extern "C" {
   void refspectrum_(short int d2[], bool* bclearrefspec,
                     bool* brefspec, bool* buseref, const char* c_fname, fortran_charlen_t);
 
-  void freqcal_(short d2[], int* k, int* nkhz,int* noffset, int* ntol,
+  void fusion_freqcal_(short d2[], int* k, int* nkhz,int* noffset, int* ntol,
                 char line[], fortran_charlen_t);
 
   void calibrate_(char const * data_dir, int* iz, double* a, double* b, double* rms,
@@ -2370,7 +2379,7 @@ void MainWindow::dataSink(qint64 frames)
     int RxFreq=ui->RxFreqSpinBox->value ();
     int nkhz=(m_freqNominal+RxFreq)/1000;
     int ftol = ui->sbFtol->value ();
-    freqcal_(&dec_data.d2[0], &k, &nkhz, &RxFreq, &ftol, &line[0], (FCL)80);
+    fusion_freqcal_(&dec_data.d2[0], &k, &nkhz, &RxFreq, &ftol, &line[0], (FCL)80);
     QString t=QString::fromLatin1(line);
     DecodedText decodedtext {t};
     if (m_bandActivityRawView) {
@@ -2453,9 +2462,9 @@ void MainWindow::dataSink(qint64 frames)
       QByteArray rxCallBa {"      "};
       if(m_diskData) {
         int idir=-1;
-        save_echo_params_(&nDopTotal,&nDop,&nfrit,&f1,&width,dec_data.d2,&idir);
+        fusion_save_echo_params_(&nDopTotal,&nDop,&nfrit,&f1,&width,dec_data.d2,&idir);
       }
-      avecho_(dec_data.d2,&nDop,&nfrit,&nauto,&ndf,&navg,&nqual,&f1,&xlevel,&sigdb,
+      fusion_avecho_(dec_data.d2,&nDop,&nfrit,&nauto,&ndf,&navg,&nqual,&f1,&xlevel,&sigdb,
           &dBerr,&dfreq,&width,&m_diskData,&bEchoCall,
           txCallBa.data(),rxCallBa.data(),6,6);
       //Don't restart Monitor after an Echo transmission
@@ -2495,7 +2504,7 @@ void MainWindow::dataSink(qint64 frames)
       if(m_echoGraph->isVisible()) m_echoGraph->plotSpec();
       if(m_saveAll and !m_diskData) {
         int idir=1;
-        save_echo_params_(&m_fDop,&nDop,&nfrit,&f1,&width,dec_data.d2,&idir);
+        fusion_save_echo_params_(&m_fDop,&nDop,&nfrit,&f1,&width,dec_data.d2,&idir);
         m_fSpread=width;
       }
       m_nclearave=0;
@@ -2670,7 +2679,7 @@ void MainWindow::fastSink(qint64 frames)
   float pxmax = 0;
   float rmsNoGain = 0;
   int ftol = ui->sbFtol->value ();
-  hspec_(dec_data.d2,&k,&nutc0,&nTRpDepth,&RxFreq,&ftol,&bmsk144,
+  fusion_hspec_(dec_data.d2,&k,&nutc0,&nTRpDepth,&RxFreq,&ftol,&bmsk144,
       &m_bTrain,m_phaseEqCoefficients.constData(),&m_inGain,&dec_data.params.mycall[0],
       &dec_data.params.hiscall[0],&bshmsg,&bswl,
       data_dir.constData (),fast_green,fast_s,&fast_jh,&pxmax,&rmsNoGain,&line[0],(FCL)12,
@@ -4972,7 +4981,7 @@ void MainWindow::decode()                                       //decode()
         narg[13]=-1;
         narg[14]=m_config.aggressive();
         memcpy(d2b,dec_data.d2,2*360000);
-        watcher3.setFuture (QtConcurrent::run (std::bind (fast_decode_, &d2b[0],
+        watcher3.setFuture (QtConcurrent::run (std::bind (fusion_fast_decode_, &d2b[0],
             &narg[0],&m_TRperiod, &m_msg[0][0], dec_data.params.mycall,
             dec_data.params.hiscall, (FCL)8000, (FCL)12, (FCL)12)));
       } else {

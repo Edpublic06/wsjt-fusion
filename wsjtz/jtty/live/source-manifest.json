@@ -126,8 +126,10 @@
     {
       "source": "widgets/JttyMessages.hpp",
       "destination": "widgets/JttyMessages.hpp",
-      "sha256": "518c94bab7f30bc0c6c23a0bfce0def79a5edcdc153359bd2c73754d32e3ee7e",
-      "adaptation": "none; upstream JTTY transmit component or regression test"
+      "sha256": "456f028b2b5a51d1b73e1046b0f57b6fa2675dce4fea522db6eaa2e1f5183374",
+      "adaptation": "none; upstream JTTY transmit component or regression test",
+      "source_commit": "9d059511f77e2d1be746ebfeaa7f88e77c1babb7",
+      "source_tag": "v3.3.0-beta2"
     },
     {
       "source": "tests/unit/jtty/test_jtty_txstream.cpp",
@@ -159,7 +161,7 @@
       "source": "widgets/mainwindow_jtty.cpp",
       "destination": "wsjtz/jtty/tx/Encode.cpp",
       "source_sha256": "ed8dd18e23ad0ca57201716156bcc03067c5876df2d90f62662698923c15095d",
-      "sha256": "469a24a21219acf9e4664563efdd67c96a8c715464ada61877b91b1530db3647",
+      "sha256": "f80a5067e9cd4bccd1b190da3025888c14b45f8ddcfb605c2389174334bc7448",
       "adaptation": "Extract text segmentation, genjtty_profile/gen_jttywave parameters and PCM conversion; cap one message at 320 characters/60 seconds. No protocol or Fortran source changes."
     },
     {
@@ -186,7 +188,7 @@
       "source": "widgets/displaytext.cpp",
       "destination": "widgets/displaytext.cpp",
       "source_sha256": "4bf9a69f9845ef5d43931ca02557f499d08d8be1a7498eb33dc20762aaadb317",
-      "sha256": "286324cbe2fc9bc8d2bc4c473af51d53586bf337fcad7ad5fde4ad7b20d2d7d0",
+      "sha256": "e67775208165b1f86a23c2f6b7e21961e401f9d015f9df0d500f8dae9684485c",
       "adaptation": "Upstream press-time word capture adapted to Fusion: single left click selects and highlights; double left click requests F2 in FT8 style. Other modes retain legacy selection."
     },
     {

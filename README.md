@@ -145,3 +145,11 @@ The vast majority of the code is created and copyrighted by the WSJT Development
 - **JTDX team** — for the multi-threaded FT8 decoder enhancements that informed the WSJT-Z decoder pipeline
 - **JTSDK** — for the Windows build environment
 - **WSJT-Z contributors** — see the commit log
+
+## Fusion 1.0.0-beta3
+
+The macOS Apple Silicon beta3 uses the WSJT-X 3.3.0-beta2 decoder reference
+behind isolated Fusion adapters. FT2 remains separately sourced from WS/Improved.
+See [beta3 changes and validation limits](doc/releases/1.0.0-beta3.md) and
+[component provenance](UPSTREAM-SOURCES.md). Upstream UI changes require
+F6FDY’s explicit selection; Fusion maintains its own interface and automation.

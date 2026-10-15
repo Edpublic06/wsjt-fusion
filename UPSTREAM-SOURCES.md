@@ -7,20 +7,20 @@ in the baseline from downloaded references and integration work in progress.
 
 ## Component versions by function
 
-**Application version: WSJT-Fusion 1.0.0-beta2.** This is the fork's own version;
+**Application version: WSJT-Fusion 1.0.0-beta3 (macOS Apple Silicon).** This is the fork's own version;
 it does not describe every decoder's version.
 
 | Function / component | Source project | Reference version | Revision / evidence | What is actually present in Fusion |
 | --- | --- | --- | --- | --- |
 | Application baseline, UI, filters, historical Auto CQ / Auto Call | WSJT-Z, SQ9FVE and contributors | **2.0.19** | [Original tag](https://github.com/sq9fve/wsjt-z/tree/v2.0.19), commit `b3a06e89ae0174c51c8595d99e40ca179738eb0a` | Baseline retained with adaptations and personal features; Fusion is not an official WSJT-Z release. |
-| Inherited general engine | WSJT-X through WSJT-Z | **3.0.0** (declared base) | [`Versions.cmake`](Versions.cmake); baseline snapshot above | Still used. This does not mean every file matches WSJT-X 3.0.0: WSJT-Z has its own modifications. |
-| FT8 decoding and multithreading | WSJT-X + WSJT-Z adaptations, JTDX contributions | WSJT-X base **3.0.0**; WSJT-Z **2.0.19**; JTDX version **not established** | [`lib/ft8`](lib/ft8), [`lib/decoder.f90`](lib/decoder.f90), baseline history | Inherited engine with specific improvements. **Full migration to WSJT-X 3.3.0-beta1 FT8 is unfinished.** Do not assign a precise JTDX version without evidence. |
-| Standard FT4 | WSJT-X through WSJT-Z | Declared base **3.0.0**, Z baseline **2.0.19** | [`lib/ft4_decode.f90`](lib/ft4_decode.f90), baseline history | Standard FT4 retained; the recent private FT2 import does not replace this decoder. |
+| General timed decoder engine | WSJT-X | **3.3.0-beta2** | `9d059511f77e2d1be746ebfeaa7f88e77c1babb7`; [source inventory and adapters](wsjtz/decoding/wsjtx-beta2/README.md) | Isolated upstream library on macOS Apple Silicon; Fusion IPC, interface and automation preserved. |
+| FT8 and standard FT4 decoding | WSJT-X | **3.3.0-beta2** | Same pinned archive; actual Fusion shared-memory boundary tested with synthetic FT8/FT4 | Runtime decode calls are routed to beta2. Old baseline code remains for non-Apple-Silicon builds and rollback, not as the active beta3 path on Apple Silicon. |
 | FT2 updated receiver | WS / WSJT-X Improved and contributors | **WS 3.2.1, build 261010** | Archive `ws-3.2.1_261010.tgz`; [file/hash manifest](wsjtz/decoding/ft2/source-manifest.json); Fusion import [`095e907`](https://github.com/Edpublic06/wsjt-fusion/commit/095e907) | Receiver adapted from the FT4 sources used for FT2, in a private module. Build and synthetic tests passed; this does not certify a complete import of WS features. |
 | FT2 inherited transmitter and application behavior | WSJT-Z, initial port declared from Improved | Z baseline **2.0.19**; initial Improved revision **not established** | Port `ec2a6037502bb177e93996d2224c97866b146a5b`; 3.75 s timing correction `c467f6653c5f79d0122fcac411b3caf27f223e2e` | Inherited transmission, mode selection, UI and operation with Fusion adapters. Historical experimental `lib/ft2` does not alone represent the active FT2 implementation. |
 | JTTY codec / receive core | WSJT-X and contributors | **3.3.0-beta1** | [Upstream tag](https://github.com/WSJTX/wsjtx/tree/v3.3.0-beta1), commit `57ba9337fa020065dc0ceee2c4ef85e433ea32d4`; [manifest](wsjtz/jtty/source-manifest.json) | Development branch: core, local continuous reception, upstream JTTY spectrum and Wide Graph connection implemented and tested. Local one-message CQ/text transmission is implemented with unchanged upstream codec/queue/stream/lifecycle components and offline tests. **RF transmission and interactive waterfall row replay remain unvalidated/unfinished respectively. Beta2 is unchanged.** |
-| Target general engine update | WSJT-X | **3.3.0-beta1** | Same upstream tag/commit; [integration plan](doc/PLAN-3.3.0-beta1.md) | Working reference. **General integration remains in progress**, separate from the imported JTTY core. |
-| Other inherited modes: JT4 / JT9 / JT65, Q65, MSK144, WSPR, Echo, FreqCal | WSJT-X through WSJT-Z | Declared base **3.0.0**, Z baseline **2.0.19** | Baseline history; precise file inventory still to complete | Inherited functions. No full 3.3.0-beta1 port of these modes is claimed. |
+| JT4 / JT9 / JT65, Q65, FST4 / FST4W | WSJT-X | **3.3.0-beta2** | Isolated library and parameter adapter | New engine path; upstream tests passed for JT4/JT9/JT65/Q65/FST4. Live checks remain required. |
+| MSK144, FreqCal, Echo | WSJT-X | **3.3.0-beta2** | `GuiDecoders.cpp` and isolated library | Decoder calls adapted; existing Fusion controls/graphs retained. Offline ABI smoke checks cover MSK spectrum, FreqCal and Echo silence/metadata. |
+| WSPR | WSJT-X | **3.3.0-beta2** | Unchanged upstream `wsprd` target | Bundled as separate beta2 worker. |
 | Incoming-caller priority, deduplicated queue, WD Counter | WSJT-Fusion, F6FDY | **1.0.0-beta1** | [`wsjtz/automation`](wsjtz/automation), Fusion history | Personal extensions. First-caller protection [`8a28ecc`](https://github.com/Edpublic06/wsjt-fusion/commit/8a28ecc), incoming-filter preference [`b34f533`](https://github.com/Edpublic06/wsjt-fusion/commit/b34f533), receive-period handover resolution [`911456c`](https://github.com/Edpublic06/wsjt-fusion/commit/911456c). Automated tests passed; radio testing continues. |
 
 “Declared base” identifies the baseline's provenance, not a complete file-by-file
@@ -111,3 +111,14 @@ is independent of upstream component versions.
 ## 1.0.0-beta2 — 14 October 2026
 
 Includes receive-period handover resolution (911456c) and the Min Signal correction (19d1f57). An outgoing partner replying in the same receive period is protected before switching to another caller. Incoming-station filtering is respected when taking stations from the queue. Min Signal is checked before automatic-selection exemptions and again before starting an outgoing call. Direct replies from the current partner remain processable. macOS Apple Silicon build and existing FT2/automation regressions pass; live validation continues.
+
+## Beta3 policy and current limits — 15 October 2026
+The decoding reference is WSJT-X 3.3.0-beta2. FT2 follows WS/Improved separately.
+Upstream UI/ergonomics changes must be reported and require F6FDY's explicit
+selection before import. Fusion's own requested UI changes are implemented
+separately. The beta2 tag and release assets remain untouched.
+Historical import descriptions above document earlier stages and do not
+override the current function table. Current beta3 hardware validation is pending.
+
+Beta3 also enforces strict FIFO after the priority-based initial selection;
+repeated calls refresh metadata without changing queue position.

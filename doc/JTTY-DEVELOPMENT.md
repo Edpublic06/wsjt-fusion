@@ -174,3 +174,13 @@ not this receive window. F Tol 1300 intentionally admits a broad range.
 JTTY now draws the shared green RX and red TX goal posts above the waterfall.
 Waterfall frequency selection preserves TX in JTTY while Hold Tx Freq is checked;
 manual TX controls remain available outside transmission.
+
+## Fusion beta3 — sender-based text coloring and beta2 TX fix
+TX uses the configured TX colors for the entire printed line, stopping at the
+last character. RX uses the identified transmitter from explicit DE, CQ or
+structured call/call forms. An unknown/partial sender receives no highlight.
+Destination calls do not set the row's colors. No paragraph-wide background
+is applied and previous formatting is reset before progressive updates.
+JttyMessages.hpp advances unchanged to beta2; codec files unchanged between
+betas keep their exact beta1 hashes. Unencodable TX segments are refused
+atomically rather than retried with shorter pieces.

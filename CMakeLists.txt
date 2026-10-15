@@ -76,7 +76,7 @@ set (PROJECT_MANUAL_DIRECTORY_URL https://github.com/Edpublic06/wsjt-fusion/tree
 set (PROJECT_SAMPLES_URL https://sourceforge.net/projects/wsjt/files/)
 #set (PROJECT_SAMPLES_UPLOAD_DEST frs.sourceforge.net:/home/frs/project/wsjt/)
 # WSJT-Z mod version suffix shown in UI and package metadata.
-set (VERSION_Z "1.0.0-beta3-dev")
+set (VERSION_Z "1.0.0-beta3")
 message (STATUS "******************************************************")
 message (STATUS "Building ${PROJECT_BUNDLE_NAME} ${VERSION_Z} (base WSJT-X ${PROJECT_VERSION}) for ${CMAKE_SYSTEM_NAME}-${PROJECT_ARCHITECTURE}")
 message (STATUS "******************************************************")
@@ -2002,7 +2002,7 @@ set (CPACK_PACKAGE_NAME "wsjt-fusion")
 set (CPACK_PACKAGE_VERSION_Z "${VERSION_Z}")
 set (CPACK_PACKAGE_VERSION_MAJOR 1)
 set (CPACK_PACKAGE_VERSION_MINOR 0)
-set (CPACK_PACKAGE_VERSION_PATCH "0-beta3-dev")
+set (CPACK_PACKAGE_VERSION_PATCH "0-beta3")
 set (CPACK_PACKAGE_VERSION "${VERSION_Z}")
 
 
@@ -2060,3 +2060,51 @@ add_test (NAME fusion_jtty_selection COMMAND test_fusion_jtty_selection)
 add_executable (test_fusion_jtty_receive_history wsjtz/jtty/display/TestReceiveHistory.cpp)
 target_link_libraries (test_fusion_jtty_receive_history Qt5::Core)
 add_test (NAME fusion_jtty_receive_history COMMAND test_fusion_jtty_receive_history)
+
+# Isolated WSJT-X 3.3.0-beta2 decoder dispatch; no upstream GUI replacement.
+target_sources (wsjt_cxx PRIVATE wsjtz/decoding/wsjtx-beta2/adapters/Loader.cpp)
+
+if (APPLE AND CMAKE_SYSTEM_PROCESSOR MATCHES "arm64|aarch64")
+  find_program (FUSION_PYTHON_EXECUTABLE python3 REQUIRED)
+  set (FUSION_BETA2_ENGINE "${CMAKE_BINARY_DIR}/libfusion_decoder_beta2.dylib")
+  add_custom_command (OUTPUT "${FUSION_BETA2_ENGINE}"
+    COMMAND "${FUSION_PYTHON_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/tools/build_beta2_decoder.py"
+      --build "${CMAKE_BINARY_DIR}/beta2-engine"
+      --output "${FUSION_BETA2_ENGINE}"
+      --fortran "${CMAKE_Fortran_COMPILER}" --prefix /opt/homebrew --qt "${Qt5_DIR}"
+    DEPENDS tools/build_beta2_decoder.py
+      wsjtz/decoding/wsjtx-beta2/adapters/DecodeBridge.f90
+      wsjtz/decoding/wsjtx-beta2/source-manifest.json
+      wsjtz/decoding/wsjtx-beta2/source/wsjtx-9d059511.tar.gz
+    VERBATIM)
+  add_custom_target (fusion_beta2_engine DEPENDS "${FUSION_BETA2_ENGINE}")
+  add_dependencies (jt9 fusion_beta2_engine)
+  add_custom_command (TARGET wsjtx POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${FUSION_BETA2_ENGINE}"
+      "$<TARGET_FILE_DIR:wsjtx>/libfusion_decoder_beta2.dylib"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_BINARY_DIR}/wsprd-beta2"
+      "$<TARGET_FILE_DIR:wsjtx>/wsprd")
+  add_dependencies (wsjtx fusion_beta2_engine)
+  install (FILES "${FUSION_BETA2_ENGINE}" DESTINATION ${CMAKE_INSTALL_BINDIR})
+  install (PROGRAMS "${CMAKE_BINARY_DIR}/wsprd-beta2" DESTINATION ${CMAKE_INSTALL_BINDIR} RENAME wsprd)
+endif ()
+
+target_sources (wsjt_cxx PRIVATE wsjtz/decoding/wsjtx-beta2/adapters/GuiDecoders.cpp)
+
+add_executable (test_fusion_jtty_sender wsjtz/jtty/display/TestSender.cpp)
+target_link_libraries (test_fusion_jtty_sender Qt5::Core)
+add_test (NAME fusion_jtty_sender COMMAND test_fusion_jtty_sender)
+
+add_executable (test_fusion_jtty_text_colors wsjtz/jtty/display/TestTextColors.cpp)
+target_link_libraries (test_fusion_jtty_text_colors Qt5::Widgets)
+add_test (NAME fusion_jtty_text_colors COMMAND test_fusion_jtty_text_colors)
+
+add_executable (test_fusion_beta2_bridge wsjtz/decoding/wsjtx-beta2/adapters/TestSharedMemory.cpp)
+target_link_libraries (test_fusion_beta2_bridge Qt5::Core wsjt_fort wsjt_cxx)
+add_test (NAME fusion_beta2_bridge COMMAND test_fusion_beta2_bridge
+  $<TARGET_FILE:jt9> "${CMAKE_BINARY_DIR}")
+set_tests_properties (fusion_beta2_bridge PROPERTIES TIMEOUT 90)
+
+add_executable (test_fusion_beta2_gui_decoders wsjtz/decoding/wsjtx-beta2/adapters/TestGuiDecoders.cpp)
+target_link_libraries (test_fusion_beta2_gui_decoders wsjt_cxx)
+add_test (NAME fusion_beta2_gui_decoders COMMAND test_fusion_beta2_gui_decoders)

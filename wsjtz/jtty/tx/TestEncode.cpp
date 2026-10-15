@@ -1,5 +1,6 @@
 // Offline TX -> receive-worker loopback. Never opens an audio device or radio.
 #include "Encode.hpp"
+#include "widgets/JttyMessages.hpp"
 #include <QCoreApplication>
 #include <QProcess>
 #include <QJsonDocument>
@@ -27,7 +28,11 @@ int main(int argc,char**argv) {
     if(obj["text"].toString()==waveform.text)found=true;
   }
   if(!found || worker.exitCode()!=0){std::cerr<<"TX loopback failed\n";return 9;}
-  auto longText=wsjtz::encodeJtty("CQ F6FDY JN33 CQ\nHELLO TESTING JTTY TRANSMISSION FROM FUSION ON APPLE SILICON. THANK YOU FOR THE CONTACT AND BEST 73",1500);
-  if(!longText.error.isEmpty() || longText.pcm.isEmpty())return 10;
-  std::cout<<"PASS upstream JTTY text/waveform to continuous receive worker, bounds and multiline encoding\n";
+  bool attempted=false;
+  auto segments=Jtty::encodeTransmitLine(QString(100,'Z'),[&](QString const&){attempted=true;return false;});
+  if(!attempted || segments)return 10;
+  int count=0;
+  auto accepted=Jtty::encodeTransmitLine("CQ F6FDY JN33 CQ",[&](QString const&){++count;return true;});
+  if(!accepted || count!=1)return 11;
+  std::cout<<"PASS JTTY TX loopback, bounds and beta2 segment refusal\n";
 }

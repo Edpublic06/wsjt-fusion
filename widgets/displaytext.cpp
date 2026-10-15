@@ -16,6 +16,8 @@
 
 #include "Configuration.hpp"
 #include "Radio.hpp"
+#include "wsjtz/jtty/display/Sender.hpp"
+#include "wsjtz/jtty/display/TextColors.hpp"
 #include "Decoder/decodedtext.h"
 #include "Network/LotWUsers.hpp"
 #include "models/DecodeHighlightingModel.hpp"
@@ -189,48 +191,25 @@ namespace
 void DisplayText::displayJttyText (QString const& text,QString const& myCall,
                                    LogBook const& logBook,QString const& band)
 {
-  setPlainText (text);
+  wsjtz::resetJttyText (*this,text,char_font_);
   static QRegularExpression const header {QStringLiteral ("^([0-9]+ Hz  )(TX|[-+]?[0-9]+ dB)  ")};
-  static QRegularExpression const token {QStringLiteral ("[A-Z0-9/]+")};
   for (auto block = document ()->begin (); block.isValid (); block = block.next ()) {
     auto const line = block.text ();
     auto const match = header.match (line);
     if (!match.hasMatch ()) continue;
     auto const message = line.mid (match.capturedLength ());
     bool const tx = match.captured (2) == "TX";
-    auto words = token.globalMatch (message);
-    bool ownCall = false;
-    while (words.hasNext ()) if (words.next ().captured () == myCall) ownCall = true;
+    auto const sender = wsjtz::jttySender (message,[] (QString const& call) {
+      return !kReGrid.match (call).hasMatch () && Radio::is_callsign (call);
+    });
     QColor bg,fg;
     if (tx) set_colours (m_config,&bg,&fg,{Highlight::Tx});
-    else if (ownCall) set_colours (m_config,&bg,&fg,{Highlight::MyCall});
-    else if (message.split (' ',Qt::SkipEmptyParts).contains ("CQ"))
-      set_colours (m_config,&bg,&fg,{Highlight::CQ});
-    QTextCursor row (block);
-    auto blockFormat = row.blockFormat ();
-    if (bg.isValid ()) blockFormat.setBackground (bg);
-    row.setBlockFormat (blockFormat);
-    row.select (QTextCursor::BlockUnderCursor);
-    QTextCharFormat format;
-    if (fg.isValid ()) { format.setForeground (fg); row.mergeCharFormat (format); }
-    // Free JTTY text has no reliable sender position. Color each explicit
-    // callsign independently rather than attributing the whole line to one.
-    if (tx || ownCall) continue;
-    words = token.globalMatch (message);
-    while (words.hasNext ()) {
-      auto const word = words.next ();
-      auto const call = word.captured ();
-      if (kReGrid.match (call).hasMatch () || !Radio::is_callsign (call)) continue;
-      QColor callBg,callFg;
-      appendWorkedB4 (call,call,QString {},&callBg,&callFg,logBook,band,"JTTY",QString {},true);
-      QTextCursor cursor (document ());
-      cursor.setPosition (block.position () + match.capturedLength () + word.capturedStart ());
-      cursor.setPosition (cursor.position () + call.size (),QTextCursor::KeepAnchor);
-      QTextCharFormat callFormat;
-      if (callBg.isValid ()) callFormat.setBackground (callBg);
-      if (callFg.isValid ()) callFormat.setForeground (callFg);
-      cursor.mergeCharFormat (callFormat);
+    else if (sender.isEmpty ()) continue;
+    else {
+      appendWorkedB4 (message,sender,QString {},&bg,&fg,logBook,band,"JTTY",QString {},true);
+      if (sender == myCall) set_colours (m_config,&bg,&fg,{Highlight::MyCall});
     }
+    wsjtz::colorJttyLine (document (),block,bg,fg);
   }
   moveCursor (QTextCursor::End);
 }

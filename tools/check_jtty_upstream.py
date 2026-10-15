@@ -36,6 +36,7 @@ def main():
                 failures.append({'file': entry['destination'], 'problem': 'local hash mismatch'})
     result = {'baselines': [{'repository': m['repository'], 'tag': m['tag'],
                             'commit': m['commit']} for m in manifests],
+              'individual_references': [{'source': e['source'], 'tag': e.get('source_tag'), 'commit': e['source_commit']} for m in manifests for e in m['files'] if 'source_commit' in e],
               'local_files_checked': sum(len(m['files']) for m in manifests),
               'local_failures': failures}
     if args.upstream:

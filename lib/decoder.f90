@@ -26,6 +26,19 @@ subroutine multimode_decoder(ss,id2,params,nfsample)
   include 'jt9com.f90'
   include 'timer_common.inc'
 
+  interface
+    integer(c_int) function fusion_beta2_dispatch(spectrum,audio,p,rate,exe,data,temp,share) bind(C)
+      import c_int,c_float,c_short,c_char,params_block
+      real(c_float) :: spectrum(*)
+      integer(c_short) :: audio(*)
+      type(params_block),intent(in) :: p
+      integer(c_int),value :: rate
+      character(c_char),intent(in) :: exe(500),data(500),temp(500),share(500)
+    end function
+  end interface
+  integer(c_int) :: fusion_engine_status
+
+
   type, extends(jt4_decoder) :: counting_jt4_decoder
      integer :: decoded
   end type counting_jt4_decoder
@@ -100,6 +113,14 @@ subroutine multimode_decoder(ss,id2,params,nfsample)
   type(counting_ft2_decoder) :: my_ft2
   type(counting_fst4_decoder) :: my_fst4
   type(counting_q65_decoder) :: my_q65  
+
+  ! Standard decoders are isolated from the inherited FT2 codec and UI ABI.
+  if(params%nmode==4.or.params%nmode==5.or.params%nmode==8.or.params%nmode==9.or. &
+     params%nmode==65.or.params%nmode==66.or.params%nmode==74.or. &
+     params%nmode==240.or.params%nmode==241.or.params%nmode==242) then
+    fusion_engine_status=fusion_beta2_dispatch(ss,id2,params,nfsample,exe_dir,data_dir,temp_dir,share_dir)
+    if(fusion_engine_status.ne.0) return
+  endif
 
   if(.not.params%newdat .and. params%ntr.gt.ntr0) go to 800
   ntr0=params%ntr

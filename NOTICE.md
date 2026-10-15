@@ -1,6 +1,6 @@
 # Copyright, licenses and credits
 
-This working branch develops **WSJT-Fusion 1.0.0-beta2**, a derivative version.
+This working branch develops **WSJT-Fusion 1.0.0-beta3**, a derivative version.
 It is not an official release of WSJT-X, WS or WSJT-Z. Changes in this branch
 do not transfer the rights of the authors of imported code. The licenses and
 notices in individual files remain applicable; this document supplements them.
@@ -75,3 +75,12 @@ WSJT-Fusion is an independent fork maintained by F6FDY, derived from WSJT-Z
 2.0.19 by SQ9FVE. Its version number is independent of component versions.
 Historical copyrights and credits remain applicable; F6FDY does not claim
 authorship of imported code.
+
+## Beta3 isolated decoder import
+The macOS Apple Silicon beta3 decoder image and WSPR worker are built from
+WSJT-X v3.3.0-beta2, commit 9d059511f77e2d1be746ebfeaa7f88e77c1babb7,
+by the WSJT Development Group and contributors. The official source archive,
+COPYING/AUTHORS notices, SHA-256 inventory and separate Fusion adapters are
+retained in wsjtz/decoding/wsjtx-beta2/. GPL obligations and original credits
+remain applicable. This import does not transfer authorship to F6FDY or imply
+endorsement by the upstream authors.
