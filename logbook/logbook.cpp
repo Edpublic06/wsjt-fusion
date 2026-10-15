@@ -34,9 +34,11 @@ void LogBook::match (QString const& call, QString const& mode, QString const& gr
 {
   if (call.size() > 0)
     {
-      // JTTY worked-before colours must distinguish contacts made in other modes.
-      auto const& mode_to_check = (mode != "JTTY" && config_ && !config_->highlight_by_mode ()) ? QString {} : mode;
-      callB4 = worked_before_.call_worked (call, mode_to_check, band);
+      // In JTTY, entities and overall calls remain worked across modes. Only
+      // the call-on-band criterion distinguishes the JTTY contact.
+      auto const& mode_to_check = (mode == "JTTY" || (config_ && !config_->highlight_by_mode ())) ? QString {} : mode;
+      auto const call_mode = mode == "JTTY" && !band.isEmpty () ? mode : mode_to_check;
+      callB4 = worked_before_.call_worked (call, call_mode, band);
       gridB4 = worked_before_.grid_worked(grid, mode_to_check, band);
       auto const& countryName = looked_up.entity_name;
       if (countryName.size ())

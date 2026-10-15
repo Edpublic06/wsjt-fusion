@@ -206,4 +206,4 @@ The JTTY macro panel shows the expanded transmit text below each editable templa
 
 Manual JTTY QSO logging explicitly supplies `JTTY` to the common logging dialog, so ADIF and UDP QSO notifications carry the same mode for every connected logger, independently of the macro message style.
 
-JTTY worked-before colours always compare the JTTY mode, including band-specific checks. Previous FT8/FT4 contacts alone do not mark a station as already worked in JTTY; other modes retain their existing highlight setting.
+JTTY colours check countries, other entities and overall calls across modes. Only the call-on-band check requires a JTTY contact: a station previously worked on the band in FT8/FT4 is highlighted as New call on band, without reclassifying its country as new. Other modes retain their existing highlight setting.
