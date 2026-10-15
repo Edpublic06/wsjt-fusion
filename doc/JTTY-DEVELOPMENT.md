@@ -205,3 +205,5 @@ resets the average. No automatic QSO logging is introduced.
 The JTTY macro panel shows the expanded transmit text below each editable template, in smaller text directly on the panel background. Previews update immediately when selecting a correspondent or changing callsign, grid, report, serial number, next call or template. Sending and previewing share the same expansion function. The two macro groups have additional vertical spacing; Call next and Serial Number share a row. These are Fusion interface changes.
 
 Manual JTTY QSO logging explicitly supplies `JTTY` to the common logging dialog, so ADIF and UDP QSO notifications carry the same mode for every connected logger, independently of the macro message style.
+
+JTTY worked-before colours always compare the JTTY mode, including band-specific checks. Previous FT8/FT4 contacts alone do not mark a station as already worked in JTTY; other modes retain their existing highlight setting.
