@@ -170,3 +170,7 @@ reported audio frequency lies in Rx ± F Tol, plus local transmissions. Stored
 frequency metadata keeps progressive updates distinct; moving Rx or changing
 F Tol refilters existing history. The red waterfall bars show TX bandwidth,
 not this receive window. F Tol 1300 intentionally admits a broad range.
+
+JTTY now draws the shared green RX and red TX goal posts above the waterfall.
+Waterfall frequency selection preserves TX in JTTY while Hold Tx Freq is checked;
+manual TX controls remain available outside transmission.

@@ -47,7 +47,7 @@
       "source": "widgets/plotter.cpp",
       "destination": "widgets/plotter.cpp",
       "source_sha256": "113ff54262c65ed217b18dc85aa2a8e0b975e618ad37309a66c2f2b7ec472dde",
-      "sha256": "4253c0fa59c27bb4cf7287c83f837996fcf7c767a86c1d483c8a937c60ffeede",
+      "sha256": "254149b43b4dfc768cead798cf68c0d10ab3285af143c531fa9814a1b1c79d70",
       "adaptation": "Partial JTTY spectrum bridge port into existing Fusion UI; preserve other mode paths. WideGraph methods imported unchanged; plotter uses Fusion geometry and continuous UTC labels. Row replay/history not yet ported."
     },
     {

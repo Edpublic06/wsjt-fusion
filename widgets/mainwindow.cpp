@@ -11469,7 +11469,8 @@ void MainWindow::setFreq4(int rxFreq, int txFreq)
   if(m_mode=="WSPR" or m_mode=="FST4W") {
     ui->WSPRfreqSpinBox->setValue(txFreq);
   } else {
-    if (ui->TxFreqSpinBox->isEnabled ()) {
+    if (ui->TxFreqSpinBox->isEnabled ()
+        && !(m_jttyActive && ui->cbHoldTxFreq->isChecked ())) {
       ui->TxFreqSpinBox->setValue(txFreq);
       if ("FT8" == m_mode || "FT2" == m_mode || "FT4" == m_mode || m_mode=="FST4")
         {
