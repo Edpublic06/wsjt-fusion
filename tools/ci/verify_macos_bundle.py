@@ -36,7 +36,7 @@ def rpaths(path):
 
 
 # Loaded only by LLDB after the application's static resource initializers and
-# before main executes. It uses the bundle's QtCore, not a second Qt runtime.
+# before the Mach-O LC_MAIN entry point executes. It uses the bundle's QtCore, not a second Qt runtime.
 TRANSLATION_PROBE = r"""
 #include <QDir>
 #include <QTranslator>
@@ -60,7 +60,36 @@ extern "C" int fusion_check_translations() {
 """
 
 
+def executable_entry_address(executable):
+    """Resolve LC_MAIN's file offset to an unslid __TEXT virtual address."""
+    entries, text_segments = [], []
+    for block in re.split(r'^Load command \d+\s*$',
+                          output('otool', '-l', str(executable)), flags=re.M):
+        def field(name):
+            values = re.findall(r'^\s*' + name + r'\s+(\S+)\s*$', block, re.M)
+            if len(values) != 1:
+                raise RuntimeError(f'Invalid Mach-O field {name}: {executable}')
+            return values[0]
+        if re.search(r'^\s*cmd LC_MAIN\s*$', block, re.M):
+            entries.append(int(field('entryoff'), 0))
+        if (re.search(r'^\s*cmd LC_SEGMENT_64\s*$', block, re.M)
+                and re.search(r'^\s*segname __TEXT\s*$', block, re.M)):
+            # Restrict to segment fields; __TEXT's section records repeat names.
+            block = block.split('Section', 1)[0]
+            text_segments.append(tuple(int(field(name), 0)
+                                       for name in ('vmaddr', 'fileoff', 'filesize')))
+    if len(entries) != 1 or len(text_segments) != 1:
+        raise RuntimeError(f'Expected one LC_MAIN and one __TEXT: {executable}')
+    vmaddr, fileoff, filesize = text_segments[0]
+    if not fileoff <= entries[0] < fileoff + filesize:
+        raise RuntimeError(f'LC_MAIN entry is outside __TEXT: {executable}')
+    return vmaddr + entries[0] - fileoff
+
+
 def verify_translations(app, qt_prefix):
+    executable = (app / 'Contents/MacOS/wsjtx').resolve()
+    entry_address = executable_entry_address(executable)
+    print(f'Mach-O LC_MAIN entry address: {entry_address:#x}')
     framework = app / 'Contents/Frameworks'
     core = framework / 'QtCore.framework'
     if not core.is_dir():
@@ -99,24 +128,55 @@ def verify_translations(app, qt_prefix):
         if len(loads) != 1 or loads != qtcore_loads(app / 'Contents/MacOS/wsjtx'):
             raise RuntimeError(f'Translation probe QtCore differs from application: {loads}')
         print(f'Translation probe QtCore dependency: {loads[0]}')
-        # No app arguments or Qt GUI startup: stop before main's first instruction.
+        # Set one address breakpoint before launch, using LC_MAIN rather than
+        # potentially ambiguous name/debug-info matches for 'main'.
         # Every debugger/load/expression error fails closed; no string scanning.
         driver = root / 'check.py'
         driver.write_text('''
 import lldb
+import os
 from pathlib import Path
 
 def check(debugger, command, result, internal_dict):
-    process = debugger.GetSelectedTarget().GetProcess()
+    process = None
     try:
+        debugger.SetAsync(False)
+        target = debugger.GetSelectedTarget()
+        module = target.GetModuleAtIndex(0)
+        def module_path(m):
+            spec = m.GetFileSpec()
+            return Path(spec.GetDirectory(), spec.GetFilename()).resolve()
+        if module_path(module) != Path(APP_EXECUTABLE):
+            raise RuntimeError('Unexpected LLDB executable module')
+        entry = module.ResolveFileAddress(ENTRY_ADDRESS)
+        if not entry.IsValid() or entry.GetModule() != module:
+            raise RuntimeError('Cannot resolve LC_MAIN in the application module')
+        breakpoint = target.BreakpointCreateBySBAddress(entry)
+        if not breakpoint.IsValid() or breakpoint.GetNumLocations() != 1:
+            raise RuntimeError('LC_MAIN breakpoint must have exactly one location')
+        breakpoint.SetOneShot(True)
+        print('Unique LC_MAIN breakpoint: %s' % breakpoint)
+        launch = lldb.SBLaunchInfo([])
+        # Environment belongs to this probe only; tests keep their offscreen QPA.
+        launch.SetEnvironmentEntries([key + '=' + value
+                                     for key, value in os.environ.items()], False)
+        launch.SetWorkingDirectory(str(Path(APP_EXECUTABLE).parent))
+        error = lldb.SBError()
+        process = target.Launch(launch, error)
+        if error.Fail():
+            raise RuntimeError('Cannot launch translation probe: %s' % error)
         if process.GetState() != lldb.eStateStopped:
-            raise RuntimeError('Application did not stop before main')
+            raise RuntimeError('Application did not stop at LC_MAIN')
         thread = process.GetSelectedThread()
-        if thread.GetStopReason() != lldb.eStopReasonBreakpoint:
-            raise RuntimeError('Application stopped unexpectedly')
+        if (thread.GetStopReason() != lldb.eStopReasonBreakpoint
+                or thread.GetStopReasonDataCount() < 2
+                or thread.GetStopReasonDataAtIndex(0) != breakpoint.GetID()):
+            raise RuntimeError('Application stopped outside the LC_MAIN breakpoint')
         frame = thread.GetFrameAtIndex(0)
-        if frame.GetFunctionName() != 'main':
-            raise RuntimeError('Application did not stop at main')
+        pc = frame.GetPCAddress()
+        if pc.GetModule() != module or pc.GetFileAddress() != ENTRY_ADDRESS:
+            raise RuntimeError('Application did not stop at the exact LC_MAIN address')
+        print('Stopped at LC_MAIN before executing the application entry point')
         options = lldb.SBExpressionOptions()
         options.SetLanguage(lldb.eLanguageTypeC_plus_plus)
         options.SetTimeoutInMicroSeconds(30000000)
@@ -145,18 +205,23 @@ def check(debugger, command, result, internal_dict):
             raise RuntimeError('Expected nine usable embedded catalogs; missing/corrupt catalog or negative-control failure')
         print('TRANSLATIONS_RUNTIME_PASS: %d nonempty catalogs loaded with QTranslator; missing/corrupt controls rejected; only bundle QtCore loaded' % count)
     finally:
-        process.Kill()
+        if process is not None and process.IsValid():
+            process.Kill()
 '''.replace('LOAD_EXPRESSION', repr(
             '(void*)dlopen(' + json.dumps(str(library)) + ', 2)'))
+            .replace('ENTRY_ADDRESS', repr(entry_address))
+            .replace('APP_EXECUTABLE', repr(str(executable)))
             .replace('BUNDLE_QTCORE', repr(str((core / 'Versions/5/QtCore').resolve())))
             + '\ndef __lldb_init_module(debugger, internal_dict):\n'
               '    debugger.HandleCommand("command script add -f check.check fusion-translations")\n')
+        probe_env = os.environ.copy()
+        if probe_env.get('QT_QPA_PLATFORM') == 'offscreen':
+            del probe_env['QT_QPA_PLATFORM']
         run = subprocess.run(['xcrun', 'lldb', '--batch',
-                              '-o', 'breakpoint set --name main --skip-prologue false', '-o', 'run',
                               '-o', 'command script import ' + str(driver),
                               '-o', 'fusion-translations', '--',
                               str(app / 'Contents/MacOS/wsjtx')],
-                             text=True, stdout=subprocess.PIPE,
+                             text=True, stdout=subprocess.PIPE, env=probe_env,
                              stderr=subprocess.STDOUT, timeout=120)
         print(run.stdout)
         if run.returncode or 'TRANSLATIONS_RUNTIME_PASS:' not in run.stdout:
