@@ -60,14 +60,31 @@ CMAKE
     test -x "$qt_prefix/bin/qmake"
     test -x "$qt_prefix/bin/macdeployqt"
     for tool in rigctl rigctld rigctlcom; do command -v "$tool"; done
+    # Ask the installed Qt rather than assuming its plugin layout. Cocoa,
+    # SQLite and an audio backend are runtime requirements of this application.
+    qt_plugins="$("$qt_prefix/bin/qmake" -query QT_INSTALL_PLUGINS)"
+    test -d "$qt_plugins"
+    {
+      echo "QT_INSTALL_PLUGINS=$qt_plugins"
+      find "$qt_plugins" -type f -name '*.dylib' | sort
+    } > "$CI_ROOT/logs/qt-plugins.txt"
     for plugin in platforms/libqcocoa.dylib sqldrivers/libqsqlite.dylib; do
-      test -f "$qt_prefix/plugins/$plugin"
-    done
-    for directory in audio accessible imageformats styles; do
-      test -d "$qt_prefix/plugins/$directory" || {
-        echo "Qt plugin directory expected by CMake is absent: $directory. Review deployment before changing sources."
+      test -f "$qt_plugins/$plugin" || {
+        echo "Required Qt plugin is absent: $qt_plugins/$plugin"
         exit 1
       }
+    done
+    if ! test -d "$qt_plugins/audio" || ! find "$qt_plugins/audio" -name '*.dylib' -print -quit | grep -q .; then
+      echo "Required Qt audio backend is absent: $qt_plugins/audio"
+      exit 1
+    fi
+    # These categories vary between Qt distributions. In particular, macOS
+    # accessibility support need not be supplied as an accessible/ plugin.
+    for directory in accessible imageformats styles; do
+      if ! test -d "$qt_plugins/$directory"; then
+        echo "Optional Qt plugin directory not supplied: $qt_plugins/$directory" \
+          | tee -a "$CI_ROOT/logs/qt-plugins.txt"
+      fi
     done
     {
       brew list --versions
