@@ -153,6 +153,9 @@ PY
       -executable="$app/Contents/MacOS/jt9" \
       -executable="$app/Contents/MacOS/fusion-jtty-rx" \
       -executable="$app/Contents/MacOS/wsprd" \
+      -executable="$app/Contents/MacOS/rigctl-wsjtx" \
+      -executable="$app/Contents/MacOS/rigctld-wsjtx" \
+      -executable="$app/Contents/MacOS/rigctlcom-wsjtx" \
       -executable="$app/Contents/MacOS/libfusion_decoder_beta2.dylib" \
       2>&1 | tee "$CI_ROOT/logs/macdeployqt.log"
     # License notices are deliberately included beside the application resources.

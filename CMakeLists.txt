@@ -1830,22 +1830,37 @@ install (TARGETS ft8code jt65code jt9code jt4code msk144code
   )
 endif(WSJT_BUILD_UTILS)  
 
+# Homebrew exposes these programs through relative bin -> Cellar symlinks.
+# install(PROGRAMS) preserves those links, which are invalid inside a .app.
+# Resolve only the macOS installation inputs; keep discovery/runtime paths and
+# the existing Linux/Windows installation behavior unchanged.
+foreach (_rig_tool RIGCTL RIGCTLD RIGCTLCOM)
+  set (${_rig_tool}_INSTALL_SOURCE "${${_rig_tool}_EXE}")
+  if (APPLE)
+    if (NOT EXISTS "${${_rig_tool}_EXE}")
+      message (FATAL_ERROR "Missing Hamlib utility: ${_rig_tool} (${${_rig_tool}_EXE})")
+    endif ()
+    get_filename_component (${_rig_tool}_INSTALL_SOURCE "${${_rig_tool}_EXE}" REALPATH)
+    message (STATUS "Hamlib bundle input: ${${_rig_tool}_EXE} -> ${${_rig_tool}_INSTALL_SOURCE}")
+  endif ()
+endforeach ()
+
 install (PROGRAMS
-  ${RIGCTL_EXE}
+  ${RIGCTL_INSTALL_SOURCE}
   DESTINATION ${CMAKE_INSTALL_BINDIR}
   #COMPONENT runtime
   RENAME rigctl-wsjtx${CMAKE_EXECUTABLE_SUFFIX}
   )
 
 install (PROGRAMS
-  ${RIGCTLD_EXE}
+  ${RIGCTLD_INSTALL_SOURCE}
   DESTINATION ${CMAKE_INSTALL_BINDIR}
   #COMPONENT runtime
   RENAME rigctld-wsjtx${CMAKE_EXECUTABLE_SUFFIX}
   )
 
 install (PROGRAMS
-  ${RIGCTLCOM_EXE}
+  ${RIGCTLCOM_INSTALL_SOURCE}
   DESTINATION ${CMAKE_INSTALL_BINDIR}
   #COMPONENT runtime
   RENAME rigctlcom-wsjtx${CMAKE_EXECUTABLE_SUFFIX}

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Inspect a CI macOS bundle without opening audio, CAT/PTT or user settings."""
 import argparse
+import os
 from pathlib import Path
 import re
 import subprocess
@@ -35,6 +36,20 @@ def verify(app):
     app = app.resolve()
     mac = app / 'Contents/MacOS'
     resources = app / 'Contents/Resources'
+    for name in ('rigctl-wsjtx', 'rigctld-wsjtx', 'rigctlcom-wsjtx'):
+        helper = mac / name
+        if helper.is_symlink():
+            raise RuntimeError(f'Hamlib utility must be a copied executable, '
+                               f'not a symlink: {helper} -> {os.readlink(helper)}')
+        if not helper.is_file() or not helper.stat().st_size:
+            raise RuntimeError(f'Missing or empty Hamlib utility: {helper}')
+        if not os.access(helper, os.X_OK):
+            raise RuntimeError(f'Hamlib utility is not executable: {helper}')
+        if not macho(helper):
+            raise RuntimeError(f'Hamlib utility is not Mach-O: {helper}')
+        print(f'Hamlib utility: {name}, size={helper.stat().st_size}, '
+              f'mode={oct(helper.stat().st_mode & 0o777)}')
+        print(output('otool', '-L', str(helper)))
     required = (
         mac / 'wsjtx', mac / 'jt9', mac / 'fusion-jtty-rx', mac / 'wsprd',
         mac / 'libfusion_decoder_beta2.dylib', mac / 'ALLCALL7.TXT',
