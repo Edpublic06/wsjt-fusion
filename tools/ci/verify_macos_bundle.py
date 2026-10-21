@@ -144,6 +144,8 @@ def check(debugger, command, result, internal_dict):
         target = debugger.GetSelectedTarget()
         module = target.GetModuleAtIndex(0)
         def module_path(m):
+            if not m.IsValid():
+                return '<invalid>'
             spec = m.GetFileSpec()
             return Path(spec.GetDirectory(), spec.GetFilename()).resolve()
         if module_path(module) != Path(APP_EXECUTABLE):
@@ -154,8 +156,16 @@ def check(debugger, command, result, internal_dict):
         breakpoint = target.BreakpointCreateBySBAddress(entry)
         if not breakpoint.IsValid() or breakpoint.GetNumLocations() != 1:
             raise RuntimeError('LC_MAIN breakpoint must have exactly one location')
-        breakpoint.SetOneShot(True)
-        print('Unique LC_MAIN breakpoint: %s' % breakpoint)
+        # Keep the breakpoint alive: one-shot deletion can clear LLDB's stop
+        # reason data before GetStopReasonDataCount/GetStopReasonDataAtIndex.
+        breakpoint_id = breakpoint.GetID()
+        location = breakpoint.GetLocationAtIndex(0)
+        location_id = location.GetID()
+        address = location.GetAddress()
+        if address.GetModule() != module or address.GetFileAddress() != ENTRY_ADDRESS:
+            raise RuntimeError('LC_MAIN breakpoint location has an unexpected address')
+        print('Unique LC_MAIN breakpoint: id=%d location=%d file_address=%#x module=%s'
+              % (breakpoint_id, location_id, ENTRY_ADDRESS, module_path(module)))
         launch = lldb.SBLaunchInfo([])
         # Environment belongs to this probe only; tests keep their offscreen QPA.
         launch.SetEnvironmentEntries([key + '=' + value
@@ -165,15 +175,23 @@ def check(debugger, command, result, internal_dict):
         process = target.Launch(launch, error)
         if error.Fail():
             raise RuntimeError('Cannot launch translation probe: %s' % error)
+        print('LLDB process state: %s' % process.GetState())
         if process.GetState() != lldb.eStateStopped:
             raise RuntimeError('Application did not stop at LC_MAIN')
         thread = process.GetSelectedThread()
-        if (thread.GetStopReason() != lldb.eStopReasonBreakpoint
-                or thread.GetStopReasonDataCount() < 2
-                or thread.GetStopReasonDataAtIndex(0) != breakpoint.GetID()):
-            raise RuntimeError('Application stopped outside the LC_MAIN breakpoint')
+        reason = thread.GetStopReason()
+        stop_data = [thread.GetStopReasonDataAtIndex(i)
+                     for i in range(thread.GetStopReasonDataCount())]
         frame = thread.GetFrameAtIndex(0)
         pc = frame.GetPCAddress()
+        print('LLDB stop: expected_breakpoint=%d expected_location=%d '
+              'reason=%s data=%s PC_file=%#x PC_load=%#x module=%s'
+              % (breakpoint_id, location_id, reason, stop_data,
+                 pc.GetFileAddress(), pc.GetLoadAddress(target),
+                 module_path(pc.GetModule())))
+        if (reason != lldb.eStopReasonBreakpoint
+                or stop_data != [breakpoint_id, location_id]):
+            raise RuntimeError('Application stopped outside the LC_MAIN breakpoint')
         if pc.GetModule() != module or pc.GetFileAddress() != ENTRY_ADDRESS:
             raise RuntimeError('Application did not stop at the exact LC_MAIN address')
         print('Stopped at LC_MAIN before executing the application entry point')
