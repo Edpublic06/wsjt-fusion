@@ -5,6 +5,8 @@ import os
 from pathlib import Path
 import re
 import subprocess
+import json
+import tempfile
 
 
 def output(*args):
@@ -32,7 +34,97 @@ def rpaths(path):
     return result
 
 
-def verify(app):
+
+# Loaded only by LLDB after the application's static resource initializers and
+# before main executes. It uses the bundle's QtCore, not a second Qt runtime.
+TRANSLATION_PROBE = r"""
+#include <QDir>
+#include <QTranslator>
+extern "C" int fusion_check_translations() {
+    const QDir dir(":/Translations");
+    const auto files = dir.entryList({"wsjtx_*.qm"}, QDir::Files);
+    int usable = 0;
+    for (const auto &name : files) {
+        QTranslator translator;
+        if (!translator.load(dir.filePath(name))) return -1;
+        // The deliberately empty English catalog is a locale fallback guard.
+        if (!translator.isEmpty()) ++usable;
+    }
+    return usable;
+}
+"""
+
+
+def verify_translations(app, qt_prefix):
+    framework = app / 'Contents/Frameworks'
+    core = framework / 'QtCore.framework'
+    if not core.is_dir():
+        raise RuntimeError('Bundle QtCore framework is missing for translation probe')
+    with tempfile.TemporaryDirectory(prefix='fusion-translations-') as tmp:
+        root = Path(tmp)
+        source, library = root / 'probe.cpp', root / 'probe.dylib'
+        source.write_text(TRANSLATION_PROBE)
+        # Headers only come from the build Qt; linkage is exclusively bundle Qt.
+        headers = qt_prefix / 'lib/QtCore.framework/Headers'
+        subprocess.run(['xcrun', 'clang++', '-std=c++11', '-arch', 'arm64',
+                        '-dynamiclib', str(source), '-I' + str(headers),
+                        '-F' + str(framework), '-iframework', str(qt_prefix / 'lib'),
+                        '-framework', 'QtCore',
+                        '-Wl,-rpath,' + str(framework), '-o', str(library)], check=True)
+        # No app arguments or Qt GUI startup: stop before main's first instruction.
+        # Every debugger/load/expression error fails closed; no string scanning.
+        driver = root / 'check.py'
+        driver.write_text('''
+import lldb
+
+def check(debugger, command, result, internal_dict):
+    process = debugger.GetSelectedTarget().GetProcess()
+    try:
+        if process.GetState() != lldb.eStateStopped:
+            raise RuntimeError('Application did not stop before main')
+        thread = process.GetSelectedThread()
+        if thread.GetStopReason() != lldb.eStopReasonBreakpoint:
+            raise RuntimeError('Application stopped unexpectedly')
+        frame = thread.GetFrameAtIndex(0)
+        if frame.GetFunctionName() != 'main':
+            raise RuntimeError('Application did not stop at main')
+        options = lldb.SBExpressionOptions()
+        options.SetLanguage(lldb.eLanguageTypeC_plus_plus)
+        options.SetTimeoutInMicroSeconds(30000000)
+        def evaluate(expression):
+            value = frame.EvaluateExpression(expression, options)
+            if value.GetError().Fail():
+                raise RuntimeError(str(value.GetError()))
+            return value.GetValueAsUnsigned()
+        handle = evaluate(LOAD_EXPRESSION)
+        if not handle:
+            raise RuntimeError('Cannot load translation probe with bundle QtCore')
+        address = evaluate('(void*)dlsym((void*)%d, "fusion_check_translations")' % handle)
+        if not address:
+            raise RuntimeError('Translation probe symbol missing')
+        count = evaluate('((int(*)())%d)()' % address)
+        if not 0 < count < 1000:
+            raise RuntimeError('No usable embedded translations, or a catalog failed to load')
+        print('TRANSLATIONS_RUNTIME_PASS: %d nonempty catalogs loaded with QTranslator' % count)
+    finally:
+        process.Kill()
+'''.replace('LOAD_EXPRESSION', repr(
+            '(void*)dlopen(' + json.dumps(str(library)) + ', 2)'))
+            + '\ndef __lldb_init_module(debugger, internal_dict):\n'
+              '    debugger.HandleCommand("command script add -f check.check fusion-translations")\n')
+        run = subprocess.run(['xcrun', 'lldb', '--batch',
+                              '-o', 'breakpoint set --name main --skip-prologue false', '-o', 'run',
+                              '-o', 'command script import ' + str(driver),
+                              '-o', 'fusion-translations', '--',
+                              str(app / 'Contents/MacOS/wsjtx')],
+                             text=True, stdout=subprocess.PIPE,
+                             stderr=subprocess.STDOUT, timeout=120)
+        print(run.stdout)
+        if run.returncode or 'TRANSLATIONS_RUNTIME_PASS:' not in run.stdout:
+            raise RuntimeError('Embedded translations runtime verification failed')
+
+
+def verify(app, qt_prefix):
     app = app.resolve()
     mac = app / 'Contents/MacOS'
     resources = app / 'Contents/Resources'
@@ -63,8 +155,7 @@ def verify(app):
     for name in ('cty.dat', 'USState.db', 'JPLEPH'):
         if not any(p.is_file() for p in app.rglob(name)):
             raise RuntimeError(f'Missing application data: {name}')
-    if not list(resources.rglob('wsjtx_*.qm')):
-        raise RuntimeError('Missing application translations')
+    verify_translations(app, qt_prefix)
     conf = (resources / 'qt.conf').read_text()
     match = re.search(r'^Plugins\s*=\s*(.+)$', conf, re.M)
     if not match:
@@ -130,4 +221,7 @@ def verify(app):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('app', type=Path)
-    verify(parser.parse_args().app)
+    parser.add_argument('--qt-prefix', required=True, type=Path,
+                        help='Build Qt headers for the runtime-only translation probe')
+    args = parser.parse_args()
+    verify(args.app, args.qt_prefix)

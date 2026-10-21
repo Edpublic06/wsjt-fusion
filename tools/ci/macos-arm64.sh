@@ -162,11 +162,12 @@ PY
     mkdir -p "$app/Contents/Resources/Fusion-Source-Notices"
     cp "$source_root/"{COPYING,NOTICE.md,UPSTREAM-SOURCES.md} \
       "$app/Contents/Resources/Fusion-Source-Notices/"
-    python3 "$source_root/tools/ci/verify_macos_bundle.py" "$app" \
-      2>&1 | tee "$CI_ROOT/logs/bundle-verification.log"
     codesign --force --deep --sign - --timestamp=none \
       --entitlements "$source_root/Darwin/entitlements.plist" "$app" \
       2>&1 | tee "$CI_ROOT/logs/codesign.log"
+    # Sign the relocated ARM64 images before the runtime translation probe.
+    python3 "$source_root/tools/ci/verify_macos_bundle.py" "$app" --qt-prefix "$QT_PREFIX" \
+      2>&1 | tee "$CI_ROOT/logs/bundle-verification.log"
     codesign --verify --deep --strict --verbose=2 "$app" \
       2>&1 | tee -a "$CI_ROOT/logs/codesign.log"
     ;;
