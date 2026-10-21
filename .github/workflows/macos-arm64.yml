@@ -1,0 +1,84 @@
+name: Beta3 native macOS ARM64
+
+on:
+  push:
+    branches:
+      - beta3-remote
+    paths:
+      - .github/workflows/macos-arm64.yml
+      - tools/ci/macos-arm64.sh
+      - tools/ci/verify_macos_bundle.py
+      - doc/CI-MACOS-ARM64.md
+
+permissions:
+  contents: read
+
+concurrency:
+  group: beta3-macos-arm64-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: github.repository == 'Edpublic06/wsjt-fusion' && github.ref == 'refs/heads/beta3-remote'
+    runs-on: macos-15
+    timeout-minutes: 120
+    env:
+      CI_ROOT: ${{ runner.temp }}/fusion-macos
+      HOMEBREW_NO_AUTO_UPDATE: '1'
+      HOMEBREW_NO_INSTALL_CLEANUP: '1'
+      HOMEBREW_NO_BOTTLE_SOURCE_FALLBACK: '1'
+      OMP_NUM_THREADS: '2'
+      QT_QPA_PLATFORM: offscreen
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify branch, reference and native architecture
+        run: |
+          mkdir -p "$CI_ROOT/logs"
+          test "$(uname -m)" = arm64
+          test "$GITHUB_REF" = refs/heads/beta3-remote
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git merge-base --is-ancestor 3f9d41dcc761f820bf09a8974b94c795a972de9c HEAD
+          git rev-parse HEAD | tee "$CI_ROOT/logs/commit.txt"
+          sw_vers | tee "$CI_ROOT/logs/macos.txt"
+          xcodebuild -version | tee "$CI_ROOT/logs/xcode.txt"
+      - name: Install and record native dependencies
+        run: bash tools/ci/macos-arm64.sh setup
+      - name: Configure and build from an empty directory
+        run: bash tools/ci/macos-arm64.sh build
+      - name: Run every registered test (including Apple Silicon adapters)
+        run: bash tools/ci/macos-arm64.sh test
+      - name: Install, deploy Qt and verify the application bundle
+        run: bash tools/ci/macos-arm64.sh package
+      - name: Collect diagnostics and compiler warnings even on failure
+        if: always()
+        run: bash tools/ci/macos-arm64.sh report
+      - name: Archive application and build report
+        if: success()
+        run: |
+          mkdir -p "$CI_ROOT/artifacts"
+          tar -czf "$CI_ROOT/artifacts/WSJT-Fusion-beta3-${GITHUB_SHA}-macOS-arm64.tar.gz" \
+            -C "$CI_ROOT/stage" wsjtx.app -C "$CI_ROOT" logs
+          shasum -a 256 "$CI_ROOT"/artifacts/*.tar.gz > "$CI_ROOT/artifacts/SHA256SUMS.txt"
+      - name: Upload test application (not a release)
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: beta3-macos-arm64-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/fusion-macos/artifacts/
+          retention-days: 7
+          if-no-files-found: error
+      - name: Upload diagnostics independently of build success
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: beta3-macos-logs-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/fusion-macos/logs/
+          retention-days: 7
+          if-no-files-found: warn
