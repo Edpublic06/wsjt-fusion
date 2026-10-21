@@ -2102,12 +2102,17 @@ add_test (NAME fusion_jtty_text_colors COMMAND test_fusion_jtty_text_colors)
 add_executable (test_fusion_beta2_bridge wsjtz/decoding/wsjtx-beta2/adapters/TestSharedMemory.cpp)
 target_link_libraries (test_fusion_beta2_bridge Qt5::Core wsjt_fort wsjt_cxx)
 add_test (NAME fusion_beta2_bridge COMMAND test_fusion_beta2_bridge
-  $<TARGET_FILE:jt9> "${CMAKE_BINARY_DIR}")
+  $<TARGET_FILE:jt9> "${CMAKE_BINARY_DIR}" "${CMAKE_SOURCE_DIR}/ALLCALL7.TXT")
 set_tests_properties (fusion_beta2_bridge PROPERTIES TIMEOUT 90)
 
-add_executable (test_fusion_beta2_gui_decoders wsjtz/decoding/wsjtx-beta2/adapters/TestGuiDecoders.cpp)
-target_link_libraries (test_fusion_beta2_gui_decoders wsjt_cxx)
-add_test (NAME fusion_beta2_gui_decoders COMMAND test_fusion_beta2_gui_decoders)
+# These ABI adapters exist only with the isolated macOS Apple Silicon engine.
+# Other platforms use their legacy decoder path and cannot link this test.
+if (APPLE AND CMAKE_SYSTEM_PROCESSOR MATCHES "arm64|aarch64")
+  add_executable (test_fusion_beta2_gui_decoders wsjtz/decoding/wsjtx-beta2/adapters/TestGuiDecoders.cpp)
+  target_link_libraries (test_fusion_beta2_gui_decoders wsjt_cxx)
+  add_dependencies (test_fusion_beta2_gui_decoders fusion_beta2_engine)
+  add_test (NAME fusion_beta2_gui_decoders COMMAND test_fusion_beta2_gui_decoders)
+endif ()
 
 add_executable (test_fusion_jtty_sent_report wsjtz/jtty/selection/TestSentReport.cpp)
 target_link_libraries (test_fusion_jtty_sent_report Qt5::Core)

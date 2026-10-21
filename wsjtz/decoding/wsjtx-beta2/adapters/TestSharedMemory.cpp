@@ -4,6 +4,7 @@
 #include <QSharedMemory>
 #include <QProcess>
 #include <QTemporaryDir>
+#include <QFile>
 #include <QElapsedTimer>
 #include <QThread>
 #include <QUuid>
@@ -17,8 +18,14 @@ void genft4_(char*,int*,char*,char*,int*,size_t,size_t);
 void gen_ft4wave_(int*,int*,int*,float*,float*,void*,float*,int*,int*);
 }
 int main(int argc,char**argv) {
- QCoreApplication app(argc,argv);if(argc!=3)return 2;
+ QCoreApplication app(argc,argv);if(argc!=4)return 2;
  QTemporaryDir temp;
+ // The Linux legacy multithreaded decoder reads this fixture from its CWD.
+ // Keep the test isolated instead of changing the application's resource lookup.
+ if(!temp.isValid() || !QFile::copy(QString::fromLocal8Bit(argv[3]),temp.filePath("ALLCALL7.TXT"))) {
+  std::cerr<<"Cannot prepare ALLCALL7.TXT in the decoder test directory\n";
+  return 6;
+ }
  for(int variant: {8,108,5}) {
   int mode=variant%100;
   QSharedMemory mem("fusion-beta3-test-"+QUuid::createUuid().toString());
@@ -26,7 +33,9 @@ int main(int argc,char**argv) {
   auto* data=static_cast<dec_data_t*>(mem.data());std::memset(data,0,sizeof(*data));
   char message[37],sent[37],bits[77];std::memset(message,' ',37);std::memcpy(message,"CQ K1JT FN20",12);
   int tones[105]={},i3=-1,n3=-1,check=0;
-  int symbols=mode==8?79:105,nsps=mode==8?1920:576,nwave=symbols*nsps,complex=0;
+  int symbols=mode==8?79:105,nsps=mode==8?1920:576;
+  // gen_ft4wave writes two additional ramp symbols; FT8 omits its padding.
+  int nwave=(symbols+(mode==8?0:2))*nsps,complex=0;
   float bt=mode==8?2.f:1.f,rate=12000.f,freq=1500.f;
   std::vector<float> wave(nwave),dummy(2*nwave);
   if(mode==8){genft8_(message,&i3,&n3,sent,bits,tones,37,37);gen_ft8wave_(tones,&symbols,&nsps,&bt,&rate,&freq,dummy.data(),wave.data(),&complex,&nwave);}
