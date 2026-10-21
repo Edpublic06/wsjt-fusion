@@ -22,6 +22,7 @@ public:
   void appendTransmit (QString const& text,int frequency);
   std::function<void(QString const&,QString const&)> textChanged;
   std::function<void(QString const&)> statusChanged;
+  std::function<void(QString const&)> decodedMessage;
   void setSelection(int center,int tolerance);
 private:
   JttySnrHistory snrHistory_;

@@ -47,7 +47,7 @@
       "source": "widgets/plotter.cpp",
       "destination": "widgets/plotter.cpp",
       "source_sha256": "113ff54262c65ed217b18dc85aa2a8e0b975e618ad37309a66c2f2b7ec472dde",
-      "sha256": "254149b43b4dfc768cead798cf68c0d10ab3285af143c531fa9814a1b1c79d70",
+      "sha256": "2db7ae889e545a80debbfa939926341e9fff1ff944c86229cf341820933e5f6c",
       "adaptation": "Partial JTTY spectrum bridge port into existing Fusion UI; preserve other mode paths. WideGraph methods imported unchanged; plotter uses Fusion geometry and continuous UTC labels. Row replay/history not yet ported."
     },
     {
@@ -147,14 +147,14 @@
       "source": "widgets/mainwindow.ui",
       "destination": "wsjtz/jtty/ui/JttyTransmitPanel.ui",
       "source_sha256": "e1c48b21ce694bd7754c3b919bc3c8e89393d7792655665ce2d14edc8d7d412f",
-      "sha256": "003d7e5148ab577357ce14c23f15aca2d3f8851af66dadcad10b9e8d1cc7e389",
+      "sha256": "8de654dcd3549afc5aac351a2d8c2ef8d8b5fa90f40fba0d124e4472a9773d39",
       "adaptation": "Extract upstream page_4 as a standalone panel; Fusion adds live expanded macro preview labels, extra spacing between macro groups, and a shared row for Call next and Serial Number."
     },
     {
       "source": "widgets/mainwindow_jtty.cpp",
       "destination": "widgets/mainwindow_jtty_tx.cpp",
       "source_sha256": "ed8dd18e23ad0ca57201716156bcc03067c5876df2d90f62662698923c15095d",
-      "sha256": "8da9166acda4de596b6df1e7e697ed3535928cc43359f5b5745f11a19fa2d671",
+      "sha256": "9ac6a687725412df15e74a2705c7f027f7f6315f3f5c40bc87778b3a8c7bfbdc",
       "adaptation": "Fusion adapter for upstream asynchronous queue/PTT lifecycle. One-shot submission, callbacks, F1-F8 literal expansion. Advanced live typing, native macro atoms and contest auto-log trigger not yet connected."
     },
     {
@@ -188,7 +188,7 @@
       "source": "widgets/displaytext.cpp",
       "destination": "widgets/displaytext.cpp",
       "source_sha256": "4bf9a69f9845ef5d43931ca02557f499d08d8be1a7498eb33dc20762aaadb317",
-      "sha256": "e67775208165b1f86a23c2f6b7e21961e401f9d015f9df0d500f8dae9684485c",
+      "sha256": "5d2c21f759e280716057b53c908fe80ac0a493223ee15ac6634a2639f0d37577",
       "adaptation": "Upstream press-time word capture adapted to Fusion: single left click selects and highlights; double left click requests F2 in FT8 style. Other modes retain legacy selection."
     },
     {

@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <ui version="4.0">
  <class>JttyTransmitPanel</class>
  <widget class="QWidget" name="JttyTransmitPanel">
   <layout class="QGridLayout" name="gridLayout_12">
-   <item row="0" column="0">
+   <item row="1" column="0">
     <widget class="QWidget" name="widget" native="true">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
@@ -167,7 +167,7 @@
      </layout>
     </widget>
    </item>
-   <item row="0" column="1" colspan="2">
+   <item row="1" column="1" colspan="2">
     <widget class="QWidget" name="widget2" native="true">
      <property name="title" stdset="0">
       <string>GroupBox</string>
@@ -370,9 +370,6 @@
           </property>
          </widget>
         </item>
-        <property name="verticalSpacing">
-         <number>5</number>
-        </property>
         <item row="2" column="2">
          <widget class="QLabel" name="macroPreview3">
           <property name="text">
@@ -389,9 +386,6 @@
           </property>
          </widget>
         </item>
-        <property name="verticalSpacing">
-         <number>5</number>
-        </property>
         <item row="2" column="3">
          <widget class="QLabel" name="macroPreview4">
           <property name="text">
@@ -408,9 +402,6 @@
           </property>
          </widget>
         </item>
-        <property name="verticalSpacing">
-         <number>5</number>
-        </property>
         <item row="6" column="0">
          <widget class="QLabel" name="macroPreview5">
           <property name="text">
@@ -427,9 +418,6 @@
           </property>
          </widget>
         </item>
-        <property name="verticalSpacing">
-         <number>5</number>
-        </property>
         <item row="6" column="1">
          <widget class="QLabel" name="macroPreview6">
           <property name="text">
@@ -446,9 +434,6 @@
           </property>
          </widget>
         </item>
-        <property name="verticalSpacing">
-         <number>5</number>
-        </property>
         <item row="6" column="2">
          <widget class="QLabel" name="macroPreview7">
           <property name="text">
@@ -465,9 +450,6 @@
           </property>
          </widget>
         </item>
-        <property name="verticalSpacing">
-         <number>5</number>
-        </property>
         <item row="6" column="3">
          <widget class="QLabel" name="macroPreview8">
           <property name="text">
@@ -484,9 +466,6 @@
           </property>
          </widget>
         </item>
-        <property name="verticalSpacing">
-         <number>5</number>
-        </property>
        </layout>
       </item>
      </layout>
@@ -495,46 +474,83 @@
    <item row="2" column="0" colspan="3">
     <layout class="QGridLayout" name="gridLayout_4">
      <item row="0" column="0">
-      <widget class="QLabel" name="label_jttyStyle">
-       <property name="text">
-        <string>Message style </string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QComboBox" name="comboBoxJttyStyle">
-       <property name="toolTip">
-        <string>Choose the F1-F8 message template set: Contest style (exchange-oriented) or FT8 style (chat-QSO-oriented).</string>
-       </property>
+      <layout class="QVBoxLayout" name="compactJttySendLayout">
        <item>
-        <property name="text">
-         <string>Contest</string>
-        </property>
+        <layout class="QHBoxLayout" name="compactJttyStyleLayout">
+         <item>
+          <widget class="QLabel" name="label_jttyStyle">
+           <property name="text">
+            <string>Message style </string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="comboBoxJttyStyle">
+           <property name="toolTip">
+            <string>Choose the F1-F8 message template set: Contest style (exchange-oriented) or FT8 style (chat-QSO-oriented).</string>
+           </property>
+           <item>
+            <property name="text">
+             <string>Contest</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>FT8</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item>
-        <property name="text">
-         <string>FT8</string>
-        </property>
+        <widget class="QPushButton" name="pbSendMessage">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>Send and clear the message. Press Enter in the field.</string>
+         </property>
+         <property name="text">
+          <string>Send message</string>
+         </property>
+        </widget>
        </item>
-      </widget>
+       <item>
+        <widget class="QLabel" name="labelJttyFrameCount">
+         <property name="alignment">
+          <set>Qt::AlignHCenter</set>
+         </property>
+         <property name="toolTip">
+          <string>JTTY frames sent / total frames required for the current message.</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
-     <item row="8" column="0">
-      <spacer name="verticalSpacer_8">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
+     <item row="0" column="1" colspan="4">
+      <widget class="QPlainTextEdit" name="Tx_Message">
+       <property name="maximumSize">
         <size>
-         <width>20</width>
-         <height>40</height>
+         <width>16777215</width>
+         <height>100</height>
         </size>
        </property>
-      </spacer>
+       <property name="tabChangesFocus">
+        <bool>true</bool>
+       </property>
+       <property name="toolTip">
+        <string>Ctrl+K sends now (one-shot). Alt+J starts a live session that keeps sending as you type, until Alt+K signs off. Ctrl+Shift+K clears the box. Ctrl+H inserts a chat opener.</string>
+       </property>
+      </widget>
      </item>
-     <item row="2" column="4">
+     <item row="1" column="4">
       <spacer name="horizontalSpacer_8">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -550,7 +566,7 @@
        </property>
       </spacer>
      </item>
-     <item row="2" column="3">
+     <item row="1" column="3">
       <widget class="QSpinBox" name="sbSerialNumber_2">
        <property name="minimumSize">
         <size>
@@ -582,36 +598,6 @@
       </widget>
      </item>
      <item row="1" column="0">
-      <layout class="QVBoxLayout" name="verticalLayout_jttySend">
-       <item>
-        <widget class="QPushButton" name="pbSendMessage">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="toolTip">
-          <string>Send and clear the message. Press Enter in the field.</string>
-         </property>
-         <property name="text">
-          <string>Send message</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="labelJttyFrameCount">
-         <property name="alignment">
-          <set>Qt::AlignHCenter</set>
-         </property>
-         <property name="toolTip">
-          <string>JTTY frames sent / total frames required for the current message.</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item row="2" column="0">
       <widget class="QLabel" name="label_3">
        <property name="sizePolicy">
         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
@@ -633,23 +619,7 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="1" colspan="4">
-      <widget class="QPlainTextEdit" name="Tx_Message">
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>60</height>
-        </size>
-       </property>
-       <property name="tabChangesFocus">
-        <bool>true</bool>
-       </property>
-       <property name="toolTip">
-        <string>Ctrl+K sends now (one-shot). Alt+J starts a live session that keeps sending as you type, until Alt+K signs off. Ctrl+Shift+K clears the box. Ctrl+H inserts a chat opener.</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="2">
+     <item row="1" column="2">
       <widget class="QLabel" name="label_6">
        <property name="text">
         <string>Serial Number </string>
@@ -659,7 +629,7 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="1">
+     <item row="1" column="1">
       <widget class="QLineEdit" name="lineEdit">
        <property name="maximumSize">
         <size>
@@ -673,6 +643,16 @@
       </widget>
      </item>
     </layout>
+   </item>
+   <item row="0" column="0" colspan="3">
+    <widget class="QLabel" name="qsoReports">
+     <property name="text">
+      <string />
+     </property>
+     <property name="textFormat">
+      <enum>Qt::PlainText</enum>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

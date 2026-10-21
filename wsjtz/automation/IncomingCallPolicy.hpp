@@ -2,6 +2,7 @@
 #ifndef WSJTZ_INCOMING_CALL_POLICY_HPP
 #define WSJTZ_INCOMING_CALL_POLICY_HPP
 #include <QString>
+#include <QSet>
 
 namespace wsjtz {
 // Receives normalized base calls from the application adapter. Keeping this
@@ -9,12 +10,22 @@ namespace wsjtz {
 class IncomingCallPolicy
 {
 public:
-  void reset () { target_.clear (); answered_ = false; }
+  void reset () { target_.clear (); answered_ = false; cq_count_ = 0; cq_periods_.clear (); }
   void observe (QString const& selected, QString const& sender, bool directed_to_us)
   {
-    if (selected != target_) { target_ = selected; answered_ = false; }
+    if (selected != target_) { reset (); target_ = selected; }
     if (!target_.isEmpty () && directed_to_us && sender == target_) answered_ = true;
   }
+  void observe_target_message (QString const& selected, QString const& sender,
+                               bool directed_to_us, bool cq, QString const& period)
+  {
+    observe (selected, sender, directed_to_us);
+    if (selected.isEmpty () || sender != selected || answered_) return;
+    if (!cq) { cq_count_ = 0; return; }
+    if (!cq_periods_.contains (period)) { cq_periods_.insert (period); ++cq_count_; }
+  }
+  bool unanswered_cqs (QString const& selected) const
+  { return !selected.isEmpty () && selected == target_ && !answered_ && cq_count_ >= 2; }
   bool should_switch (bool enabled, bool auto_call, bool auto_tx, bool auto_sequence,
                       bool live_receive, bool early_qso, bool supported_activity,
                       bool valid_incoming_call, bool filtered,
@@ -35,6 +46,8 @@ public:
 private:
   QString target_;
   bool answered_ = false;
+  int cq_count_ = 0;
+  QSet<QString> cq_periods_;
 };
 }
 #endif

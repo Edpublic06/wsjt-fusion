@@ -206,4 +206,20 @@ The JTTY macro panel shows the expanded transmit text below each editable templa
 
 Manual JTTY QSO logging explicitly supplies `JTTY` to the common logging dialog, so ADIF and UDP QSO notifications carry the same mode for every connected logger, independently of the macro message style.
 
-JTTY colours check countries, other entities and overall calls across modes. Only the call-on-band check requires a JTTY contact: a station previously worked on the band in FT8/FT4 is highlighted as New call on band, without reclassifying its country as new. Other modes retain their existing highlight setting.
+JTTY colours check countries, other entities and calls across modes. The separate, configurable New Mode on Band criterion detects a callsign already worked on the same band in another mode, but not in the current mode. It defaults to enabled, with a light grey background (#E0E0E0) and unset foreground. Existing saved palettes gain this criterion after New Call on Band without resetting their custom colours or order. The criterion is available to other decoded modes as well; their existing highlight-by-mode setting remains unchanged.
+
+Entering JTTY from another mode clears DX Call, the target grid, Call Info and the current QSO/report context before refreshing macro previews. Re-selecting JTTY while it is already active preserves the current target.
+
+JTTY uses the shared decoded-text font in both receive views and the configured application font in its dynamically created controls, including subsequent settings changes. Macro previews retain their requested 80% relative size, inherit the selected font style, and support both point- and pixel-sized fonts.
+
+Selecting a callsign in JTTY Band Activity moves Rx to the frequency in that decoded line, re-filters Rx Frequency using F Tol, and moves Tx only when Hold Tx Freq is unchecked. Double-click triggers the FT8-style F1 action after tuning. Selecting in Rx Frequency retains its existing tuning behaviour.
+
+### QSO reports
+
+A single line above the JTTY Tx controls shows RST S and RST R. RST S is populated immediately from the selected correspondent’s first decoded SNR, recalculated as the mean of the first two and then the first three distinct messages, and does not include later messages; RST R is extracted from newly decoded messages explicitly addressed to our callsign by the selected correspondent (including optional DE and R prefix). Received reports are not averaged. Both values use the common logging fields and are cleared on correspondent changes and JTTY entry. This does not trigger automatic logging.
+
+JTTY lower spectrum display gain is increased by a factor of 1.5 for readability, on top of the existing adjustable 2D gain. This affects display only, not waterfall intensity, receiver audio, SNR measurements or decoding. Other modes retain their scale. Pending compilation after the 5e66bed test build.
+
+The enlarged JTTY report line now starts with the selected callsign in bold DX blue (#007AFF), followed only by available RST S / RST R fields. It is entirely blank without a selected peer. In FT8 macro style, F2 is highlighted green until a report addressed to us from that peer is decoded, then F3 is highlighted green. This is a visual suggestion only; no automatic transmission. Selection changes clear old reports and update the suggestion. Other macro styles receive no F2/F3 suggestion.
+
+F6 is green by default; when the FT8-style F2/F3 suggestion applies, F6 loses its green background. Message style sits above Send message beside the message editor. The separate style row and bottom 40px spacer are removed, reducing the controls height so Rx Frequency can use the recovered area. Pending compilation and visual validation.

@@ -24,6 +24,7 @@ wsjtz::LiveReceiver::LiveReceiver (QObject * parent) : QObject {parent}
         std::abs(frequency-center_) <= tolerance_);
       lines_.put(session_,id,QString ("%1 Hz  %2 dB  %3").arg (frequency,0,'f',0)
         .arg (object["snr"].toInt ()).arg (object["text"].toString ()),frequency);
+      if(decodedMessage)decodedMessage(object["text"].toString());
       publish();
     }
   });

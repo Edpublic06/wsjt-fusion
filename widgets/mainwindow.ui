@@ -3813,6 +3813,11 @@ list. The list can be maintained in Settings (F2).</string>
                              <string>Distance</string>
                             </property>
                            </item>
+                           <item>
+                            <property name="text">
+                             <string>New call</string>
+                            </property>
+                           </item>
                           </widget>
                          </item>
                         </layout>

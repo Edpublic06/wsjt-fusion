@@ -22,6 +22,9 @@ int main(int argc,char**argv) {
  QString sent,macro;panel.sendText=[&](QString s){sent=s;};panel.sendMacro=[&](QString s){macro=s;};
  auto entry=panel.findChild<QPlainTextEdit*>("Tx_Message");auto send=panel.findChild<QPushButton*>("pbSendMessage");
  if(!entry||!send)return 2;
+ if(!send->styleSheet().contains("white"))return 42;
+ entry->setPlainText("test");if(!send->styleSheet().contains("#00cc00"))return 43;
+ panel.clearEntry();if(!send->styleSheet().contains("white"))return 44;
  entry->setPlainText("CQ F6FDY CQ");send->click();if(sent!="CQ F6FDY CQ")return 3;
  panel.triggerMacro(1);if(macro!="CQ %M CQ")return 4;
  auto style=panel.findChild<QComboBox*>("comboBoxJttyStyle");auto f1=panel.findChild<QLineEdit*>("msg1");
@@ -47,7 +50,7 @@ int main(int argc,char**argv) {
  if(preview2->text()!="PE1HUD F6FDY R-07")return 25;
  f1->setText("%H %M %G");
  panel.setMacroContext("F6FDY","","JN33",-10);
- if(preview1->text()!="Select a DX Call")return 26;
+ if(!preview1->text().isEmpty() || !preview1->toolTip().isEmpty())return 26;
  panel.setMacroContext("F6FDY","W1PID","JN33",4);
  style->setCurrentIndex(0);panel.findChild<QLineEdit*>("msg6")->setText("TU NOW %Q %E");
  panel.findChild<QLineEdit*>("lineEdit")->setText("K1JT");
@@ -61,6 +64,30 @@ int main(int argc,char**argv) {
  if(qAbs(serialWidget->mapTo(&panel,QPoint{}).y()-nextWidget->mapTo(&panel,QPoint{}).y())>8)return 29;
  auto f5=panel.findChild<QPushButton*>("pbF5");
  if(f5->mapTo(&panel,QPoint{}).y()-(preview1->mapTo(&panel,QPoint{}).y()+preview1->height())<18)return 30;
+ // Peer summary and next-report guidance never transmit by themselves.
+ auto summary=panel.findChild<QLabel*>("qsoReports");
+ auto f2Button=panel.findChild<QPushButton*>("pbF2");
+ auto f3Button=panel.findChild<QPushButton*>("pbF3");
+ style->setCurrentIndex(1);panel.setReports("AE2NY","","");
+ if(!summary->text().contains("AE2NY") || summary->text().contains("RST"))return 31;
+ auto f1Button=panel.findChild<QPushButton*>("pbF1");
+ if(f1Button->styleSheet().isEmpty() || !f2Button->styleSheet().isEmpty() || !f3Button->styleSheet().isEmpty())return 32;
+ panel.setReports("AE2NY","+10","");
+ if(f1Button->styleSheet().isEmpty() || !f2Button->styleSheet().isEmpty())return 40;
+ panel.highlightCallMacro();
+ panel.setReports("AE2NY","+10","");
+ if(f1Button->styleSheet().isEmpty())return 41;
+ if(!panel.findChild<QPushButton*>("pbF6")->styleSheet().isEmpty())return 39;
+ panel.setReports("AE2NY","+10","-05");
+ if(!summary->text().contains("-05") || !summary->text().contains("+10"))return 33;
+ if(!f2Button->styleSheet().isEmpty() || f3Button->styleSheet().isEmpty())return 34;
+ panel.setReports("K2GAV","","");
+ if(summary->text().contains("AE2NY") || summary->text().contains("RST"))return 35;
+ panel.setReports("","","");
+ if(panel.findChild<QPushButton*>("pbF6")->styleSheet().isEmpty())return 38;
+ if(!summary->text().isEmpty() || !f2Button->styleSheet().isEmpty() || !f3Button->styleSheet().isEmpty())return 36;
+ panel.setReports("AE2NY","+10","-05");style->setCurrentIndex(0);
+ if(!f2Button->styleSheet().isEmpty() || !f3Button->styleSheet().isEmpty())return 37;
  // Exercise the embedded controls at a large font, not just the standalone form.
  QWidget window; auto layout=new QVBoxLayout(&window);
  layout->addWidget(new QTextEdit(&window),1);

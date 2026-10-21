@@ -5,6 +5,7 @@
 #include <QTextBlock>
 namespace wsjtz {
 inline void resetJttyText(QTextEdit& view,QString const& text,QFont const& font) {
+ view.document()->setDefaultFont(font);
  view.setCurrentCharFormat(QTextCharFormat{});view.setPlainText(text);
  QTextCursor cursor(view.document());cursor.select(QTextCursor::Document);
  QTextCharFormat format;format.setFont(font);cursor.setCharFormat(format);

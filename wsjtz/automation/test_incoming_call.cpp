@@ -9,6 +9,23 @@ static void require (bool condition, char const * message)
 }
 int main ()
 {
+  wsjtz::IncomingCallPolicy cqs;
+  cqs.observe_target_message ("K1OLD", "K1OLD", false, true, "120000");
+  cqs.observe_target_message ("K1OLD", "K1OLD", false, true, "120000");
+  require (!cqs.unanswered_cqs ("K1OLD"), "duplicate decode counted as second CQ");
+  cqs.observe_target_message ("K1OLD", "N2NEW", false, true, "120030");
+  require (!cqs.unanswered_cqs ("K1OLD"), "other station counted as target CQ");
+  cqs.observe_target_message ("K1OLD", "K1OLD", false, true, "120030");
+  require (cqs.unanswered_cqs ("K1OLD"), "two target CQs did not end attempt");
+  cqs.observe_target_message ("K1OLD", "K1OLD", true, false, "120030");
+  require (!cqs.unanswered_cqs ("K1OLD"), "reply in same batch failed to protect QSO");
+  cqs.observe_target_message ("K3NEW", "K3NEW", false, true, "120100");
+  require (!cqs.unanswered_cqs ("K3NEW"), "new target inherited CQ count");
+  cqs.observe_target_message ("K3NEW", "K3NEW", false, false, "120130");
+  cqs.observe_target_message ("K3NEW", "K3NEW", false, true, "120200");
+  require (!cqs.unanswered_cqs ("K3NEW"), "non-CQ failed to break consecutive CQs");
+  cqs.reset ();
+  require (!cqs.unanswered_cqs ("K3NEW"), "reset retained CQ state");
   wsjtz::IncomingCallPolicy policy;
   auto eligible = [&] (bool enabled = true, bool filtered = false) {
     return policy.should_switch (enabled, true, true, true, true, true, true,

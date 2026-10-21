@@ -392,7 +392,8 @@ private slots:
     void pskReporterReportsUpdated(QStringList const& receiver_callsigns);
     void logSlots();
     void execCmd(QString cmd);
-    bool setFreeFreq();
+    bool setFreeFreq(bool manual = false);
+    void prepareAutomaticTxFrequency();
     bool isSlotFree(int f);
     void addSlot(int freq);
     void on_pb_FreeFreq_clicked();
@@ -776,7 +777,7 @@ private:
   QString m_jttyOriginalLhHeading, m_jttyOriginalRhHeading;
   int m_jttyTolerance = 1300;
   int m_jttyHisCallSnr = -10;
-  void selectJttyCorrespondent (QString const& line,QString const& word,bool sendF2=false);
+  void selectJttyCorrespondent (QString const& line,QString const& word,bool sendF1=false,bool followFrequency=false);
   int m_jttyPreviousControlsMaximumHeight = 220;
   QByteArray m_jttyPreviousSplitterState;
   qint64 m_jttyEnqueueId = 0;
@@ -798,6 +799,16 @@ private:
   QString m_pendingIncomingTarget;
   bool m_resolvingIncomingBatch = false;
   wsjtz::CqReplyQueue m_cqReplyQueue;
+  QMap<QString,wsjtz::CqReply> m_pendingSignoffQsos;
+  QString m_pendingSignoffContext;
+  QString m_autoTxLockedCall, m_autoTxLockContext;
+  int m_autoTxLockedFrequency = 0;
+  bool m_deferredSignoffActive = false;
+  bool m_deferredSignoffLogged = false;
+  bool m_deferredSignoffResumeCq = false;
+  double m_deferredSignoffIdleMinutes = 0;
+  double m_cqWatchdogCarryMinutes = -1;
+  QString m_deferredSignoffCqLeft, m_deferredSignoffCallLeft;
   wsjtz::QueuedCallBudget m_queuedCallBudget;
   bool m_processingCqQueue = false;
   bool m_resumeCqQueue = false;

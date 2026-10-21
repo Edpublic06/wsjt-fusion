@@ -13,10 +13,19 @@
 #include <QPlainTextEdit>
 #include <QPushButton>
 #include <QStatusBar>
+#include <QRegularExpression>
 extern int g_iptt;
 
 void MainWindow::initializeJttyTransmit ()
 {
+  m_jttyLive->decodedMessage = [this] (QString const& text) {
+    if (!m_jttyActive) return;
+    auto const report = wsjtz::jttyReceivedReport(text,m_hisCall,m_config.my_callsign ());
+    if (!report.isEmpty ()) {
+      m_rptRcvd = report;
+      refreshJttyMacroPreviews ();
+    }
+  };
   m_jttyTxLifecycle.reset (new JttyTxLifecycle);
   qRegisterMetaType<TxAudioQueueEpoch> ("TxAudioQueueEpoch");
   qRegisterMetaType<TxAudioQueueProgress> ("TxAudioQueueProgress");
@@ -128,6 +137,7 @@ void MainWindow::startJttyTransmitAudio ()
   tx_status_label.setText (tr ("Tx: JTTY"));
   auto const sentReport = wsjtz::jttySentReport (m_jttyTxText,m_hisCall,m_config.my_callsign ());
   if (!sentReport.isEmpty ()) m_rptSent = sentReport;
+  refreshJttyMacroPreviews ();
   m_jttyLive->appendTransmit (m_jttyTxText,ui->TxFreqSpinBox->value ());
   write_all ("Tx",m_jttyTxText);
   // Completion comes from the upstream audio queue's device-buffer drain guard.
@@ -172,6 +182,14 @@ void MainWindow::refreshJttyMacroPreviews ()
 {
   if(!m_jttyPanel || !m_jttyActive)return;
   auto const average=m_jttyLive->peerAverage ();
+  // The outgoing report is available from the first selected-peer decode,
+  // then follows the mean of the first two and three distinct messages.
+  if (average.count) {
+    m_rptSent = QStringLiteral ("%1%2")
+      .arg (average.snr < 0 ? QStringLiteral ("-") : QStringLiteral ("+"))
+      .arg (qAbs (average.snr),2,10,QLatin1Char ('0'));
+  }
+  m_jttyPanel->setReports(ui->dxCallEntry->text (),m_rptSent,m_rptRcvd);
   m_jttyPanel->setMacroContext(m_config.my_callsign (),ui->dxCallEntry->text ().trimmed ().toUpper (),
     m_config.my_grid (),average.count ? average.snr : m_jttyHisCallSnr);
 }
@@ -188,7 +206,7 @@ void MainWindow::sendJttyMacro (QString const& macro)
   sendJttyText (expanded);
 }
 
-void MainWindow::selectJttyCorrespondent (QString const& line,QString const& word,bool sendF2)
+void MainWindow::selectJttyCorrespondent (QString const& line,QString const& word,bool sendF1,bool followFrequency)
 {
   if (!m_jttyActive || !Radio::is_callsign (word)) return;
   // Upstream handleDecodeSelection JTTY branch: DX Call changes first, then
@@ -206,6 +224,19 @@ void MainWindow::selectJttyCorrespondent (QString const& line,QString const& wor
     clearCallInfo ();
     ui->ci_dxcall->setText (word);
   }
-  if (sendF2 && m_jttyPanel && m_jttyPanel->isFt8Style ())
-    m_jttyPanel->triggerMacro (2);
+  if (followFrequency || sendF1) {
+    static QRegularExpression const frequencyHeader {QStringLiteral ("^\\s*([0-9]+) Hz\\s")};
+    auto const match = frequencyHeader.match (line);
+    if (match.hasMatch ()) {
+      int const frequency = match.captured (1).toInt ();
+      if (frequency >= ui->RxFreqSpinBox->minimum () && frequency <= ui->RxFreqSpinBox->maximum ()) {
+        ui->RxFreqSpinBox->setValue (frequency);
+        if (!ui->cbHoldTxFreq->isChecked ()) ui->TxFreqSpinBox->setValue (frequency);
+      }
+    }
+  }
+  if (m_jttyPanel && m_jttyPanel->isFt8Style ()) {
+    m_jttyPanel->highlightCallMacro ();
+    if (sendF1) m_jttyPanel->triggerMacro (1);
+  }
 }

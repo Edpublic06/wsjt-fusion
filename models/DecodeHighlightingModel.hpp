@@ -20,7 +20,7 @@ class DecodeHighlightingModel final
 public:
   enum class Highlight : char {CQ, MyCall, Tx, DXCC, DXCCBand, Grid, GridBand, Call, CallBand
                                , Continent, ContinentBand, CQZone, CQZoneBand, ITUZone, ITUZoneBand
-                               , LotW};
+                               , LotW, ModeBand};
   Q_ENUM (Highlight)
   static QString highlight_name (Highlight h);
 

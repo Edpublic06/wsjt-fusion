@@ -22,6 +22,18 @@ LogBook::~LogBook ()
 {
 }
 
+bool LogBook::call_worked (QString const& call) const
+{
+  return worked_before_.call_worked (call, QString {}, QString {});
+}
+
+bool LogBook::new_mode_on_band (QString const& call, QString const& mode, QString const& band) const
+{
+  return !call.isEmpty () && !mode.isEmpty () && !band.isEmpty ()
+    && worked_before_.call_worked (call, QString {}, band)
+    && !worked_before_.call_worked (call, mode, band);
+}
+
 void LogBook::match (QString const& call, QString const& mode, QString const& grid,
                      AD1CCty::Record const& looked_up,
                      bool& callB4,
@@ -34,11 +46,10 @@ void LogBook::match (QString const& call, QString const& mode, QString const& gr
 {
   if (call.size() > 0)
     {
-      // In JTTY, entities and overall calls remain worked across modes. Only
-      // the call-on-band criterion distinguishes the JTTY contact.
+      // JTTY entities and calls remain worked across modes; a separate
+      // New Mode on Band highlight handles contacts made in another mode.
       auto const& mode_to_check = (mode == "JTTY" || (config_ && !config_->highlight_by_mode ())) ? QString {} : mode;
-      auto const call_mode = mode == "JTTY" && !band.isEmpty () ? mode : mode_to_check;
-      callB4 = worked_before_.call_worked (call, call_mode, band);
+      callB4 = worked_before_.call_worked (call, mode_to_check, band);
       gridB4 = worked_before_.grid_worked(grid, mode_to_check, band);
       auto const& countryName = looked_up.entity_name;
       if (countryName.size ())

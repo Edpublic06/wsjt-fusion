@@ -44,6 +44,7 @@ QList<DecodeHighlightingModel::HighlightInfo> const DecodeHighlightingModel::imp
   , {Highlight::GridBand, false, {}, {{0xff, 0xcc, 0x99}}}
   , {Highlight::Call, false, {}, {{0x00, 0xff, 0xff}}}
   , {Highlight::CallBand, false, {}, {{0x99, 0xff, 0xff}}}
+  , {Highlight::ModeBand, true, {}, {{0xe0, 0xe0, 0xe0}}}
   , {Highlight::LotW, false, {{0x99, 0x00, 0x00}}, {}}
   , {Highlight::CQ, true, {}, {{0x66, 0xff, 0x66}}}
   , {Highlight::Tx, true, {}, {Qt::yellow}}
@@ -118,6 +119,7 @@ QString DecodeHighlightingModel::highlight_name (Highlight h)
     case Highlight::GridBand: return tr ("New Grid on Band");
     case Highlight::Call: return tr ("New Call");
     case Highlight::CallBand: return tr ("New Call on Band");
+    case Highlight::ModeBand: return tr ("New Mode on Band");
     case Highlight::Continent: return tr ("New Continent");
     case Highlight::ContinentBand: return tr ("New Continent on Band");
     case Highlight::CQZone: return tr ("New CQ Zone");

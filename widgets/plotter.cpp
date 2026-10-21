@@ -151,6 +151,8 @@ void CPlotter::draw(float swide[], bool bScroll, bool bRed)
   double fac = sqrt(m_binsPerPixel*m_waterfallAvg/15.0);
   double gain = fac*pow(10.0,0.015*m_plotGain);
   double gain2d = pow(10.0,0.02*(m_plot2dGain));
+  // Fusion: modest display-only boost for the continuous JTTY spectrum.
+  if (m_mode == "JTTY") gain2d *= 1.5;
 
   if(m_bReference != m_bReference0) resizeEvent(NULL);
   m_bReference0=m_bReference;

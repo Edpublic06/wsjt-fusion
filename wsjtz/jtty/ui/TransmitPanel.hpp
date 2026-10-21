@@ -15,11 +15,13 @@ public:
   std::function<void(QString)> sendText,sendMacro;
   std::function<void(int)> rxChanged,txChanged,toleranceChanged;
   void setFrequencies(int rx,int tx);
+  void setReports(QString const& call,QString const& sent,QString const& received);
   void setBusy(bool busy);
   void setProgress(qint64 served,qint64 total);
   void showPreparedText(QString const&);
   void clearEntry();
   void triggerMacro(int index);
+  void highlightCallMacro();
   bool isFt8Style() const { return style_ == 1; }
   void setMacroContext(QString const& myCall,QString const& hisCall,QString const& grid,int snr);
   QString expandedMacro(QString const&) const;
@@ -35,7 +37,9 @@ private:
   std::unique_ptr<Ui::JttyTransmitPanel> ui_;
   QSettings* settings_;
   int style_=-1;
+  bool callMacroHighlighted_=false;
   QString myCall_,hisCall_,grid_;
+  QString reportCall_,sentReport_,receivedReport_;
   int snr_=-10;
   void loadStyle(int style);
   void saveTemplates();

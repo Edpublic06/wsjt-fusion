@@ -2066,6 +2066,19 @@ void Configuration::impl::read_settings ()
 
   auto highlight_items = settings_->value ("DecodeHighlighting", QVariant::fromValue (DecodeHighlightingModel::default_items ())).value<DecodeHighlightingModel::HighlightItems> ();
   if (!highlight_items.size ()) highlight_items = DecodeHighlightingModel::default_items ();
+  // Add the new criterion to saved palettes without replacing custom colours
+  // or changing the existing criteria order.
+  using Highlight = DecodeHighlightingModel::Highlight;
+  bool hasModeBand = false;
+  int modeBandPosition = highlight_items.size ();
+  for (int i = 0; i < highlight_items.size (); ++i) {
+    if (highlight_items[i].type_ == Highlight::ModeBand) hasModeBand = true;
+    if (highlight_items[i].type_ == Highlight::CallBand) modeBandPosition = i + 1;
+  }
+  if (!hasModeBand) {
+    for (auto const& item : DecodeHighlightingModel::default_items ())
+      if (item.type_ == Highlight::ModeBand) highlight_items.insert (modeBandPosition, item);
+  }
   decode_highlighing_model_.items (highlight_items);
   highlight_by_mode_ = settings_->value("HighlightByMode", false).toBool ();
   highlight_only_fields_ = settings_->value("OnlyFieldsSought", false).toBool ();

@@ -129,8 +129,10 @@ void DisplayText::mouseDoubleClickEvent(QMouseEvent *e)
              cursor.select (QTextCursor::WordUnderCursor);
              QTextEdit::ExtraSelection highlight;
              highlight.cursor = cursor;
-             highlight.format.setBackground (QColor (255,235,90));
-             highlight.format.setForeground (Qt::black);
+             highlight.format.setBackground (Qt::red);
+             highlight.format.setForeground (Qt::white);
+             highlight.format.setFontUnderline (false);
+             highlight.format.setUnderlineStyle (QTextCharFormat::NoUnderline);
              setExtraSelections ({highlight});
              Q_EMIT previewJttyCallsign (m_jttyPressedLine,m_jttyPressedWord,mouseEvent->modifiers ());
          }
@@ -388,6 +390,8 @@ QString DisplayText::appendWorkedB4 (QString message, QString call, QString cons
   message = message.trimmed ();
 
   highlight_types types;
+  if (logBook.new_mode_on_band (call, currentMode, currentBand))
+    types.push_back (Highlight::ModeBand);
   // no shortcuts here as some types may be disabled
   if (!countryB4) {
     types.push_back (Highlight::DXCC);
