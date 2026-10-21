@@ -149,6 +149,8 @@ PY
     # Start with a fresh installation, never an old developer/test bundle.
     cmake --install "$CI_ROOT/build" 2>&1 | tee "$CI_ROOT/logs/install.log"
     app="$CI_ROOT/stage/wsjtx.app"
+    python3 "$source_root/tools/ci/verify_macos_bundle.py" "$app" \
+      --snapshot "$CI_ROOT/logs/dependencies-before-macdeployqt.json"
     "$QT_PREFIX/bin/macdeployqt" "$app" -always-overwrite -verbose=2 \
       -executable="$app/Contents/MacOS/jt9" \
       -executable="$app/Contents/MacOS/fusion-jtty-rx" \
@@ -158,6 +160,8 @@ PY
       -executable="$app/Contents/MacOS/rigctlcom-wsjtx" \
       -executable="$app/Contents/MacOS/libfusion_decoder_beta2.dylib" \
       2>&1 | tee "$CI_ROOT/logs/macdeployqt.log"
+    python3 "$source_root/tools/ci/verify_macos_bundle.py" "$app" \
+      --snapshot "$CI_ROOT/logs/dependencies-after-macdeployqt.json"
     # License notices are deliberately included beside the application resources.
     mkdir -p "$app/Contents/Resources/Fusion-Source-Notices"
     cp "$source_root/"{COPYING,NOTICE.md,UPSTREAM-SOURCES.md} \

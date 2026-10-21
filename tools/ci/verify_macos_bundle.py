@@ -6,6 +6,7 @@ from pathlib import Path
 import re
 import subprocess
 import json
+import hashlib
 import tempfile
 
 
@@ -222,11 +223,33 @@ def check(debugger, command, result, internal_dict):
         if count != 9:
             raise RuntimeError('Expected nine usable embedded catalogs; missing/corrupt catalog or negative-control failure')
         print('TRANSLATIONS_RUNTIME_PASS: %d nonempty catalogs loaded with QTranslator; missing/corrupt controls rejected; only bundle QtCore loaded' % count)
+        # Real dyld check of the WebP plugin chain; no GUI or radio is started.
+        webp = evaluate(WEBP_PLUGIN_EXPRESSION)
+        if not webp:
+            message = frame.EvaluateExpression('(const char*)dlerror()', options)
+            raise RuntimeError('WebP plugin dlopen failed: %s' % message.GetSummary())
+        check_qtcore()
+        # Reject any on-disk image loaded from Homebrew or another external
+        # location. The temporary diagnostic dylib is the sole explicit exception.
+        for loaded in target.modules:
+            path = module_path(loaded)
+            if not isinstance(path, Path) or not path.is_file():
+                continue  # LLDB JIT images have no on-disk Mach-O file.
+            if str(path).startswith(('/System/Library/', '/usr/lib/')):
+                continue
+            if path == Path(PROBE_FILE):
+                continue
+            if not path.is_relative_to(Path(APP_EXECUTABLE).parent.parent.parent):
+                raise RuntimeError('External image loaded during WebP probe: %s' % path)
+        print('WEBP_DYLD_PASS: bundle WebP plugin loaded; only bundle QtCore loaded; no external on-disk images')
     finally:
         if process is not None and process.IsValid():
             process.Kill()
 '''.replace('LOAD_EXPRESSION', repr(
             '(void*)dlopen(' + json.dumps(str(library)) + ', 2)'))
+            .replace('WEBP_PLUGIN_EXPRESSION', repr(
+                '(void*)dlopen(' + json.dumps(str(app / 'Contents/PlugIns/imageformats/libqwebp.dylib')) + ', 2)'))
+            .replace('PROBE_FILE', repr(str(library.resolve())))
             .replace('ENTRY_ADDRESS', repr(entry_address))
             .replace('APP_EXECUTABLE', repr(str(executable)))
             .replace('BUNDLE_QTCORE', repr(str((core / 'Versions/5/QtCore').resolve())))
@@ -242,8 +265,92 @@ def check(debugger, command, result, internal_dict):
                              text=True, stdout=subprocess.PIPE, env=probe_env,
                              stderr=subprocess.STDOUT, timeout=120)
         print(run.stdout)
-        if run.returncode or 'TRANSLATIONS_RUNTIME_PASS:' not in run.stdout:
-            raise RuntimeError('Embedded translations runtime verification failed')
+        if (run.returncode or 'TRANSLATIONS_RUNTIME_PASS:' not in run.stdout
+                or 'WEBP_DYLD_PASS:' not in run.stdout):
+            raise RuntimeError('Bundle translations/WebP runtime verification failed')
+
+
+
+def snapshot_dependencies(app, destination):
+    """Preserve the actual WebP graph and Frameworks symlinks for comparison."""
+    app = app.resolve()
+    frameworks = app / 'Contents/Frameworks'
+    inventory = []
+    for path in sorted(frameworks.rglob('*')):
+        if path.is_symlink() or path.is_file():
+            inventory.append(dict(path=str(path.relative_to(app)),
+                                  link=os.readlink(path) if path.is_symlink() else None,
+                                  exists=path.exists(), resolved=str(path.resolve())))
+    selected = {app / 'Contents/MacOS/wsjtx',
+                app / 'Contents/PlugIns/imageformats/libqwebp.dylib'}
+    for pattern in ('libwebp*.dylib', 'libsharpyuv*.dylib'):
+        selected.update(frameworks.glob(pattern))
+    images = []
+    for path in sorted(selected):
+        resolved = path.resolve()
+        item = dict(path=str(path.relative_to(app)), resolved=str(resolved),
+                    link=os.readlink(path) if path.is_symlink() else None,
+                    exists=path.exists())
+        if resolved.is_relative_to(app) and path.is_file() and macho(path):
+            item.update(sha256=hashlib.sha256(path.read_bytes()).hexdigest(),
+                        otool_L=output('otool', '-L', str(path)),
+                        otool_l=output('otool', '-l', str(path)),
+                        architectures=output('lipo', '-archs', str(path)))
+        images.append(item)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    destination.write_text(json.dumps(dict(frameworks=inventory, images=images), indent=2))
+    print(f'Dependency snapshot: {destination}')
+
+
+def verify_dependency_graph(app, images, executable_paths):
+    """Check each real load chain, retaining its dyld run-path stack."""
+    main = (app / 'Contents/MacOS/wsjtx').resolve()
+    system = ('/System/Library/', '/usr/lib/')
+    visited, covered = set(), set()
+
+    def expand(text, image, executable):
+        return Path(text.replace('@loader_path', str(image.parent))
+                    .replace('@executable_path', str(executable.parent)))
+
+    def walk(image, executable, inherited=()):
+        search = tuple(dict.fromkeys(
+            [expand(s, image, executable) for s in rpaths(image)] + list(inherited)))
+        key = image, executable, search
+        if key in visited:
+            return
+        visited.add(key)
+        covered.add(image)
+        for line in output('otool', '-L', str(image)).splitlines()[1:]:
+            dep = line.strip().split(' (', 1)[0]
+            if dep.startswith(system):
+                continue
+            candidates = ([p / dep[len('@rpath/'):] for p in search]
+                          if dep.startswith('@rpath/') else [expand(dep, image, executable)])
+            resolved = next((p.resolve() for p in candidates if p.is_file()), None)
+            if resolved is None or not resolved.is_relative_to(app):
+                raise RuntimeError(f'Unresolved/external dependency: {image}: {dep}; '
+                                   f'executable={executable}; rpaths={list(search)}; '
+                                   f'candidates={candidates}')
+            if resolved != image:
+                walk(resolved, executable, search)
+
+    for executable in executable_paths:
+        walk(executable.resolve(), executable.resolve())
+    main_search = [expand(s, main, main) for s in rpaths(main)]
+    # Qt plugins and the isolated decoder are actual dlopen roots. Libraries
+    # reached through them inherit that root's paths, rather than losing them
+    # through a second, artificial standalone load from the main executable.
+    roots = [p for p in images if (app / 'Contents/PlugIns') in p.parents]
+    engine = (app / 'Contents/MacOS/libfusion_decoder_beta2.dylib').resolve()
+    if engine in images:
+        roots.append(engine)
+    for root in roots:
+        walk(root, main, main_search)
+    # Retain strict coverage for unused/duplicate images as standalone roots.
+    # Nothing is exempted simply because the executable graph did not reach it.
+    for image in images:
+        if image not in covered:
+            walk(image, main, main_search)
 
 
 def verify(app, qt_prefix):
@@ -296,46 +403,12 @@ def verify(app, qt_prefix):
         raise RuntimeError('No Mach-O image in bundle')
     executable_paths = [p for p in mac.iterdir() if p.is_file() and macho(p)
                         and p.suffix != '.dylib']
-    system = ('/System/Library/', '/usr/lib/')
-
-    def expand(text, image, executable):
-        return Path(text.replace('@loader_path', str(image.parent))
-                    .replace('@executable_path', str(executable.parent)))
-
-    visited = set()
-
-    def walk(image, executable, inherited=()):
-        key = image, executable
-        if key in visited:
-            return
-        visited.add(key)
-        search = [expand(s, image, executable) for s in rpaths(image)] + list(inherited)
-        for line in output('otool', '-L', str(image)).splitlines()[1:]:
-            dep = line.strip().split(' (', 1)[0]
-            if dep.startswith(system):
-                continue
-            if dep.startswith('@rpath/'):
-                candidates = [p / dep[len('@rpath/'):] for p in search]
-            else:
-                candidates = [expand(dep, image, executable)]
-            resolved = next((p.resolve() for p in candidates if p.is_file()), None)
-            if resolved is None or not resolved.is_relative_to(app):
-                raise RuntimeError(f'Unresolved/external dependency: {image}: {dep}')
-            if resolved != image:
-                walk(resolved, executable, search)
-
     for image in images:
         arch = output('lipo', '-archs', str(image)).split()
         if 'arm64' not in arch:
             raise RuntimeError(f'Non-ARM64 Mach-O: {image}: {arch}')
         print(f'ARM64: {image.relative_to(app)}')
-    for executable in executable_paths:
-        walk(executable.resolve(), executable.resolve())
-    # Plugins and the dlopen-loaded engine must also pass even if not in otool's
-    # normal executable dependency graph. Qt plugins use the main app context.
-    for image in images:
-        walk(image, (mac / 'wsjtx').resolve(),
-             [expand(s, mac / 'wsjtx', mac / 'wsjtx') for s in rpaths(mac / 'wsjtx')])
+    verify_dependency_graph(app, images, executable_paths)
     print(f'PASS: {len(images)} ARM64 images; resources/plugins present; '
           'all non-system dynamic dependencies resolve inside the bundle.')
 
@@ -343,7 +416,14 @@ def verify(app, qt_prefix):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('app', type=Path)
-    parser.add_argument('--qt-prefix', required=True, type=Path,
+    parser.add_argument('--qt-prefix', type=Path,
                         help='Build Qt headers for the runtime-only translation probe')
+    parser.add_argument('--snapshot', type=Path,
+                        help='Record WebP dependencies, rpaths, hashes and Frameworks links')
     args = parser.parse_args()
-    verify(args.app, args.qt_prefix)
+    if args.snapshot:
+        snapshot_dependencies(args.app, args.snapshot)
+    elif args.qt_prefix is None:
+        parser.error('--qt-prefix is required for verification')
+    else:
+        verify(args.app, args.qt_prefix)
