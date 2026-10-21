@@ -43,6 +43,11 @@ TRANSLATION_PROBE = r"""
 extern "C" int fusion_check_translations() {
     const QDir dir(":/Translations");
     const auto files = dir.entryList({"wsjtx_*.qm"}, QDir::Files);
+    // Negative controls use Qt itself, before accepting the embedded catalogs.
+    QTranslator rejected;
+    const uchar corrupt[] = "not a Qt translation catalog";
+    if (rejected.load(":/Translations/wsjtx_ci_missing.qm") ||
+        rejected.load(corrupt, sizeof(corrupt))) return -2;
     int usable = 0;
     for (const auto &name : files) {
         QTranslator translator;
@@ -64,18 +69,42 @@ def verify_translations(app, qt_prefix):
         root = Path(tmp)
         source, library = root / 'probe.cpp', root / 'probe.dylib'
         source.write_text(TRANSLATION_PROBE)
-        # Headers only come from the build Qt; linkage is exclusively bundle Qt.
+        # Compile separately: a bundle framework has no development headers and
+        # must never shadow Homebrew's framework during QtCore/... includes.
         headers = qt_prefix / 'lib/QtCore.framework/Headers'
+        installed_headers = Path(output(str(qt_prefix / 'bin/qmake'),
+                                        '-query', 'QT_INSTALL_HEADERS'))
+        print(f'Qt headers: {installed_headers}; QtCore headers: {headers}')
+        for name in ('QDir', 'QTranslator', 'qstring.h', 'qglobal.h'):
+            if not (headers / name).is_file():
+                raise RuntimeError(f'Missing build Qt header: {headers / name}')
+        obj = root / 'probe.o'
         subprocess.run(['xcrun', 'clang++', '-std=c++11', '-arch', 'arm64',
-                        '-dynamiclib', str(source), '-I' + str(headers),
-                        '-F' + str(framework), '-iframework', str(qt_prefix / 'lib'),
-                        '-framework', 'QtCore',
+                        '-fPIC', '-c', str(source), '-I' + str(installed_headers),
+                        '-I' + str(headers), '-F' + str(qt_prefix / 'lib'),
+                        '-o', str(obj)], check=True)
+        # No Homebrew search path at link time: use the final bundle framework.
+        subprocess.run(['xcrun', 'clang++', '-arch', 'arm64', '-dynamiclib',
+                        str(obj), '-F' + str(framework), '-framework', 'QtCore',
                         '-Wl,-rpath,' + str(framework), '-o', str(library)], check=True)
+
+        def qtcore_loads(image):
+            return [line.strip().split(' (', 1)[0]
+                    for line in output('otool', '-L', str(image)).splitlines()[1:]
+                    if '/QtCore.framework/' in line]
+
+        # Match the application's QtCore load command before dlopen. The LLDB
+        # check below also verifies the actual loaded image before and after.
+        loads = qtcore_loads(library)
+        if len(loads) != 1 or loads != qtcore_loads(app / 'Contents/MacOS/wsjtx'):
+            raise RuntimeError(f'Translation probe QtCore differs from application: {loads}')
+        print(f'Translation probe QtCore dependency: {loads[0]}')
         # No app arguments or Qt GUI startup: stop before main's first instruction.
         # Every debugger/load/expression error fails closed; no string scanning.
         driver = root / 'check.py'
         driver.write_text('''
 import lldb
+from pathlib import Path
 
 def check(debugger, command, result, internal_dict):
     process = debugger.GetSelectedTarget().GetProcess()
@@ -96,20 +125,30 @@ def check(debugger, command, result, internal_dict):
             if value.GetError().Fail():
                 raise RuntimeError(str(value.GetError()))
             return value.GetValueAsUnsigned()
+        def check_qtcore():
+            paths = {Path(m.GetFileSpec().GetDirectory(),
+                          m.GetFileSpec().GetFilename()).resolve()
+                     for m in debugger.GetSelectedTarget().modules
+                     if m.GetFileSpec().GetFilename() == 'QtCore'}
+            if paths != {Path(BUNDLE_QTCORE)}:
+                raise RuntimeError('Expected only bundle QtCore, got: %s' % paths)
+        check_qtcore()
         handle = evaluate(LOAD_EXPRESSION)
         if not handle:
             raise RuntimeError('Cannot load translation probe with bundle QtCore')
+        check_qtcore()
         address = evaluate('(void*)dlsym((void*)%d, "fusion_check_translations")' % handle)
         if not address:
             raise RuntimeError('Translation probe symbol missing')
         count = evaluate('((int(*)())%d)()' % address)
-        if not 0 < count < 1000:
-            raise RuntimeError('No usable embedded translations, or a catalog failed to load')
-        print('TRANSLATIONS_RUNTIME_PASS: %d nonempty catalogs loaded with QTranslator' % count)
+        if count != 9:
+            raise RuntimeError('Expected nine usable embedded catalogs; missing/corrupt catalog or negative-control failure')
+        print('TRANSLATIONS_RUNTIME_PASS: %d nonempty catalogs loaded with QTranslator; missing/corrupt controls rejected; only bundle QtCore loaded' % count)
     finally:
         process.Kill()
 '''.replace('LOAD_EXPRESSION', repr(
             '(void*)dlopen(' + json.dumps(str(library)) + ', 2)'))
+            .replace('BUNDLE_QTCORE', repr(str((core / 'Versions/5/QtCore').resolve())))
             + '\ndef __lldb_init_module(debugger, internal_dict):\n'
               '    debugger.HandleCommand("command script add -f check.check fusion-translations")\n')
         run = subprocess.run(['xcrun', 'lldb', '--batch',
